@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 
-from api.app.models.users.roles import RolesType
-from api.app.models.users.users_type import UserType
+from api.app.models.users.roles_model import RolesType
+from api.app.models.users.tipos_usuarios_model import UserType
 
 main_bp = Blueprint('main', __name__)
 
