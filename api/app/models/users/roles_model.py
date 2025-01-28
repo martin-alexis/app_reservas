@@ -6,32 +6,34 @@ from api.app import db
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
 
-from api.app.models.users.users_has_roles import UsersHasRoles
+from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
 
 
-class RolesType(enum.Enum):
+class TipoRoles(enum.Enum):
     ADMIN = "ADMIN"
     CLIENTE = "CLIENTE"
     PROVEEDOR = "PROVEEDOR"
 
 class Roles(db.Model):
     __tablename__ = 'roles'
+    id_roles = db.Column(Integer, primary_key=True, autoincrement=True)
+    tipo = db.Column(TipoRoles, nullable=False, unique=True)
 
-    id_roles = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(Enum(RolesType), nullable=False, unique=True)
-    users_roles = relationship('UsersHasRoles', back_populates='role')
+    usuarios = relationship('UsuariosTieneRoles', back_populates='rol')
 
-    def to_dict(self):
+    def __init__(self, tipo):
+        self.tipo = tipo
+
+    def to_json(self):
         return {
             'id_roles': self.id_roles,
-            'type': self.type.value
+            'tipo': self.tipo
         }
-
     @staticmethod
     def get_roles_user(user):
         try:
             roles_user = []
-            user_role_relations = UsersHasRoles.query.filter_by(users_id=user.id_users).all()
+            user_role_relations = UsuariosTieneRoles.query.filter_by(users_id=user.id_users).all()
 
             for relation in user_role_relations:
                 role = Roles.query.get(relation.roles_id)
