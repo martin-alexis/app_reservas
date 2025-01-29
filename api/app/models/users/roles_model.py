@@ -17,7 +17,7 @@ class TipoRoles(enum.Enum):
 class Roles(db.Model):
     __tablename__ = 'roles'
     id_roles = db.Column(Integer, primary_key=True, autoincrement=True)
-    tipo = db.Column(TipoRoles, nullable=False, unique=True)
+    tipo = db.Column(Enum(TipoRoles), nullable=False, unique=True)
 
     usuarios = relationship('UsuariosTieneRoles', back_populates='rol')
 
@@ -33,12 +33,12 @@ class Roles(db.Model):
     def get_roles_user(user):
         try:
             roles_user = []
-            user_role_relations = UsuariosTieneRoles.query.filter_by(users_id=user.id_users).all()
+            user_role_relations = UsuariosTieneRoles.query.filter_by(usuarios_id=user.id_usuarios).all()
 
             for relation in user_role_relations:
                 role = Roles.query.get(relation.roles_id)
                 if role:
-                    role_str = str(role.type).replace('RolesType.', '')
+                    role_str = str(role.tipo).replace('TipoRoles.', '')
                     roles_user.append(role_str)
             return roles_user
         except Exception as e:

@@ -13,7 +13,7 @@ class Estado(enum.Enum):
 class DisponibilidadServicio(db.Model):
     __tablename__ = 'disponibilidad_servicio'
     id_disponibilidad_servicio = db.Column(Integer, primary_key=True, autoincrement=True)
-    estado = db.Column(Estado, nullable=False)
+    estado = db.Column(Enum(Estado), nullable=False)
 
     servicios = relationship('Servicios', back_populates='disponibilidad')
 

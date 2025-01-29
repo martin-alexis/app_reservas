@@ -27,8 +27,8 @@ class TiposUsuario(db.Model):
     @staticmethod
     def get_usertype(user):
         try:
-            type_user = TiposUsuario.query.filter_by(id_user_types=user.user_types_id).first()
-            return str(type_user.type).replace('UserType.', '')
+            type_user = TiposUsuario.query.filter_by(id_tipos_usuario=user.tipos_usuario_id).first()
+            return str(type_user.tipo).replace('Tipo.', '')
 
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)}), 400

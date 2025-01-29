@@ -44,5 +44,5 @@ class Usuarios(db.Model):
 
     def check_password(self, password):
         # Verifica si la contraseña ingresada coincide con el hash guardado
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.contrasena, password)
 

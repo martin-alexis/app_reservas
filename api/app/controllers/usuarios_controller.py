@@ -22,7 +22,7 @@ class ControladorUsuarios:
                 return jsonify({'message': 'El correo o el teléfono ya están registrados'}), 400
 
             # Obtener el tipo de usuario
-            tipo_usuario = TiposUsuario.query.filter_by(type=data['tipos_usuario_id']).first()
+            tipo_usuario = TiposUsuario.query.filter_by(tipo=data['tipos_usuario_id']).first()
             if not tipo_usuario:
                 return jsonify({'message': 'Tipo de usuario inválido'}), 400
 
@@ -86,9 +86,9 @@ class ControladorUsuarios:
     @staticmethod
     def obtener_info_usuario(usuario_actual):
         try:
-            usuario = Usuarios.query.filter_by(correo=usuario_actual['correo']).first()
+            usuario = Usuarios.query.filter_by(correo=usuario_actual['email']).first()
             return jsonify({
-                'username': usuario.name
+                'username': usuario.nombre
             })
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)}), 400

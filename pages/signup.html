@@ -49,7 +49,7 @@
                 <select class="form-select" id="userType" name="userType" required>
                     <option value="" selected disabled>Select Usertype</option>
                     {% for type in user_types %}
-                    <option value="{{ type.value }}">{{ type.name }}</option>
+                        <option value="{{ type.value }}">{{ type.name }}</option>
                     {% endfor %}
                 </select>
 
@@ -61,15 +61,15 @@
                 <select class="form-select" id="role" name="role" required>
                     <option value="" selected disabled>Select role</option>
                     {% for role in roles_types %}
-                    <option value="{{ role.value }}">{{ role.name }}</option>
+                        <option value="{{ role.value }}">{{ role.name }}</option>
                     {% endfor %}
                     <option value="cliente_proveedor">CLIENTE Y PROVEEDOR</option>
-
                 </select>
+            </div>
 
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
         </form>
     </div>
 </div>
@@ -86,22 +86,22 @@
             alert('Passwords do not match!');
             return;
         }
-            const selectedRole = document.getElementById('role').value;
-            // Determinar los roles basados en la selección
-            let roles_ids = [];
+        const selectedRole = document.getElementById('role').value;
+        // Determinar los roles basados en la selección
+        let roles_ids = [];
 
-            if (selectedRole === 'cliente_proveedor') {
-                roles_ids = ['CLIENTE', 'PROVEEDOR']; // IDs para cliente y proveedor
-            } else {
-                roles_ids = [selectedRole];
-            }
+        if (selectedRole === 'cliente_proveedor') {
+            roles_ids = ['CLIENTE', 'PROVEEDOR']; // IDs para cliente y proveedor
+        } else {
+            roles_ids = [selectedRole];
+        }
         // Preparar los datos para enviar al servidor
         const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            password: password,
-            user_types_id: document.getElementById('userType').value,
+            nombre: document.getElementById('name').value,
+            correo: document.getElementById('email').value,
+            telefono: document.getElementById('phone').value,
+            contrasena: password,
+            tipos_usuario_id: document.getElementById('userType').value,
             roles_id: roles_ids
         };
         // Inspeccionar el formData
