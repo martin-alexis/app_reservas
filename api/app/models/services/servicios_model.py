@@ -39,8 +39,5 @@ class Servicios(db.Model):
             'ubicacion': self.ubicacion,
             'tipos_servicio_id': self.tipos_servicio_id,
             'usuarios_proveedores_id': self.usuarios_proveedores_id,
-            'disponibilidad_servicio_id': self.disponibilidad_servicio_id,
-            'tipo_servicio': self.tipo_servicio.to_json() if self.tipo_servicio else None,
-            'disponibilidad': self.disponibilidad.to_json() if self.disponibilidad else None,
-            'proveedor': self.proveedor.to_json() if self.proveedor else None
+            'disponibilidad_servicio_id': self.disponibilidad_servicio_id
         }

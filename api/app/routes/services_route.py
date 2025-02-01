@@ -11,7 +11,7 @@ services_bp = Blueprint('services', __name__)
 
 
 @services_bp.route('api/services', methods=['POST'])
-def create_services():
+def crear_servicio():
     has_access = Security.verify_token(request.headers)
     roles = has_access.get('roles')
     email = has_access.get('email')
@@ -26,13 +26,21 @@ def create_services():
 
 
 @services_bp.route('/api/services', methods=['GET'])
-def get_services():
+def obtener_servicios_usuario():
+    has_access = Security.verify_token(request.headers)
+    email = has_access.get('email')
 
-    controller = ControladorServicios()
-    return controller.obtener_servicios()
+    if has_access:
+        controller = ControladorServicios()
+        return controller.obtener_servicios_usuario(email)
+
+    else:
+        response = jsonify({'message': 'Unauthorized'})
+        return response, 401
+
 
 @services_bp.route('/api/services/<int:id_services>', methods=['PATCH'])
-def update_services(id_services):
+def actualizar_servicios(id_services):
     has_access = Security.verify_token(request.headers)
 
     if has_access:

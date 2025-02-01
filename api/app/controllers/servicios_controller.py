@@ -19,7 +19,8 @@ class ControladorServicios:
 
             tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
             print(tipo_servicio)
-            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(status=data['disponibilidad_servicio_id']).first()
+            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
+            print(disponibilidad_servicio)
 
             if not disponibilidad_servicio:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
@@ -48,12 +49,13 @@ class ControladorServicios:
         finally:
             db.session.close()
 
-    def obtener_servicios(self):
+    def obtener_servicios_usuario(self, email):
         try:
-            servicios = Servicios.query.all()
+            usuario = Usuarios.query.filter_by(correo=email).first()
+            servicios = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).all()
 
             if servicios:
-                return jsonify([servicio.to_dict() for servicio in servicios]), 200
+                return jsonify([servicio.to_json() for servicio in servicios]), 200
             else:
                 return jsonify({'message': 'No hay productos registrados.'}), 200
 
@@ -70,9 +72,9 @@ class ControladorServicios:
 
             data = request.json
 
-            tipo_servicio = TiposServicio.query.filter_by(type=data['tipos_servicio_id']).first()
+            tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
 
-            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(status=data['disponibilidad_servicio_id']).first()
+            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
 
             if not disponibilidad_servicio:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
@@ -88,7 +90,7 @@ class ControladorServicios:
             if 'disponibilidad_servicio_id' in data:
                 servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
             if 'tipos_servicio_id' in data:
-                servicio.tipos_servicio_id = tipo_servicio.id_service_types
+                servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
 
             db.session.commit()
 
