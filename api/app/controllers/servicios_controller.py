@@ -57,10 +57,10 @@ class ControladorServicios:
             if servicios:
                 return jsonify([servicio.to_json() for servicio in servicios]), 200
             else:
-                return jsonify({'message': 'No hay productos registrados.'}), 200
+                return jsonify({'message': 'No hay servicios registrados.'}), 200
 
         except Exception as e:
-            return jsonify({'error': 'Ocurrió un error al obtener los productos.', 'message': str(e)}), 500
+            return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
     @staticmethod
     def actualizar_servicio(id_servicio):
@@ -103,3 +103,19 @@ class ControladorServicios:
             db.session.close()
 
         return jsonify({"message": "Servicio actualizado exitosamente"}), 200
+
+
+    def eliminar_servicios_usuario(self, id_servicios, email):
+        try:
+            # usuario = Usuarios.query.filter_by(correo=email).first()
+            servicio = Servicios.query.get(id_servicios)
+
+            if servicio:
+                db.session.delete(servicio)
+                db.session.commit()
+                return jsonify({'message': 'Servicio eliminado correctamente.'}), 200
+            else:
+                return jsonify({'message': 'No se encontró el servicio.'}), 404
+
+        except Exception as e:
+            return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
