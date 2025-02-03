@@ -68,48 +68,46 @@ class ControladorReservas:
     #     except Exception as e:
     #         return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
     #
-    # @staticmethod
-    # def actualizar_servicio(id_servicio):
-    #     try:
-    #         servicio = Servicios.query.get(id_servicio)
-    #
-    #         if not servicio:
-    #             return jsonify({"error": "Servicio no encontrado"}), 404
-    #
-    #         data = request.json
-    #
-    #         tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
-    #
-    #         disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
-    #
-    #         if not disponibilidad_servicio:
-    #             return jsonify({'message': 'Estado del servicio inválido'}), 400
-    #
-    #         if 'nombre' in data:
-    #             servicio.nombre = data['nombre']
-    #         if 'descripcion' in data:
-    #             servicio.descripcion = data['descripcion']
-    #         if 'precio' in data:
-    #             servicio.precio = data['precio']
-    #         if 'ubicacion' in data:
-    #             servicio.ubicacion = data['ubicacion']
-    #         if 'disponibilidad_servicio_id' in data:
-    #             servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
-    #         if 'tipos_servicio_id' in data:
-    #             servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
-    #
-    #         db.session.commit()
-    #
-    #     except Exception as e:
-    #         db.session.rollback()
-    #         print(f"Error al actualizar el registro: {e}")
-    #         return jsonify({"error": "Error al actualizar el registro"}), 500
-    #
-    #     finally:
-    #         db.session.close()
-    #
-    #     return jsonify({"message": "Servicio actualizado exitosamente"}), 200
-    #
+
+    def actualizar_reservas(self, id_servicio, id_reserva):
+        try:
+            servicio = Servicios.query.get(id_servicio)
+
+            if not servicio:
+                return jsonify({"error": "Servicio no encontrado"}), 404
+
+            reserva = Reservas.query.get(id_reserva)
+
+            if not reserva:
+                return jsonify({"error": "Reserva no encontrada"}), 404
+
+            data = request.json
+
+            estado_reserva = True
+            if 'fecha_inicio_reserva' in data:
+                reserva.fecha_inicio_reserva = datetime.strptime(data['fecha_inicio_reserva'], "%d/%m/%Y %H:%M:%S")
+            if 'fecha_fin_reserva' in data:
+                reserva.fecha_fin_reserva = datetime.strptime(data['fecha_fin_reserva'], "%d/%m/%Y %H:%M:%S")
+            if 'monto_total' in data:
+                reserva.monto_total = data['monto_total']
+            if 'estados_reserva_id' in data:
+                estado_reserva = EstadosReserva.query.filter_by(estado=data['estados_reserva_id']).first()
+                reserva.estados_reserva_id = estado_reserva.id_estados_reserva
+            elif not estado_reserva :
+                return jsonify({"error": "Estado de la reserva no es valido."}), 400
+
+
+            db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
+
+        finally:
+            db.session.close()
+
+        return jsonify({"message": "Reserva actualizado exitosamente"}), 200
+
     #
     # def eliminar_servicios_usuario(self, id_servicios, email):
     #     try:
