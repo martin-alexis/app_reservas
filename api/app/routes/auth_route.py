@@ -7,22 +7,27 @@ from api.app.utils.security import Security
 
 auth_bp = Blueprint('auth', __name__)
 
+
 @auth_bp.route('/generate_token', methods=['POST'])
 def login_jwt():
+    email = request.json.get('email')
+    password = request.json.get('password')
 
-    email = request.json['email']
-    password = request.json['password']
+    if not email or not password:
+        return jsonify({'message': 'Email y contraseña son requeridos'}), 400
 
-    authenticated_user = ControladorUsuarios.obtener_usuario_por_email(email)
+    authenticated_user = ControladorUsuarios.obtener_usuario_por_correo(email)
 
-    if authenticated_user and authenticated_user.check_password(password):
-        roles_user = Roles.get_roles_user(authenticated_user)
+    if not authenticated_user:
+        return jsonify({'message': 'Email incorrecto'}), 404
 
-        type_user = TiposUsuario.get_usertype(authenticated_user)
+    if not authenticated_user.check_password(password):
+        return jsonify({'message': 'Contraseña incorrecta'}), 401
 
-        jwt_token = Security.create_token(authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
+    roles_user = Roles.get_roles_user(authenticated_user)
+    type_user = TiposUsuario.get_usertype(authenticated_user)
 
-        return jsonify({'token': jwt_token})
+    jwt_token = Security.create_token(authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
 
-    else:
-        return jsonify({'message': 'Unauthorized'}), 401
+    return jsonify({'token': jwt_token}), 200
+

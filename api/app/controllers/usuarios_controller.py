@@ -111,26 +111,26 @@ class ControladorUsuarios:
     #
     #     return jsonify({"message": "Servicio actualizado exitosamente"}), 200
     #
-    # @staticmethod
-    # def obtener_usuario_por_correo(correo):
-    #     try:
-    #
-    #         usuario = Usuarios.query.filter_by(correo=correo).first()
-    #
-    #         if usuario:
-    #             return usuario
-    #         else:
-    #             return None
-    #
-    #     except Exception as e:
-    #         return jsonify({'status': 'error', 'message': str(e)}), 400
-    #
-    # @staticmethod
-    # def obtener_info_usuario(usuario_actual):
-    #     try:
-    #         usuario = Usuarios.query.filter_by(correo=usuario_actual['email']).first()
-    #         return jsonify({
-    #             'username': usuario.nombre
-    #         })
-    #     except Exception as e:
-    #         return jsonify({'status': 'error', 'message': str(e)}), 400
+    @staticmethod
+    def obtener_usuario_por_correo(correo):
+        try:
+
+            usuario = Usuarios.query.filter_by(correo=correo).first()
+
+            if usuario:
+                return usuario
+            else:
+                return None
+
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)}), 400
+
+    @staticmethod
+    def obtener_info_usuario(usuario_actual):
+        try:
+            usuario = Usuarios.query.filter_by(correo=usuario_actual['email']).first()
+            return jsonify({
+                'username': usuario.nombre
+            })
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)}), 400

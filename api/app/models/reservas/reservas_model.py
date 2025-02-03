@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 class Reservas(db.Model):
     __tablename__ = 'reservas'
     id_reservas = db.Column(Integer, primary_key=True, autoincrement=True)
-    fecha_creacion_reserva = db.Column(DateTime, nullable=False)
+    fecha_creacion_reserva = db.Column(DateTime, default=datetime.utcnow, nullable=False)
     fecha_inicio_reserva = db.Column(DateTime, nullable=False)
     fecha_fin_reserva = db.Column(DateTime, nullable=False)
     monto_total = db.Column(Numeric(10, 0), nullable=False)
@@ -16,9 +16,9 @@ class Reservas(db.Model):
 
     servicio = relationship('Servicios', back_populates='reservas')
     estado_reserva = relationship('EstadosReserva', back_populates='reservas')
-    pagos = relationship('Pagos', back_populates='reserva')
+    # pagos = relationship('Pagos', back_populates='reserva')
 
-    def __init__(self, fecha_inicio_reserva, fecha_fin_reserva, monto_total, servicios_id, usuarios_id,
+    def __init__(self, fecha_inicio_reserva, fecha_fin_reserva, monto_total, servicios_id,
                  estados_reserva_id):
         self.fecha_creacion_reserva = datetime.now()
         self.fecha_inicio_reserva = fecha_inicio_reserva

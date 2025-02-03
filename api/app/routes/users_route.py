@@ -1,7 +1,9 @@
 
 from flask import Blueprint, request, jsonify
 
+from api.app.controllers.servicios_controller import ControladorServicios
 from api.app.controllers.usuarios_controller import ControladorUsuarios
+from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.security import Security
 
 user_bp = Blueprint('user', __name__)
@@ -40,7 +42,7 @@ def eliminar_servicios_usuario(id_usuario):
 
     if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
         controller = ControladorServicios()
-        return controller.eliminar_servicios_usuario(id_services, email)
+        return controller.eliminar_servicios_usuario(id_usuario, email)
 
     else:
         response = jsonify({'message': 'Unauthorized'})
