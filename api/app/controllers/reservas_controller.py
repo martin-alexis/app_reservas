@@ -56,8 +56,7 @@ class ControladorReservas:
         finally:
             db.session.close()
 
-    @staticmethod
-    def obtener_reservas_por_servicio(email, id_servicio):
+    def obtener_reservas_por_servicio(self, email, id_servicio):
         usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
         if not usuario:
             return jsonify({"error": "Usuario no encontrado"}), 404
@@ -83,7 +82,7 @@ class ControladorReservas:
 
             servicio = Servicios.query.get(id_servicio)
 
-            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuarios.id_usuario).first()
+            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
             if not usuario_es_valido:
                 return jsonify({"error": "El usuario no ha creado este servicio"}), 403
 
@@ -122,18 +121,30 @@ class ControladorReservas:
 
         return jsonify({"message": "Reserva actualizado exitosamente"}), 200
 
-    #
-    # def eliminar_servicios_usuario(self, id_servicios, email):
-    #     try:
-    #         # usuario = Usuarios.query.filter_by(correo=email).first()
-    #         servicio = Servicios.query.get(id_servicios)
-    #
-    #         if servicio:
-    #             db.session.delete(servicio)
-    #             db.session.commit()
-    #             return jsonify({'message': 'Servicio eliminado correctamente.'}), 200
-    #         else:
-    #             return jsonify({'message': 'No se encontró el servicio.'}), 404
-    #
-    #     except Exception as e:
-    #         return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
+
+    def eliminar_reservas_por_servicio(self, id_servicio, id_reserva, email):
+        try:
+            usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
+            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
+            if not usuario_es_valido:
+                return jsonify({"error": "El usuario no ha creado este servicio"}), 403
+
+            servicio = Servicios.query.get(id_servicio)
+
+            if not servicio:
+                return jsonify({"error": "Servicio no encontrado"}), 404
+
+            reserva = Reservas.query.get(id_reserva)
+
+            if reserva:
+                db.session.delete(reserva)
+                db.session.commit()
+                return jsonify({'message': 'Reserva eliminado correctamente.'}), 200
+            else:
+                return jsonify({'message': 'No se encontró la reserva.'}), 404
+
+        except Exception as e:
+            return jsonify({'error': 'Ocurrió un error al eliminar la reserva.', 'message': str(e)}), 500
