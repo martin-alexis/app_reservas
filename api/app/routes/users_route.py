@@ -8,20 +8,47 @@ user_bp = Blueprint('user', __name__)
 
 
 @user_bp.route('api/users', methods=['POST'])
-def create_user():
+def crear_usuario():
     data = request.get_json()
     controller = ControladorUsuarios()
     return controller.crear_usuario(data)
 
 @user_bp.route('api/users', methods=['GET'])
-def get_user():
+def obtener_usuario_por_correo():
     data = request.get_json()
     controller = ControladorUsuarios()
-    return controller.obtener_usuario_por_email(data['correo'])
+    return controller.obtener_usuario_por_correo(data['correo'])
+
+@user_bp.route('/api/users/<int:id_usuario>', methods=['PATCH'])
+def actualizar_usuario(id_usuario):
+    has_access = Security.verify_token(request.headers)
+    email = has_access.get('email')
+
+    if has_access:
+        controller = ControladorUsuarios()
+        return controller.actualizar_usuario(id_usuario, email)
+
+    else:
+        response = jsonify({'message': 'Unauthorized'})
+        return response, 401
+
+@user_bp.route('/api/users/<int:id_usuario>', methods=['DELETE'])
+def eliminar_servicios_usuario(id_usuario):
+    has_access = Security.verify_token(request.headers)
+    email = has_access.get('email')
+    roles = has_access.get('roles')
+
+    if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
+        controller = ControladorServicios()
+        return controller.eliminar_servicios_usuario(id_services, email)
+
+    else:
+        response = jsonify({'message': 'Unauthorized'})
+        return response, 401
 
 # Endpoint para obtener información del usuario
 @user_bp.route('/api/user/me', methods=['GET'])
-def get_user_info():
+def obtener_info_usuario():
     try:
         # Verifica el token y obtiene la información del usuario
         user_data = Security.verify_token(request.headers)
