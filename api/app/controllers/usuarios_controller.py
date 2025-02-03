@@ -1,6 +1,7 @@
 from flask import jsonify, request
 
 from api.app import db
+from api.app.models.services.servicios_model import Servicios
 from api.app.models.users.roles_model import Roles
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
@@ -134,3 +135,13 @@ class ControladorUsuarios:
             })
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)}), 400
+
+
+    @staticmethod
+    def verificar_acceso_usuario(email):
+
+        usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+
+        usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuario).first()
+        if not usuario_es_valido:
+            return jsonify({"error": "El usuario no ha creado este servicio"}), 403
