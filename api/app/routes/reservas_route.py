@@ -18,3 +18,16 @@ def crear_reservas(id_servicio):
     else:
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
+
+@reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_servicio>', methods=['PATCH'])
+def actualizar_reservas(id_servicio, id_reserva):
+    has_access = Security.verify_token(request.headers)
+    roles= has_access.get('roles')
+
+    if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
+        controller = ControladorReservas()
+        return controller.actualizar_reservas(id_servicio, id_reserva)
+
+    else:
+        response = jsonify({'message': 'Unauthorized'})
+        return response, 401
