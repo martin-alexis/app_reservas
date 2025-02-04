@@ -6,7 +6,7 @@ from api.app.utils.security import Security
 
 valoraciones_bp = Blueprint('valoraciones', __name__)
 
-@valoraciones_bp.route('/api/servicios/<int:id_servicio>/reservas', methods=['POST'])
+@valoraciones_bp.route('/api/servicios/<int:id_servicio>/valoraciones', methods=['POST'])
 def crear_valoraciones(id_servicio):
     has_access = Security.verify_token(request.headers)
     roles = has_access.get('roles')
