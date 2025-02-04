@@ -35,4 +35,7 @@ def create_app():
     from .routes.valoraciones_route import valoraciones_bp
     app.register_blueprint(valoraciones_bp, url_prefix='/')
 
+    from .routes.pagos_route import pagos_bp
+    app.register_blueprint(pagos_bp, url_prefix='/')
+
     return app
