@@ -32,4 +32,7 @@ def create_app():
     from .routes.reservas_route import reservas_bp
     app.register_blueprint(reservas_bp, url_prefix='/')
 
+    from .routes.valoraciones_route import valoraciones_bp
+    app.register_blueprint(valoraciones_bp, url_prefix='/')
+
     return app
