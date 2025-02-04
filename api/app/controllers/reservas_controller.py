@@ -76,7 +76,7 @@ class ControladorReservas:
         else:
             return jsonify({'message': 'No hay reservas registradas para este servicio.'}), 200
 
-    def actualizar_reservas(self, id_servicio, id_reserva, email):
+    def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, email):
         try:
             usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
 

@@ -20,14 +20,14 @@ def crear_reservas(id_servicio):
         return response, 401
 
 @reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
-def actualizar_reservas(id_servicio, id_reserva):
+def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     has_access = Security.verify_token(request.headers)
     email= has_access.get('email')
     roles= has_access.get('roles')
 
     if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
         controller = ControladorReservas()
-        return controller.actualizar_reservas(id_servicio, id_reserva, email)
+        return controller.actualizar_reservas_por_servicio(id_servicio, id_reserva, email)
 
     else:
         response = jsonify({'message': 'Unauthorized'})
