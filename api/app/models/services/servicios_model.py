@@ -19,7 +19,7 @@ class Servicios(db.Model):
     proveedor = relationship('Usuarios', back_populates='servicios')
     disponibilidad = relationship('DisponibilidadServicio', back_populates='servicios')
     reservas = relationship('Reservas', back_populates='servicio')
-    # calificaciones = relationship('Calificaciones', back_populates='servicio')
+    valoraciones = relationship('Valoraciones', back_populates='servicio')
 
     def __init__(self, nombre, descripcion, precio, ubicacion, tipos_servicio_id, usuarios_proveedores_id, disponibilidad_servicio_id):
         self.nombre = nombre
