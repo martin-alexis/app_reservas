@@ -16,7 +16,7 @@ class Reservas(db.Model):
 
     servicio = relationship('Servicios', back_populates='reservas')
     estado_reserva = relationship('EstadosReserva', back_populates='reservas')
-    # pagos = relationship('Pagos', back_populates='reserva')
+    pagos = relationship('Pagos', back_populates='reserva')
 
     def __init__(self, fecha_inicio_reserva, fecha_fin_reserva, monto_total, servicios_id,
                  estados_reserva_id):
