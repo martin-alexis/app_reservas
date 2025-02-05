@@ -15,8 +15,9 @@ class Valoraciones(db.Model):
     servicios_id = db.Column(Integer, ForeignKey('servicios.id_servicios'), nullable=False)
     usuarios_id = db.Column(Integer, ForeignKey('usuarios.id_usuarios'), nullable=False)
 
-    servicio = relationship('Servicios', back_populates='valoraciones')
-    usuario = relationship('Usuarios', back_populates='valoraciones')
+    # servicio = relationship('Servicios', back_populates='valoraciones')
+    # usuario = relationship('Usuarios', back_populates='valoraciones')
+    #
 
     def __init__(self, puntuacion, comentario, servicios_id, usuarios_id):
         self.puntuacion = puntuacion

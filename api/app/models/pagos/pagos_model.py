@@ -1,15 +1,15 @@
 from datetime import datetime
 
 from api.app import db
-from sqlalchemy import DateTime, Integer, Decimal, ForeignKey
+from sqlalchemy import DateTime, Integer, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 
 
 class Pagos(db.Model):
     __tablename__ = 'pagos'
-    id_pagos = db.Column(Integer, primary_key=True)
-    fecha_pago = db.Column(DateTime, nullable=False)
-    monto = db.Column(Decimal(10, 2), nullable=False)
+    id_pagos = db.Column(Integer, primary_key=True, autoincrement=True)
+    fecha_pago = db.Column(DateTime, default=datetime.utcnow, nullable=False)
+    monto = db.Column(Numeric(10, 2), nullable=False)
     reservas_id = db.Column(Integer, ForeignKey('reservas.id_reservas'), nullable=False)
     estados_pago_id = db.Column(Integer, ForeignKey('estados_pago.id_estados_pago'), nullable=False)
 

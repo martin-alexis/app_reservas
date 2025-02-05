@@ -17,7 +17,7 @@ class Usuarios(db.Model):
     tipo_usuario = relationship('TiposUsuario', back_populates='usuarios')
     roles = relationship('UsuariosTieneRoles', back_populates='usuario')
     servicios = relationship('Servicios', back_populates='proveedor')
-    valoraciones = relationship('Valoraciones', back_populates='usuario')
+    # valoraciones = relationship('Valoraciones', back_populates='usuario')
 
     def __init__(self, nombre, correo, contrasena, telefono, tipos_usuario_id):
         self.nombre = nombre
