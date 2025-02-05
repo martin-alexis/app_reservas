@@ -9,19 +9,19 @@ from api.app.utils.security import Security
 user_bp = Blueprint('user', __name__)
 
 
-@user_bp.route('api/users', methods=['POST'])
+@user_bp.route('usuarios/', methods=['POST'])
 def crear_usuario():
     data = request.get_json()
     controller = ControladorUsuarios()
     return controller.crear_usuario(data)
 
-@user_bp.route('api/users', methods=['GET'])
+@user_bp.route('usuarios/', methods=['GET'])
 def obtener_usuario_por_correo():
     data = request.get_json()
     controller = ControladorUsuarios()
     return controller.obtener_usuario_por_correo(data['correo'])
 
-@user_bp.route('/api/users/<int:id_usuario>', methods=['PATCH'])
+@user_bp.route('usuarios/<int:id_usuario>', methods=['PUT'])
 def actualizar_usuario(id_usuario):
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')
@@ -34,7 +34,7 @@ def actualizar_usuario(id_usuario):
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
 
-@user_bp.route('/api/users/<int:id_usuario>', methods=['DELETE'])
+@user_bp.route('usuarios/<int:id_usuario>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario):
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')
@@ -49,7 +49,7 @@ def eliminar_servicios_usuario(id_usuario):
         return response, 401
 
 # Endpoint para obtener información del usuario
-@user_bp.route('/api/user/me', methods=['GET'])
+@user_bp.route('user/me', methods=['GET'])
 def obtener_info_usuario():
     try:
         # Verifica el token y obtiene la información del usuario
