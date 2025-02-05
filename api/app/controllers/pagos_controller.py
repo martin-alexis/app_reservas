@@ -20,8 +20,12 @@ class ControladorPagos:
         pass
 
 
-    def efectuar_pago(self, id_servicio, id_reserva):
+    def efectuar_pago(self, id_servicio, id_reserva, email):
         try:
+            usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
             servicio = Servicios.query.get(id_servicio)
 
             if not servicio:
@@ -52,6 +56,7 @@ class ControladorPagos:
                 monto=data['monto'],
                 reservas_id=reserva.id_reservas,
                 estados_pago_id=tipo_pago.id_estados_pago,
+                usuarios_id=usuario.id_usuarios,
             )
 
             db.session.add(nuevo_pago)

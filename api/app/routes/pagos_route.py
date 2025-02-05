@@ -15,7 +15,7 @@ def efectuar_pago(id_servicio, id_reserva):
 
     if has_access and roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
         controller = ControladorPagos()
-        return controller.efectuar_pago(id_servicio, id_reserva)
+        return controller.efectuar_pago(id_servicio, id_reserva, email)
 
     else:
         response = jsonify({'message': 'Unauthorized'})
