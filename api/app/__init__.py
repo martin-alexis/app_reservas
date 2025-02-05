@@ -20,7 +20,7 @@ def create_app():
     app.register_blueprint(main_bp, url_prefix='/')
 
     # #
-    from .routes.users_route import user_bp
+    from .routes.usuarios_route import user_bp
     app.register_blueprint(user_bp, url_prefix='/')
 
     from .routes.auth_route import auth_bp

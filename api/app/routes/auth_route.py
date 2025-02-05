@@ -8,26 +8,29 @@ from api.app.utils.security import Security
 auth_bp = Blueprint('auth', __name__)
 
 
-@auth_bp.route('/generate_token', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login_jwt():
-    email = request.json.get('email')
-    password = request.json.get('password')
+    try:
+        email = request.json.get('email')
+        password = request.json.get('password')
 
-    if not email or not password:
-        return jsonify({'message': 'Email y contraseña son requeridos'}), 400
+        if not email or not password:
+            return jsonify({'message': 'Email y contraseña son requeridos'}), 400
 
-    authenticated_user = ControladorUsuarios.obtener_usuario_por_correo(email)
+        authenticated_user = ControladorUsuarios.obtener_usuario_por_correo(email)
 
-    if not authenticated_user:
-        return jsonify({'message': 'Email incorrecto'}), 404
+        if not authenticated_user:
+            return jsonify({'message': 'Email incorrecto'}), 404
 
-    if not authenticated_user.check_password(password):
-        return jsonify({'message': 'Contraseña incorrecta'}), 401
+        if not authenticated_user.check_password(password):
+            return jsonify({'message': 'Contraseña incorrecta'}), 401
 
-    roles_user = Roles.get_roles_user(authenticated_user)
-    type_user = TiposUsuario.get_usertype(authenticated_user)
+        roles_user = Roles.get_roles_user(authenticated_user)
+        type_user = TiposUsuario.get_usertype(authenticated_user)
 
-    jwt_token = Security.create_token(authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
+        jwt_token = Security.create_token(authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
 
-    return jsonify({'token': jwt_token}), 200
+        return jsonify({'token': jwt_token}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
