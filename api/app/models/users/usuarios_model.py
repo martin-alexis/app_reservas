@@ -17,7 +17,7 @@ class Usuarios(db.Model):
     tipo_usuario = relationship('TiposUsuario', back_populates='usuarios')
     roles = relationship('UsuariosTieneRoles', back_populates='usuario')
     servicios = relationship('Servicios', back_populates='proveedor')
-    pagos = relationship('Pagos', back_populates='usuarios')
+    pagos = relationship('Pagos', back_populates='usuario')
 
     # valoraciones = relationship('Valoraciones', back_populates='usuario')
 
