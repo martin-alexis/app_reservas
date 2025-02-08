@@ -7,7 +7,7 @@ from api.app.utils.security import Security
 
 pagos_bp = Blueprint('pagos', __name__)
 
-@pagos_bp.route('/api/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
+@pagos_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
 def efectuar_pago(id_servicio, id_reserva):
     has_access = Security.verify_token(request.headers)
     roles = has_access.get('roles')

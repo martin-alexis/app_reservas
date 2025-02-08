@@ -10,7 +10,7 @@ from api.app.utils.security import Security
 services_bp = Blueprint('services', __name__)
 
 
-@services_bp.route('api/services', methods=['POST'])
+@services_bp.route('/servicios', methods=['POST'])
 def crear_servicio():
     has_access = Security.verify_token(request.headers)
     roles = has_access.get('roles')
@@ -25,7 +25,7 @@ def crear_servicio():
         return response, 401
 
 
-@services_bp.route('/api/services', methods=['GET'])
+@services_bp.route('/servicios', methods=['GET'])
 def obtener_servicios_usuario():
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')
@@ -40,28 +40,28 @@ def obtener_servicios_usuario():
         return response, 401
 
 
-@services_bp.route('/api/services/<int:id_services>', methods=['PATCH'])
-def actualizar_servicios(id_services):
+@services_bp.route('/servicios/<int:id_servicios>', methods=['PUT'])
+def actualizar_servicios(id_servicios):
     has_access = Security.verify_token(request.headers)
     roles= has_access.get('roles')
 
     if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
         controller = ControladorServicios()
-        return controller.actualizar_servicio(id_services)
+        return controller.actualizar_servicio(id_servicios)
 
     else:
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
 
-@services_bp.route('/api/services/<int:id_services>', methods=['DELETE'])
-def eliminar_servicios_usuario(id_services):
+@services_bp.route('/servicios/<int:id_servicio>', methods=['DELETE'])
+def eliminar_servicios_usuario(id_servicio):
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')
     roles = has_access.get('roles')
 
     if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
         controller = ControladorServicios()
-        return controller.eliminar_servicios_usuario(id_services, email)
+        return controller.eliminar_servicios_usuario(id_servicio, email)
 
     else:
         response = jsonify({'message': 'Unauthorized'})

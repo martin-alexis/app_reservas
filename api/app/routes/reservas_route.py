@@ -6,7 +6,7 @@ from api.app.utils.security import Security
 
 reservas_bp = Blueprint('reservas', __name__)
 
-@reservas_bp.route('/api/servicios/<int:id_servicio>/reservas', methods=['POST'])
+@reservas_bp.route('/servicios/<int:id_servicio>/reservas', methods=['POST'])
 def crear_reservas(id_servicio):
     has_access = Security.verify_token(request.headers)
     roles = has_access.get('roles')
@@ -19,7 +19,7 @@ def crear_reservas(id_servicio):
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
 
-@reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
+@reservas_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PUT'])
 def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     has_access = Security.verify_token(request.headers)
     email= has_access.get('email')
@@ -33,7 +33,7 @@ def actualizar_reservas_por_servicio(id_servicio, id_reserva):
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
 
-@reservas_bp.route('api/servicios/<int:id_servicio>/reservas', methods=['GET'])
+@reservas_bp.route('/servicios/<int:id_servicio>/reservas', methods=['GET'])
 def obtener_reservas_por_servicio(id_servicio):
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')
@@ -47,7 +47,7 @@ def obtener_reservas_por_servicio(id_servicio):
         response = jsonify({'message': 'Unauthorized'})
         return response, 401
 
-@reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
+@reservas_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
 def eliminar_reservas_por_servicio(id_servicio, id_reserva):
     has_access = Security.verify_token(request.headers)
     email = has_access.get('email')

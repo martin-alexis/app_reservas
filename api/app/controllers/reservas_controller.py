@@ -57,24 +57,28 @@ class ControladorReservas:
             db.session.close()
 
     def obtener_reservas_por_servicio(self, email, id_servicio):
-        usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
-        if not usuario:
-            return jsonify({"error": "Usuario no encontrado"}), 404
+        try:
+            usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
 
-        servicio = Servicios.query.get(id_servicio)
-        if not servicio:
-            return jsonify({"error": "Servicio no encontrado"}), 404
+            servicio = Servicios.query.get(id_servicio)
+            if not servicio:
+                return jsonify({"error": "Servicio no encontrado"}), 404
 
-        usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
-        if not usuario_es_valido:
-            return jsonify({"error": "El usuario no ha creado este servicio"}), 403
+            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
+            if not usuario_es_valido:
+                return jsonify({"error": "El usuario no ha creado este servicio"}), 403
 
-        reservas = Reservas.query.filter_by(servicios_id=id_servicio).all()
+            reservas = Reservas.query.filter_by(servicios_id=id_servicio).all()
 
-        if reservas:
-            return jsonify([reserva.to_json() for reserva in reservas]), 200
-        else:
-            return jsonify({'message': 'No hay reservas registradas para este servicio.'}), 200
+            if reservas:
+                return jsonify([reserva.to_json() for reserva in reservas]), 200
+            else:
+                return jsonify({'message': 'No hay reservas registradas para este servicio.'}), 200
+
+        except Exception as e:
+            return jsonify({"error": f"Error al localizar el registro: {str(e)}"}), 500
 
     def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, email):
         try:
@@ -112,6 +116,8 @@ class ControladorReservas:
 
             db.session.commit()
 
+            return jsonify({"message": "Reserva actualizado exitosamente"}), 200
+
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
@@ -119,7 +125,6 @@ class ControladorReservas:
         finally:
             db.session.close()
 
-        return jsonify({"message": "Reserva actualizado exitosamente"}), 200
 
 
     def eliminar_reservas_por_servicio(self, id_servicio, id_reserva, email):

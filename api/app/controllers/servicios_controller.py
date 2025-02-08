@@ -18,9 +18,8 @@ class ControladorServicios:
             usuario_proveedor = Usuarios.query.filter_by(correo=correo).first()
 
             tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
-            print(tipo_servicio)
+
             disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
-            print(disponibilidad_servicio)
 
             if not disponibilidad_servicio:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
@@ -52,6 +51,7 @@ class ControladorServicios:
     def obtener_servicios_usuario(self, email):
         try:
             usuario = Usuarios.query.filter_by(correo=email).first()
+            print(usuario)
             servicios = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).all()
 
             if servicios:
@@ -62,8 +62,8 @@ class ControladorServicios:
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
-    @staticmethod
-    def actualizar_servicio(id_servicio):
+
+    def actualizar_servicio(self, id_servicio):
         try:
             servicio = Servicios.query.get(id_servicio)
 
@@ -107,7 +107,7 @@ class ControladorServicios:
 
     def eliminar_servicios_usuario(self, id_servicios, email):
         try:
-            # usuario = Usuarios.query.filter_by(correo=email).first()
+            usuario = Usuarios.query.filter_by(correo=email).first()
             servicio = Servicios.query.get(id_servicios)
 
             if servicio:
