@@ -9,17 +9,18 @@ pagos_bp = Blueprint('pagos', __name__)
 
 @pagos_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
 def efectuar_pago(id_servicio, id_reserva):
-    has_access = Security.verify_token(request.headers)
-    roles = has_access.get('roles')
-    email = has_access.get('email')
+    try:
+        has_access = Security.verify_token(request.headers)
+        if has_access:
+            email = has_access.get('email')
+            roles = has_access.get('roles')
+            if roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
+                controller = ControladorPagos()
+                return controller.efectuar_pago(id_servicio, id_reserva, email)
+        return jsonify({'message': 'Unauthorized'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
-    if has_access and roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
-        controller = ControladorPagos()
-        return controller.efectuar_pago(id_servicio, id_reserva, email)
-
-    else:
-        response = jsonify({'message': 'Unauthorized'})
-        return response, 401
 
 # @reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
 # def actualizar_reservas_por_servicio(id_servicio, id_reserva):
