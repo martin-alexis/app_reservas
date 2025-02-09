@@ -6,10 +6,8 @@ from api.app import db
 from api.app.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.reservas.estados_reserva_model import EstadosReserva
 from api.app.models.reservas.reservas_model import Reservas
-from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio
 from api.app.models.services.servicios_model import Servicios
-from api.app.models.services.tipos_servicios_model import TiposServicio
-from api.app.models.users.usuarios_model import Usuarios
+
 
 
 class ControladorReservas:

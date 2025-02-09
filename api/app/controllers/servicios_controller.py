@@ -12,8 +12,7 @@ class ControladorServicios:
     def __init__(self):
         pass
 
-    @staticmethod
-    def crear_servicio(data, correo):
+    def crear_servicio(self, data, correo):
         try:
             usuario_proveedor = Usuarios.query.filter_by(correo=correo).first()
 
@@ -51,7 +50,6 @@ class ControladorServicios:
     def obtener_servicios_usuario(self, email):
         try:
             usuario = Usuarios.query.filter_by(correo=email).first()
-            print(usuario)
             servicios = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).all()
 
             if servicios:
