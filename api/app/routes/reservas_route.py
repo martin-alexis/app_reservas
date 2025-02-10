@@ -5,7 +5,7 @@ from api.app.utils.security import Security
 
 reservas_bp = Blueprint('reservas', __name__)
 
-@reservas_bp.route('/servicios/<int:id_servicio>/reservas', methods=['POST'])
+@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas', methods=['POST'])
 def crear_reservas(id_servicio):
     try:
         has_access = Security.verify_token(request.headers)
@@ -18,7 +18,7 @@ def crear_reservas(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PUT'])
+@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PUT'])
 def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)
@@ -32,7 +32,7 @@ def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/servicios/<int:id_servicio>/reservas', methods=['GET'])
+@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas', methods=['GET'])
 def obtener_reservas_por_servicio(id_servicio):
     try:
         has_access = Security.verify_token(request.headers)
@@ -46,7 +46,7 @@ def obtener_reservas_por_servicio(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
+@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
 def eliminar_reservas_por_servicio(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)

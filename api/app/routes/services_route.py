@@ -6,7 +6,7 @@ from api.app.utils.security import Security
 
 services_bp = Blueprint('services', __name__)
 
-@services_bp.route('/servicios', methods=['POST'])
+@services_bp.route('/api/v1.0/servicios', methods=['POST'])
 def crear_servicio():
     try:
         has_access = Security.verify_token(request.headers)
@@ -21,7 +21,7 @@ def crear_servicio():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/servicios', methods=['GET'])
+@services_bp.route('/api/v1.0/servicios', methods=['GET'])
 def obtener_servicios_usuario():
     try:
         has_access = Security.verify_token(request.headers)
@@ -35,7 +35,7 @@ def obtener_servicios_usuario():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/servicios/<int:id_servicios>', methods=['PUT'])
+@services_bp.route('/api/v1.0/servicios/<int:id_servicios>', methods=['PUT'])
 def actualizar_servicios(id_servicios):
     try:
         has_access = Security.verify_token(request.headers)
@@ -48,7 +48,7 @@ def actualizar_servicios(id_servicios):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/servicios/<int:id_servicio>', methods=['DELETE'])
+@services_bp.route('/api/v1.0/servicios/<int:id_servicio>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_servicio):
     try:
         has_access = Security.verify_token(request.headers)

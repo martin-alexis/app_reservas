@@ -8,7 +8,7 @@ from api.app.utils.security import Security
 auth_bp = Blueprint('auth', __name__)
 
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/api/v1.0/login', methods=['POST'])
 def login_jwt():
     try:
         email = request.json.get('email')

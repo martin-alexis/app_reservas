@@ -8,7 +8,7 @@ from api.app.utils.security import Security
 user_bp = Blueprint('user', __name__)
 
 
-@user_bp.route('/usuarios', methods=['POST'])
+@user_bp.route('/api/v1.0/usuarios', methods=['POST'])
 def crear_usuario():
     try:
         data = request.get_json()
