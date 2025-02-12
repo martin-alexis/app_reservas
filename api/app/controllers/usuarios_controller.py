@@ -114,8 +114,6 @@ class ControladorUsuarios:
     #
     @staticmethod
     def obtener_usuario_por_correo(correo):
-        try:
-
             usuario = Usuarios.query.filter_by(correo=correo).first()
 
             if usuario:
@@ -123,8 +121,7 @@ class ControladorUsuarios:
             else:
                 return None
 
-        except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)}), 400
+
 
     @staticmethod
     def obtener_info_usuario(usuario_actual):
@@ -137,11 +134,35 @@ class ControladorUsuarios:
             return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-    @staticmethod
-    def verificar_acceso_usuario(email):
+    # @staticmethod
+    # def verificar_acceso_usuario(email):
+    #
+    #     usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+    #
+    #     usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuario).first()
+    #     if not usuario_es_valido:
+    #         return jsonify({"error": "El usuario no ha creado este servicio"}), 403
 
-        usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
+    @staticmethod
+    def verificar_usuario_servicio(email, id_servicio):
+        usuario = ControladorUsuarios().obtener_usuario_por_correo(email)
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        servicio = Servicios.query.get(id_servicio)
+        if not servicio:
+            return jsonify({"error": "Servicio no encontrado"}), 404
 
         usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuario).first()
         if not usuario_es_valido:
             return jsonify({"error": "El usuario no ha creado este servicio"}), 403
+
+        return usuario, servicio
+
+    # @staticmethod
+    # def verificar_datos_unicos(data):
+    #     usuario_existente_por_email = ControladorUsuarios.obtener_usuario_por_correo(data['correo'])
+    #     usuario_existente_por_telefono = Usuarios.query.filter_by(telefono=data['telefono']).first()
+    #
+    #     if usuario_existente_por_email or usuario_existente_por_telefono:
+    #         return jsonify({'message': 'El correo o el teléfono ya están registrados'}), 400

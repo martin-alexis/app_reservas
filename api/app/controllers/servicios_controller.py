@@ -53,7 +53,7 @@ class ControladorServicios:
 
     def obtener_servicios_usuario(self, id_usuario):
         try:
-            usuario = Usuarios.query.filter_by(correo=id_usuario).first()
+            usuario = Usuarios.query.get(id_usuario)
             if not usuario:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
@@ -67,18 +67,54 @@ class ControladorServicios:
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
+
     def obtener_todos_servicios(self, email):
         try:
             usuario = Usuarios.query.filter_by(correo=email).first()
             if not usuario:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
-            servicios = Servicios.query.all()
+            # Obtener los filtros desde la URL
+            tipos_servicios = request.args.get('categoria')
+            disponibilidad = request.args.get('disponibilidad')
+            precio_min = request.args.get('precio_min')
+            precio_max = request.args.get('precio_max')
 
-            if servicios:
-                return jsonify([servicio.to_json() for servicio in servicios]), 200
-            else:
-                return jsonify({'message': 'No hay servicios registrados.'}), 200
+            query = Servicios.query
+
+            if tipos_servicios:
+                tipos_validos = ControladorServicios.validar_tipos_servicios("Tipos de servicios", tipos_servicios,
+                                                                             "tipo", TiposServicio)
+                if "error" in tipos_validos:
+                    return jsonify(tipos_validos), 400
+
+                query = query.join(TiposServicio).filter(TiposServicio.tipo.in_(tipos_validos))
+
+            if disponibilidad:
+                estados_validos = ControladorServicios.validar_tipos_servicios("Disponibilidad", disponibilidad,
+                                                                               "estado", DisponibilidadServicio)
+                if "error" in estados_validos:
+                    return jsonify(estados_validos), 400
+
+                query = query.join(DisponibilidadServicio).filter(DisponibilidadServicio.estado.in_(estados_validos))
+
+            resultado = ControladorServicios.verificar_filtros_precio(precio_min, precio_max)
+
+            # Si se ha retornado un diccionario de error, respondemos con el error
+            if isinstance(resultado, dict) and "error" in resultado:
+                return jsonify(resultado), 400
+
+            query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
+
+            query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
+
+            servicios = query.all()
+
+            if not servicios:
+                return jsonify({'message': 'No se encontraron servicios.'}), 200
+
+            return jsonify([servicio.to_json() for servicio in servicios]), 200
+
 
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
@@ -140,3 +176,49 @@ class ControladorServicios:
 
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
+
+    @staticmethod
+    def validar_tipos_servicios(atributo, nombres_atributos, campo, modelo):
+        if not nombres_atributos:
+            return []
+
+        nombres_atributos = [atributo.upper() for atributo in nombres_atributos.split(",")]
+        atributos_validos = modelo.query.with_entities(getattr(modelo, campo)).filter(getattr(modelo, campo).in_(nombres_atributos)).all()
+
+        atributos_validos = [atributo[0].value for atributo in atributos_validos]  # Extraer los valores válidos
+
+        atributos_invalidos = set(nombres_atributos) - set(atributos_validos)  # Buscar valores que no existen
+        if atributos_invalidos:
+            return {"error": f"{atributo.capitalize()} no encontradas: {', '.join(atributos_invalidos)}"}
+
+        return atributos_validos
+
+    @staticmethod
+    def verificar_filtros_precio(precio_min, precio_max):
+        if precio_min:
+            try:
+                precio_min = float(precio_min)
+            except ValueError:
+                return {"error": "El precio mínimo debe ser un número válido."}
+
+        if precio_max:
+            try:
+                precio_max = float(precio_max)
+            except ValueError:
+                return {"error": "El precio máximo debe ser un número válido."}
+
+        return precio_min, precio_max
+
+
+    @staticmethod
+    def aplicar_filtros_precio(query, precio_min, precio_max):
+        if precio_min and precio_max:
+            query = query.filter(Servicios.precio >= float(precio_min), Servicios.precio <= float(precio_max))
+        elif precio_min:
+            query = query.filter(Servicios.precio >= float(precio_min))
+        elif precio_max:
+            query = query.filter(Servicios.precio <= float(precio_max))
+        return query
+
+
+
