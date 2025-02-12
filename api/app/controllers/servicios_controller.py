@@ -51,9 +51,9 @@ class ControladorServicios:
         finally:
             db.session.close()
 
-    def obtener_servicios_usuario(self, email):
+    def obtener_servicios_usuario(self, id_usuario):
         try:
-            usuario = Usuarios.query.filter_by(correo=email).first()
+            usuario = Usuarios.query.filter_by(correo=id_usuario).first()
             if not usuario:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
