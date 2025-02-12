@@ -15,8 +15,12 @@ class ControladorServicios:
     def crear_servicio(self, data, correo):
         try:
             usuario_proveedor = Usuarios.query.filter_by(correo=correo).first()
+            if not usuario_proveedor:
+                return jsonify({"error": "Usuario no encontrado"}), 404
 
             tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
+            if not tipo_servicio:
+                return jsonify({"error": "Tipo de servicio es invalido"}), 404
 
             disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
 
@@ -50,7 +54,26 @@ class ControladorServicios:
     def obtener_servicios_usuario(self, email):
         try:
             usuario = Usuarios.query.filter_by(correo=email).first()
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
             servicios = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).all()
+
+            if servicios:
+                return jsonify([servicio.to_json() for servicio in servicios]), 200
+            else:
+                return jsonify({'message': 'No hay servicios registrados.'}), 200
+
+        except Exception as e:
+            return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
+
+    def obtener_todos_servicios(self, email):
+        try:
+            usuario = Usuarios.query.filter_by(correo=email).first()
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
+            servicios = Servicios.query.all()
 
             if servicios:
                 return jsonify([servicio.to_json() for servicio in servicios]), 200
