@@ -14,11 +14,11 @@ class Config:
         env = os.getenv("FLASK_ENV", "development")
 
         if env == "testing":
-            app.config.from_object("config.TestConfig")
+            app.config.from_object("api.config.TestConfig")
         elif env == "production":
-            app.config.from_object("config.ProductionConfig")
+            app.config.from_object("api.config.ProductionConfig")
         else:
-            app.config.from_object("config.DevelopmentConfig")
+            app.config.from_object("api.config.DevelopmentConfig")
 
         return app
 
