@@ -12,7 +12,8 @@ def create_app():
                 static_folder='../../static')
 
     CORS(app)
-    app.config.from_object(Config)
+
+    Config.select_config(app)
     db.init_app(app)
 
 

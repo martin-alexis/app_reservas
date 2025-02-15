@@ -6,6 +6,33 @@ import os
 load_dotenv()
 
 class Config:
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.getenv('SECRET_KEY')
+
+    @staticmethod
+    def select_config(app):
+        env = os.getenv("FLASK_ENV", "development")
+
+        if env == "testing":
+            app.config.from_object("config.TestConfig")
+        elif env == "production":
+            app.config.from_object("config.ProductionConfig")
+        else:
+            app.config.from_object("config.DevelopmentConfig")
+
+        return app
+
+
+class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = f"sqlite+{os.getenv('TURSO_DATABASE_URI')}/?authToken={os.getenv('TURSO_DATABASE_TOKEN')}&secure=true"
     SECRET_KEY = os.getenv('SECRET_KEY')
+
+class ProductionConfig(Config):
+    pass
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
