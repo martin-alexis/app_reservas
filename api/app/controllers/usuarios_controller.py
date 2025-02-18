@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from pygments.lexer import default
 
 from api.app import db
 from api.app.models.services.servicios_model import Servicios
@@ -27,11 +28,14 @@ class ControladorUsuarios:
             if not tipo_usuario:
                 return jsonify({'message': 'Tipo de usuario inválido'}), 400
 
+            logo_default_user= 'https://res.cloudinary.com/dfnjifn4w/image/upload/v1739891781/ad024c34-5cb2-4ebb-8d1e-44f226384902.png'
+
             nuevo_usuario = Usuarios(
                 nombre=data['nombre'],
                 contrasena=data['contrasena'],
                 correo=data['correo'],
                 telefono=data['telefono'],
+                imagen=logo_default_user,
                 tipos_usuario_id=tipo_usuario.id_tipos_usuario
             )
             db.session.add(nuevo_usuario)
