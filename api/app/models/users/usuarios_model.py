@@ -12,6 +12,7 @@ class Usuarios(db.Model):
     correo = db.Column(String(45), nullable=False, unique=True)
     contrasena = db.Column(String(255), nullable=False)
     telefono = db.Column(String(45), nullable=False, unique=True)
+    imagen = db.Column(String(255))
     tipos_usuario_id = db.Column(Integer, ForeignKey('tipos_usuario.id_tipos_usuario'), nullable=False)
 
     tipo_usuario = relationship('TiposUsuario', back_populates='usuarios')
@@ -21,11 +22,12 @@ class Usuarios(db.Model):
 
     # valoraciones = relationship('Valoraciones', back_populates='usuario')
 
-    def __init__(self, nombre, correo, contrasena, telefono, tipos_usuario_id):
+    def __init__(self, nombre, correo, contrasena, telefono, imagen, tipos_usuario_id):
         self.nombre = nombre
         self.correo = correo
         self.contrasena = Usuarios.set_password(contrasena)
         self.telefono = telefono
+        self.imagen = imagen
         self.tipos_usuario_id = tipos_usuario_id
 
     def to_json(self):
@@ -34,6 +36,7 @@ class Usuarios(db.Model):
             'nombre': self.nombre,
             'correo': self.correo,
             'telefono': self.telefono,
+            'imagen': self.imagen,
             'tipos_usuario_id': self.tipos_usuario_id,
             'tipo_usuario': self.tipo_usuario.to_json() if self.tipo_usuario else None
         }
