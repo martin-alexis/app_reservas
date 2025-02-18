@@ -10,6 +10,7 @@ class Servicios(db.Model):
     descripcion = db.Column(String(255), nullable=False)
     precio = db.Column(Numeric(10, 0), nullable=False)
     ubicacion = db.Column(String(45), nullable=False)
+    imagen = db.Column(String(255))
     tipos_servicio_id = db.Column(Integer, ForeignKey('tipos_servicio.id_tipos_servicio'), nullable=False)
     usuarios_proveedores_id = db.Column(Integer, ForeignKey('usuarios.id_usuarios'), nullable=False)
     disponibilidad_servicio_id = db.Column(Integer, ForeignKey('disponibilidad_servicio.id_disponibilidad_servicio'),
@@ -21,11 +22,12 @@ class Servicios(db.Model):
     reservas = relationship('Reservas', back_populates='servicio')
     # valoraciones = relationship('Valoraciones', back_populates='servicio')
 
-    def __init__(self, nombre, descripcion, precio, ubicacion, tipos_servicio_id, usuarios_proveedores_id, disponibilidad_servicio_id):
+    def __init__(self, nombre, descripcion, precio, ubicacion, imagen, tipos_servicio_id, usuarios_proveedores_id, disponibilidad_servicio_id):
         self.nombre = nombre
         self.descripcion = descripcion
         self.precio = precio
         self.ubicacion = ubicacion
+        self.imagen = imagen
         self.tipos_servicio_id = tipos_servicio_id
         self.usuarios_proveedores_id = usuarios_proveedores_id
         self.disponibilidad_servicio_id = disponibilidad_servicio_id
@@ -37,6 +39,7 @@ class Servicios(db.Model):
             'descripcion': self.descripcion,
             'precio': float(self.precio),
             'ubicacion': self.ubicacion,
+            'imagen': self.imagen,
             'tipos_servicio_id': self.tipos_servicio_id,
             'usuarios_proveedores_id': self.usuarios_proveedores_id,
             'disponibilidad_servicio_id': self.disponibilidad_servicio_id
