@@ -16,14 +16,14 @@ class ControladorServicios:
 
 
     @staticmethod
-    def subir_imagen_cloudinary(imagen, correo):
+    def subir_imagen_cloudinary(imagen, correo, modelo):
         try:
 
             if not imagen:
                 return None
 
             imagen_filename = secure_filename(imagen.filename)
-            carpeta_principal = 'app_reservas/servicios'
+            carpeta_principal = f'app_reservas/{modelo}'
             carpeta_usuario = correo.replace('@', '_').replace('.', '_')
             carpeta_completa = f"{carpeta_principal}/{carpeta_usuario}"
 
@@ -56,7 +56,7 @@ class ControladorServicios:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
             imagen = request.files['imagen']
 
-            imagen_url = self.subir_imagen_cloudinary(imagen, correo)
+            imagen_url = self.subir_imagen_cloudinary(imagen, correo, 'servicios')
 
             # Crear el nuevo servicio
             nuevo_servicio = Servicios(
