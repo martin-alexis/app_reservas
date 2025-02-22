@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from api.app.controllers.servicios_controller import ControladorServicios
 from api.app.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.users.roles_model import TipoRoles
+from api.app.models.users.usuarios_model import Usuarios
 from api.app.utils.security import Security
 
 user_bp = Blueprint('user', __name__)
@@ -71,6 +72,21 @@ def eliminar_servicios_usuario(id_usuario):
             return controller.eliminar_servicios_usuario(id_usuario, email)
         else:
             return jsonify({'message': 'Unauthorized'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+
+@user_bp.route('/api//v1.0/usuarios/<int:id_usuario>', methods=['GET'])
+def obtener_usuario_por_id(id_usuario):
+    try:
+        usuario = Usuarios.query.get(id_usuario)
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+
+        return jsonify({
+            'status': 'success',
+            'usuario': usuario.to_json()}), 201
+
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
