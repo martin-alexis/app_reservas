@@ -83,7 +83,7 @@ class ControladorUsuarios:
             if not usuario:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
-            if (not mismo_usuario or usuario.id_usuarios != mismo_usuario.id_usuarios or (roles and TipoRoles.ADMIN.value not in roles)):
+            if usuario.id_usuarios != mismo_usuario.id_usuarios and (not roles or TipoRoles.ADMIN.value not in roles):
                 return jsonify({"error": "No tienes permiso para modificar esta foto"}), 403
 
             imagen = request.files.get('imagen')
