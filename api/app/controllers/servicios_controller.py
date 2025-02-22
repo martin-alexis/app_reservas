@@ -6,6 +6,7 @@ from api.app import db
 from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio
 from api.app.models.services.servicios_model import Servicios
 from api.app.models.services.tipos_servicios_model import TiposServicio
+from api.app.models.users.roles_model import TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
 
 
@@ -154,12 +155,20 @@ class ControladorServicios:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
 
-    def actualizar_servicio(self, id_servicio):
+    def actualizar_servicio(self, id_servicio, correo, roles):
         try:
             servicio = Servicios.query.get(id_servicio)
 
+            usuario = Usuarios.query.filter_by(correo=correo).first()
+
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
             if not servicio:
                 return jsonify({"error": "Servicio no encontrado"}), 404
+
+            if usuario.id_usuarios != servicio.usuarios_proveedores_id and (not roles or TipoRoles.ADMIN.value not in roles):
+                return jsonify({"error": "No tienes permiso para actualizar los datos"}), 403
 
             data = request.json
 
