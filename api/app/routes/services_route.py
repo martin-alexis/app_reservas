@@ -62,8 +62,8 @@ def actualizar_servicios(id_servicios):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/servicios/<int:id_servicio>', methods=['DELETE'])
-def eliminar_servicios_usuario(id_servicio):
+@services_bp.route('/api/v1.0/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
+def eliminar_servicios_usuario(id_usuario, id_servicio):
     try:
         has_access = Security.verify_token(request.headers)
         if has_access:
@@ -71,7 +71,7 @@ def eliminar_servicios_usuario(id_servicio):
             roles = has_access.get('roles')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
                 controller = ControladorServicios()
-                return controller.eliminar_servicios_usuario(id_servicio, email)
+                return controller.eliminar_servicios_usuario(id_usuario, id_servicio, email, roles)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400

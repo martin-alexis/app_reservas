@@ -210,20 +210,35 @@ class ControladorServicios:
 
         return jsonify({"message": "Servicio actualizado exitosamente"}), 200
 
-
-    def eliminar_servicios_usuario(self, id_servicios, email):
+    def eliminar_servicios_usuario(self, id_usuario, id_servicio, correo, roles):
         try:
-            usuario = Usuarios.query.filter_by(correo=email).first()
-            servicio = Servicios.query.get(id_servicios)
+            servicio = Servicios.query.get(id_servicio)
+            usuario = Usuarios.query.get(id_usuario)
+            mismo_usuario = Usuarios.query.filter_by(correo=correo).first()
 
-            if servicio:
-                db.session.delete(servicio)
-                db.session.commit()
-                return jsonify({'message': 'Servicio eliminado correctamente.'}), 200
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+            if not servicio:
+                return jsonify({"error": "Servicio no encontrado"}), 404
+
+            if TipoRoles.ADMIN.value in roles:
+                # El ADMIN puede eliminar cualquier servicio, no es necesario verificar si es propietario
+                pass
             else:
-                return jsonify({'message': 'No se encontró el servicio.'}), 404
+                # El usuario no es ADMIN, entonces verificamos que el usuario sea el dueño del servicio
+                if usuario.id_usuarios != servicio.usuarios_proveedores_id:
+                    return jsonify({"error": "Este servicio no pertenece al usuario"}), 403
+
+                # Verificar que el usuario en el token sea el mismo que el id_usuario
+                if usuario.id_usuarios != mismo_usuario.id_usuarios:
+                    return jsonify({"error": "No tienes permiso para eliminar el servicio"}), 403
+
+            db.session.delete(servicio)
+            db.session.commit()
+            return jsonify({'message': 'Servicio eliminado correctamente.'}), 200
 
         except Exception as e:
+            print(f"Error al eliminar servicio: {e}")
             return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
 
     @staticmethod
