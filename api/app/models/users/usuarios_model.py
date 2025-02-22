@@ -37,8 +37,7 @@ class Usuarios(db.Model):
             'correo': self.correo,
             'telefono': self.telefono,
             'imagen': self.imagen,
-            'tipos_usuario_id': self.tipos_usuario_id,
-            'tipo_usuario': self.tipo_usuario.to_json() if self.tipo_usuario else None
+            'tipos_usuario_id': self.tipos_usuario_id
         }
 
     @staticmethod
