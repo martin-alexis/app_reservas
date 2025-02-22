@@ -43,6 +43,22 @@ def actualizar_usuario(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
+@user_bp.route('/api/v1.0/usuarios/<int:id_usuario>/foto-perfil', methods=['PUT'])
+def actualizar_foto_perfil_usuario(id_usuario):
+    try:
+        has_access = Security.verify_token(request.headers)
+
+        if has_access:
+            email = has_access.get('email')
+            roles = has_access.get('roles')
+            controller = ControladorUsuarios()
+            return controller.actualizar_foto_perfil_usuario(id_usuario, email, roles)
+        else:
+            return jsonify({'message': 'Unauthorized'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+
 @user_bp.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario):
     try:

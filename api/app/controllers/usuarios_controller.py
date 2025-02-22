@@ -2,8 +2,9 @@ from flask import jsonify, request
 from pygments.lexer import default
 
 from api.app import db
+from api.app.controllers.servicios_controller import ControladorServicios
 from api.app.models.services.servicios_model import Servicios
-from api.app.models.users.roles_model import Roles
+from api.app.models.users.roles_model import Roles, TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.models.users.tipos_usuarios_model import TiposUsuario
@@ -73,6 +74,36 @@ class ControladorUsuarios:
 
         finally:
             db.session.close()
+
+    def actualizar_foto_perfil_usuario(self, id_usuario, correo, roles):
+        try:
+            usuario = Usuarios.query.get(id_usuario)
+            mismo_usuario = Usuarios.query.filter_by(correo=correo).first()
+
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
+            if (not mismo_usuario or usuario.id_usuarios != mismo_usuario.id_usuarios or (roles and TipoRoles.ADMIN.value not in roles)):
+                return jsonify({"error": "No tienes permiso para modificar esta foto"}), 403
+
+            imagen = request.files.get('imagen')
+            if not imagen:
+                return jsonify({"error": "No se envió ninguna imagen"}), 400
+
+            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, correo, 'usuarios')
+
+            usuario.imagen = imagen_url
+
+            db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "Error al actualizar el registro"}), 500
+
+        finally:
+            db.session.close()
+
+        return jsonify({"message": "Foto de perfil del usuario actualizada exitosamente"}), 200
 
     # def actualizar_usuario(self, id_usuario):
     #     try:
