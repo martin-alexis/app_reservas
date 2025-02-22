@@ -1,4 +1,6 @@
-from flask import jsonify, request
+import cloudinary.uploader
+from werkzeug.utils import secure_filename
+from flask import jsonify, request, abort
 
 from api.app import db
 from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio
@@ -12,21 +14,51 @@ class ControladorServicios:
     def __init__(self):
         pass
 
+
+    @staticmethod
+    def subir_imagen_cloudinary(imagen, correo):
+        try:
+
+            if not imagen:
+                return None
+
+            imagen_filename = secure_filename(imagen.filename)
+            carpeta_principal = 'app_reservas/servicios'
+            carpeta_usuario = correo.replace('@', '_').replace('.', '_')
+            carpeta_completa = f"{carpeta_principal}/{carpeta_usuario}"
+
+            upload_result = cloudinary.uploader.upload(
+                imagen,
+                folder=carpeta_completa,
+                public_id=imagen_filename
+            )
+            return upload_result['secure_url']
+
+        except Exception as e:
+            abort(500, description=f"Error al subir la imagen a Cloudinary: {str(e)}")
+
     def crear_servicio(self, data, correo):
         try:
+            # Recuperar el usuario proveedor
             usuario_proveedor = Usuarios.query.filter_by(correo=correo).first()
             if not usuario_proveedor:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
+            # Recuperar el tipo de servicio
             tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
             if not tipo_servicio:
-                return jsonify({"error": "Tipo de servicio es invalido"}), 404
+                return jsonify({"error": "Tipo de servicio inválido"}), 404
 
-            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
-
+            # Recuperar la disponibilidad del servicio
+            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(
+                estado=data['disponibilidad_servicio_id']).first()
             if not disponibilidad_servicio:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
+            imagen = request.files['imagen']
 
+            imagen_url = self.subir_imagen_cloudinary(imagen, correo)
+
+            # Crear el nuevo servicio
             nuevo_servicio = Servicios(
                 nombre=data['nombre'],
                 descripcion=data['descripcion'],
@@ -34,14 +66,16 @@ class ControladorServicios:
                 ubicacion=data['ubicacion'],
                 disponibilidad_servicio_id=disponibilidad_servicio.id_disponibilidad_servicio,
                 tipos_servicio_id=tipo_servicio.id_tipos_servicio,
-                usuarios_proveedores_id=usuario_proveedor.id_usuarios
+                usuarios_proveedores_id=usuario_proveedor.id_usuarios,
+                imagen=imagen_url
             )
+
             db.session.add(nuevo_servicio)
             db.session.commit()
 
             return jsonify({
                 'status': 'success',
-                'message': 'Servicio creado exitosamente'
+                'message': 'Servicio creado exitosamente',
             }), 201
 
         except Exception as e:

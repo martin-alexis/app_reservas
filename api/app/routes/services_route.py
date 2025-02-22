@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
 
 from api.app.controllers.servicios_controller import ControladorServicios
 from api.app.models.users.roles_model import TipoRoles
@@ -14,7 +15,7 @@ def crear_servicio():
             roles = has_access.get('roles')
             email = has_access.get('email')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-                data = request.get_json()
+                data = request.form
                 controller = ControladorServicios()
                 return controller.crear_servicio(data, email)
         return jsonify({'message': 'Unauthorized'}), 401
