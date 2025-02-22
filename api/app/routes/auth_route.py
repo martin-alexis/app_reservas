@@ -28,7 +28,7 @@ def login_jwt():
         roles_user = Roles.get_roles_user(authenticated_user)
         type_user = TiposUsuario.get_usertype(authenticated_user)
 
-        jwt_token = Security.create_token(authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
+        jwt_token = Security.create_token(authenticated_user.id_usuarios, authenticated_user.nombre, authenticated_user.correo, roles_user, type_user)
 
         return jsonify({'token': jwt_token}), 200
     except Exception as e:

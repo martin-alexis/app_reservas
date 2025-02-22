@@ -9,8 +9,9 @@ class Security:
     tz = pytz.timezone("America/Argentina/Buenos_Aires")
 
     @staticmethod
-    def create_token(username, email, roles, user_type):
+    def create_token(id_usuario, username, email, roles, user_type):
         payload = {
+            "id_usuario": id_usuario,
             "username": username,
             "email": email,
             "roles": roles,
