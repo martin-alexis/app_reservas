@@ -29,7 +29,7 @@ class ControladorUsuarios:
             if not tipo_usuario:
                 return jsonify({'message': 'Tipo de usuario inválido'}), 400
 
-            logo_default_user= 'https://res.cloudinary.com/dfnjifn4w/image/upload/v1739891781/ad024c34-5cb2-4ebb-8d1e-44f226384902.png'
+            logo_default_user= 'https://res.cloudinary.com/dfnjifn4w/image/upload/v1740232796/525e350a-f2e9-4b04-9cf8-93d54bffc2ec.png'
 
             nuevo_usuario = Usuarios(
                 nombre=data['nombre'],
