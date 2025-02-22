@@ -48,15 +48,16 @@ def obtener_todos_servicios():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/servicios/<int:id_servicios>', methods=['PUT'])
+@services_bp.route('/api/v1.0/servicios/<int:id_servicios>', methods=['PATCH'])
 def actualizar_servicios(id_servicios):
     try:
         has_access = Security.verify_token(request.headers)
         if has_access:
             roles = has_access.get('roles')
+            email = has_access.get('email')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
                 controller = ControladorServicios()
-                return controller.actualizar_servicio(id_servicios)
+                return controller.actualizar_servicio(id_servicios, email, roles)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400

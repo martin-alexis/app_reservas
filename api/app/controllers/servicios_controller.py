@@ -172,13 +172,22 @@ class ControladorServicios:
 
             data = request.json
 
-            tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
 
-            disponibilidad_servicio = DisponibilidadServicio.query.filter_by(estado=data['disponibilidad_servicio_id']).first()
+            if 'disponibilidad_servicio_id' in data:
+                disponibilidad_servicio = DisponibilidadServicio.query.filter_by(
+                    estado=data['disponibilidad_servicio_id']).first()
 
-            if not disponibilidad_servicio:
-                return jsonify({'message': 'Estado del servicio inválido'}), 400
+                if not disponibilidad_servicio:
+                    return jsonify({'message': 'Estado del servicio inválido'}), 400
 
+                servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
+
+            if 'tipos_servicio_id' in data:
+                tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
+                if not tipo_servicio:
+                    return jsonify({'message': 'Tipo del servicio inválido'}), 400
+
+                servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
             if 'nombre' in data:
                 servicio.nombre = data['nombre']
             if 'descripcion' in data:
@@ -187,10 +196,7 @@ class ControladorServicios:
                 servicio.precio = data['precio']
             if 'ubicacion' in data:
                 servicio.ubicacion = data['ubicacion']
-            if 'disponibilidad_servicio_id' in data:
-                servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
-            if 'tipos_servicio_id' in data:
-                servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
+
 
             db.session.commit()
 
