@@ -7,7 +7,8 @@ from api.app.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.reservas.estados_reserva_model import EstadosReserva
 from api.app.models.reservas.reservas_model import Reservas
 from api.app.models.services.servicios_model import Servicios
-
+from api.app.models.users.roles_model import TipoRoles
+from api.app.models.users.usuarios_model import Usuarios
 
 
 class ControladorReservas:
@@ -16,12 +17,20 @@ class ControladorReservas:
         pass
 
 
-    def crear_reservas(self, id_servicio):
+    def crear_reservas(self, id_servicio, id_usuario_token, roles):
         try:
             servicio = Servicios.query.get(id_servicio)
 
+            usuario = Usuarios.query.get(id_usuario_token)
+
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
             if not servicio:
                 return jsonify({"error": "Servicio no encontrado"}), 404
+
+            if usuario.id_usuarios != servicio.usuarios_proveedores_id and (not roles or TipoRoles.ADMIN.value not in roles):
+                return jsonify({"error": "No tienes permiso para crear la reserva."}), 403
 
             data = request.json
 

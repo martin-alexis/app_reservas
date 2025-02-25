@@ -11,9 +11,10 @@ def crear_reservas(id_servicio):
         has_access = Security.verify_token(request.headers)
         if has_access:
             roles = has_access.get('roles')
+            id_usuario_token = has_access.get('id_usuario')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
                 controller = ControladorReservas()
-                return controller.crear_reservas(id_servicio)
+                return controller.crear_reservas(id_servicio, id_usuario_token, roles)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
