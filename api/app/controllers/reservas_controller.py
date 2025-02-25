@@ -73,10 +73,6 @@ class ControladorReservas:
             if not servicio:
                 return jsonify({"error": "Servicio no encontrado"}), 404
 
-            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
-            if not usuario_es_valido:
-                return jsonify({"error": "El usuario no ha creado este servicio"}), 403
-
             reservas = Reservas.query.filter_by(servicios_id=id_servicio).all()
 
             if reservas:
