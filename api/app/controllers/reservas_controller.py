@@ -128,20 +128,21 @@ class ControladorReservas:
 
 
 
-    def eliminar_reservas_por_servicio(self, id_servicio, id_reserva, email):
+    def eliminar_reservas_por_servicio(self, id_servicio, id_reserva, id_usuario_token, roles):
         try:
-            usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-
-            usuario_es_valido = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
-            if not usuario_es_valido:
-                return jsonify({"error": "El usuario no ha creado este servicio"}), 403
+            usuario = Usuarios.query.get(id_usuario_token)
 
             servicio = Servicios.query.get(id_servicio)
 
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
             if not servicio:
                 return jsonify({"error": "Servicio no encontrado"}), 404
+
+            if usuario.id_usuarios != servicio.usuarios_proveedores_id and (
+                    not roles or TipoRoles.ADMIN.value not in roles):
+                return jsonify({"error": "No tienes permiso para eliminar la reserva."}), 403
 
             reserva = Reservas.query.get(id_reserva)
 
