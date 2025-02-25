@@ -39,12 +39,8 @@ def obtener_servicios_usuario(id_usuario):
 @services_bp.route('/api/v1.0/servicios', methods=['GET'])
 def obtener_todos_servicios():
     try:
-        has_access = Security.verify_token(request.headers)
-        if has_access:
-            email = has_access.get('email')
-            controller = ControladorServicios()
-            return controller.obtener_todos_servicios(email)
-        return jsonify({'message': 'Unauthorized'}), 401
+        controller = ControladorServicios()
+        return controller.obtener_todos_servicios()
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 

@@ -102,18 +102,14 @@ class ControladorServicios:
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
-
-    def obtener_todos_servicios(self, email):
+    def obtener_todos_servicios(self):
         try:
-            usuario = Usuarios.query.filter_by(correo=email).first()
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-
             # Obtener los filtros desde la URL
             tipos_servicios = request.args.get('categoria')
             disponibilidad = request.args.get('disponibilidad')
             precio_min = request.args.get('precio_min')
             precio_max = request.args.get('precio_max')
+            busqueda = request.args.get('busqueda')
 
             query = Servicios.query
 
@@ -135,13 +131,15 @@ class ControladorServicios:
 
             resultado = ControladorServicios.verificar_filtros_precio(precio_min, precio_max)
 
-            # Si se ha retornado un diccionario de error, respondemos con el error
             if isinstance(resultado, dict) and "error" in resultado:
                 return jsonify(resultado), 400
 
             query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
 
-            query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
+            if busqueda:
+                query = query.filter(
+                    (Servicios.nombre.ilike(f"%{busqueda}%")) | (Servicios.descripcion.ilike(f"%{busqueda}%"))
+                )
 
             servicios = query.all()
 
@@ -150,10 +148,8 @@ class ControladorServicios:
 
             return jsonify([servicio.to_json() for servicio in servicios]), 200
 
-
         except Exception as e:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
-
 
     def actualizar_servicio(self, id_servicio, correo, roles):
         try:
