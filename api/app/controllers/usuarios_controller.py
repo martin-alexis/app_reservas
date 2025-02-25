@@ -105,48 +105,43 @@ class ControladorUsuarios:
 
         return jsonify({"message": "Foto de perfil del usuario actualizada exitosamente"}), 200
 
-    # def actualizar_usuario(self, id_usuario):
-    #     try:
-    #         usuario = Usuarios.query.get(id_usuario)
-    #
-    #         if not usuario:
-    #             return jsonify({"error": "Usuario no encontrado"}), 404
-    #
-    #         data = request.json
-    #
-    #         # tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
-    #         #
-    #         # disponibilidad_servicio = DisponibilidadServicio.query.filter_by(
-    #         #     estado=data['disponibilidad_servicio_id']).first()
-    #         #
-    #         # if not disponibilidad_servicio:
-    #         #     return jsonify({'message': 'Estado del servicio inválido'}), 400
-    #
-    #         if 'nombre' in data:
-    #             servicio.nombre = data['nombre']
-    #         if 'descripcion' in data:
-    #             servicio.descripcion = data['descripcion']
-    #         if 'precio' in data:
-    #             servicio.precio = data['precio']
-    #         if 'ubicacion' in data:
-    #             servicio.ubicacion = data['ubicacion']
-    #         if 'disponibilidad_servicio_id' in data:
-    #             servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
-    #         if 'tipos_servicio_id' in data:
-    #             servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
-    #
-    #         db.session.commit()
-    #
-    #     except Exception as e:
-    #         db.session.rollback()
-    #         print(f"Error al actualizar el registro: {e}")
-    #         return jsonify({"error": "Error al actualizar el registro"}), 500
-    #
-    #     finally:
-    #         db.session.close()
-    #
-    #     return jsonify({"message": "Servicio actualizado exitosamente"}), 200
-    #
+    def actualizar_usuario(self, id_usuario, id_usuario_token, roles):
+        try:
+            usuario = Usuarios.query.get(id_usuario)
+
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
+
+            if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
+                return jsonify({"error": "No tienes permiso para actualizar los datos"}), 403
+
+
+            data = request.json
+
+            if 'nombre' in data:
+                usuario.nombre = data['nombre']
+            if 'correo' in data:
+                usuario.correo = data['correo']
+            if 'telefono' in data:
+                usuario.telefono = data['telefono']
+
+
+            db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al actualizar el registro: {e}")
+            return jsonify({"error": "Error al actualizar el registro"}), 500
+
+        finally:
+            db.session.close()
+
+        return jsonify({"message": "Usuario actualizado exitosamente"}), 200
+
+
+
+
+
     @staticmethod
     def obtener_usuario_por_correo(correo):
             usuario = Usuarios.query.filter_by(correo=correo).first()

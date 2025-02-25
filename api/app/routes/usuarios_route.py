@@ -19,25 +19,15 @@ def crear_usuario():
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-# @user_bp.route('/usuarios', methods=['GET'])
-def obtener_usuario_por_correo():
-    try:
-        data = request.get_json()
-        controller = ControladorUsuarios()
-        return controller.obtener_usuario_por_correo(data['correo'])
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
-
-
-@user_bp.route('/usuarios/<int:id_usuario>', methods=['PUT'])
+@user_bp.route('/api/v1.0/usuarios/<int:id_usuario>', methods=['PATCH'])
 def actualizar_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)
-
         if has_access:
-            email = has_access.get('email')
+            id_usuario_token = has_access.get('id_usuario')
+            roles = has_access.get('roles')
             controller = ControladorUsuarios()
-            return controller.actualizar_usuario(id_usuario, email)
+            return controller.actualizar_usuario(id_usuario, id_usuario_token, roles)
         else:
             return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
@@ -91,15 +81,25 @@ def obtener_usuario_por_id(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@user_bp.route('/user/me', methods=['GET'])
-def obtener_info_usuario():
-    try:
-        user_data = Security.verify_token(request.headers)
+# @user_bp.route('/user/me', methods=['GET'])
+# def obtener_info_usuario():
+#     try:
+#         user_data = Security.verify_token(request.headers)
+#
+#         if user_data:
+#             controller = ControladorUsuarios()
+#             return controller.obtener_info_usuario(user_data)
+#         else:
+#             return jsonify({'message': 'Unauthorized'}), 401
+#     except Exception as e:
+#         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-        if user_data:
-            controller = ControladorUsuarios()
-            return controller.obtener_info_usuario(user_data)
-        else:
-            return jsonify({'message': 'Unauthorized'}), 401
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+# @user_bp.route('/usuarios', methods=['GET'])
+# def obtener_usuario_por_correo():
+#     try:
+#         data = request.get_json()
+#         controller = ControladorUsuarios()
+#         return controller.obtener_usuario_por_correo(data['correo'])
+#     except Exception as e:
+#         return jsonify({'status': 'error', 'message': str(e)}), 400
