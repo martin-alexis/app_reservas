@@ -36,14 +36,8 @@ def actualizar_reservas_por_servicio(id_servicio, id_reserva):
 @reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas', methods=['GET'])
 def obtener_reservas_por_servicio(id_servicio):
     try:
-        has_access = Security.verify_token(request.headers)
-        if has_access:
-            email = has_access.get('email')
-            roles = has_access.get('roles')
-            if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-                controller = ControladorReservas()
-                return controller.obtener_reservas_por_servicio(email, id_servicio)
-        return jsonify({'message': 'Unauthorized'}), 401
+        controller = ControladorReservas()
+        return controller.obtener_reservas_por_servicio(id_servicio)
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 

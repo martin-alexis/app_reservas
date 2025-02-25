@@ -63,12 +63,8 @@ class ControladorReservas:
         finally:
             db.session.close()
 
-    def obtener_reservas_por_servicio(self, email, id_servicio):
+    def obtener_reservas_por_servicio(self, id_servicio):
         try:
-            usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-
             servicio = Servicios.query.get(id_servicio)
             if not servicio:
                 return jsonify({"error": "Servicio no encontrado"}), 404
