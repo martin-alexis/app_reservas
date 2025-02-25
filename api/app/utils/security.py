@@ -11,7 +11,7 @@ class Security:
     @staticmethod
     def create_token(id_usuario, email, roles,):
         payload = {
-            "sub": id_usuario,
+            "id_usuario": id_usuario,
             "email": email,
             "roles": roles,
             "exp": datetime.datetime.now(Security.tz) + datetime.timedelta(hours=24),
