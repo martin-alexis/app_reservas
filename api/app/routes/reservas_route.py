@@ -19,16 +19,16 @@ def crear_reservas(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PUT'])
+@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
 def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)
         if has_access:
-            email = has_access.get('email')
+            id_usuario_token = has_access.get('id_usuario')
             roles = has_access.get('roles')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
                 controller = ControladorReservas()
-                return controller.actualizar_reservas_por_servicio(id_servicio, id_reserva, email)
+                return controller.actualizar_reservas_por_servicio(id_servicio, id_reserva, id_usuario_token, roles)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
