@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
 from api.app.controllers.servicios_controller import ControladorServicios
+from api.app.models.services.servicios_model import Servicios
 from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.security import Security
 
@@ -41,6 +42,20 @@ def obtener_todos_servicios():
     try:
         controller = ControladorServicios()
         return controller.obtener_todos_servicios()
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@services_bp.route('/api/v1.0/servicios/<int:id_servicio>', methods=['GET'])
+def obtener_servicio_por_id(id_servicio):
+    try:
+        servicio = Servicios.query.get(id_servicio)
+        if not servicio:
+            return jsonify({"error": "Servicio no encontrado"}), 404
+
+        return jsonify({
+            'status': 'success',
+            'servicio': servicio.to_json()}), 201
+
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
