@@ -85,17 +85,21 @@ class ControladorPagos:
         finally:
             db.session.close()
 
-    def obtener_pagos(self, email):
-        usuario = ControladorUsuarios.obtener_usuario_por_correo(email)
-        if not usuario:
-            return jsonify({"error": "Usuario no encontrado"}), 404
+    def obtener_pagos_del_usuario(self, id_usuario, id_usuario_token, roles):
+        try:
+            usuario = Usuarios.query.get(id_usuario)
+            if not usuario:
+                return jsonify({"error": "Usuario no encontrado"}), 404
 
+            if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
+                return jsonify({"error": "No tienes permiso para obtener los pagos."}), 403
 
+            pagos = Pagos.query.filter_by(usuarios_id=usuario.id_usuarios).all()
 
-        reservas = Reservas.query.filter_by(servicios_id=id_servicio).all()
+            if not pagos:
+                return jsonify({'message': 'No se encontraron pagos.'}), 200
 
-        if reservas:
-            return jsonify([reserva.to_json() for reserva in reservas]), 200
-        else:
-            return jsonify({'message': 'No hay reservas registradas para este servicio.'}), 200
+            return jsonify([pago.to_json() for pago in pagos]), 200
 
+        except Exception as e:
+            return jsonify({"error": f"Error: {str(e)}"}), 500

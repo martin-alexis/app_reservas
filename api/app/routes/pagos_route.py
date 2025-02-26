@@ -36,19 +36,19 @@ def efectuar_pago(id_servicio, id_reserva):
 #         response = jsonify({'message': 'Unauthorized'})
 #         return response, 401
 #
-@pagos_bp.route('api/pagos', methods=['GET'])
-def obtener_pagos():
-    has_access = Security.verify_token(request.headers)
-    email = has_access.get('email')
-    roles= has_access.get('roles')
-
-    if has_access and roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
-        controller = ControladorPagos()
-        return controller.obtener_pagos(email)
-
-    else:
-        response = jsonify({'message': 'Unauthorized'})
-        return response, 401
+@pagos_bp.route('/api/v1.0/usuarios/<int:id_usuario>/pagos', methods=['GET'])
+def obtener_pagos_del_usuario(id_usuario):
+    try:
+        has_access = Security.verify_token(request.headers)
+        if has_access:
+            id_usuario_token = has_access.get('id_usuario')
+            roles = has_access.get('roles')
+            if roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
+                controller = ControladorPagos()
+                return controller.obtener_pagos_del_usuario(id_usuario, id_usuario_token, roles)
+        return jsonify({'message': 'Unauthorized'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
 # @reservas_bp.route('api/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
 # def eliminar_reservas_por_servicio(id_servicio, id_reserva):
