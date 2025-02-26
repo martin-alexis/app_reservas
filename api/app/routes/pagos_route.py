@@ -12,11 +12,11 @@ def efectuar_pago(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)
         if has_access:
-            email = has_access.get('email')
+            id_usuario_token = has_access.get('id_usuario')
             roles = has_access.get('roles')
             if roles and (TipoRoles.CLIENTE.value in roles or TipoRoles.ADMIN.value in roles):
                 controller = ControladorPagos()
-                return controller.efectuar_pago(id_servicio, id_reserva, email)
+                return controller.efectuar_pago(id_servicio, id_reserva, id_usuario_token, roles)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
