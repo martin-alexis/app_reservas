@@ -27,7 +27,7 @@ class Roles(db.Model):
     def to_json(self):
         return {
             'id_roles': self.id_roles,
-            'tipo': self.tipo
+            'tipo': self.tipo.value
         }
     @staticmethod
     def get_roles_user(user):
