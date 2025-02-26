@@ -73,6 +73,22 @@ def actualizar_servicios(id_servicios):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
+
+@services_bp.route('/api/v1.0/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
+def actualizar_imagen_servicio(id_servicio):
+    try:
+        has_access = Security.verify_token(request.headers)
+
+        if has_access:
+            id_usuario_token= has_access.get('id_usuario')
+            email= has_access.get('email')
+            roles = has_access.get('roles')
+            controller = ControladorServicios()
+            return controller.actualizar_imagen_servicio(id_servicio, id_usuario_token, roles, email)
+        else:
+            return jsonify({'message': 'Unauthorized'}), 401
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 @services_bp.route('/api/v1.0/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario, id_servicio):
     try:
