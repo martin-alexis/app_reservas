@@ -22,7 +22,7 @@ class TiposUsuario(db.Model):
     def to_json(self):
         return {
             'id_tipos_usuario': self.id_tipos_usuario,
-            'tipo': self.tipo
+            'tipo': self.tipo.value
         }
     @staticmethod
     def get_usertype(user):
