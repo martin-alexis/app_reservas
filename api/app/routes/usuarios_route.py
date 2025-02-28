@@ -42,8 +42,9 @@ def actualizar_foto_perfil_usuario(id_usuario):
         if has_access:
             email = has_access.get('email')
             roles = has_access.get('roles')
+            id_usuario_token = has_access.get('id_usuario')
             controller = ControladorUsuarios()
-            return controller.actualizar_foto_perfil_usuario(id_usuario, email, roles)
+            return controller.actualizar_foto_perfil_usuario(id_usuario, email, roles, id_usuario_token)
         else:
             return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:

@@ -75,7 +75,7 @@ class ControladorUsuarios:
         finally:
             db.session.close()
 
-    def actualizar_foto_perfil_usuario(self, id_usuario, correo, roles):
+    def actualizar_foto_perfil_usuario(self, id_usuario, correo, roles, id_usuario_token):
         try:
             usuario = Usuarios.query.get(id_usuario)
             mismo_usuario = Usuarios.query.filter_by(correo=correo).first()
@@ -90,7 +90,7 @@ class ControladorUsuarios:
             if not imagen:
                 return jsonify({"error": "No se envió ninguna imagen"}), 400
 
-            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, correo, 'usuarios')
+            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
 
             usuario.imagen = imagen_url
 

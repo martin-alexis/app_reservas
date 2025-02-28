@@ -15,10 +15,11 @@ def crear_servicio():
         if has_access:
             roles = has_access.get('roles')
             email = has_access.get('email')
+            id_usuario_token = has_access.get('id_usuario')
             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
                 data = request.form
                 controller = ControladorServicios()
-                return controller.crear_servicio(data, email)
+                return controller.crear_servicio(data, email, id_usuario_token)
         return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400

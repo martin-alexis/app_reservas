@@ -17,7 +17,7 @@ class ControladorServicios:
 
 
     @staticmethod
-    def subir_imagen_cloudinary(imagen, correo, modelo):
+    def subir_imagen_cloudinary(imagen, id_usuario_token, modelo):
         try:
 
             if not imagen:
@@ -25,7 +25,7 @@ class ControladorServicios:
 
             imagen_filename = secure_filename(imagen.filename)
             carpeta_principal = f'app_reservas/{modelo}'
-            carpeta_usuario = correo.replace('@', '_').replace('.', '_')
+            carpeta_usuario = f"id_{id_usuario_token}"
             carpeta_completa = f"{carpeta_principal}/{carpeta_usuario}"
 
             upload_result = cloudinary.uploader.upload(
@@ -38,7 +38,7 @@ class ControladorServicios:
         except Exception as e:
             abort(500, description=f"Error al subir la imagen a Cloudinary: {str(e)}")
 
-    def crear_servicio(self, data, correo):
+    def crear_servicio(self, data, correo, id_usuario_token):
         try:
             # Recuperar el usuario proveedor
             usuario_proveedor = Usuarios.query.filter_by(correo=correo).first()
@@ -57,7 +57,7 @@ class ControladorServicios:
                 return jsonify({'message': 'Estado del servicio inválido'}), 400
             imagen = request.files['imagen']
 
-            imagen_url = self.subir_imagen_cloudinary(imagen, correo, 'servicios')
+            imagen_url = self.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
 
             # Crear el nuevo servicio
             nuevo_servicio = Servicios(
@@ -220,7 +220,7 @@ class ControladorServicios:
             if not imagen:
                 return jsonify({"error": "No se envió ninguna imagen"}), 400
 
-            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, correo, 'servicios')
+            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
 
             servicio.imagen = imagen_url
 
