@@ -18,7 +18,9 @@ class Tipo(enum.Enum):
 class TiposServicio(db.Model):
     __tablename__ = 'tipos_servicio'
     id_tipos_servicio = db.Column(Integer, primary_key=True, autoincrement=True)
-    tipo = db.Column(Enum(Tipo), nullable=False)
+    # El parámetro values_callable es clave: le dice a SQLAlchemy que use los valores de los enums (e.value) en lugar de sus nombres (e.name)
+    tipo = db.Column(Enum(Tipo, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
+
     servicios = relationship('Servicios', back_populates='tipo_servicio')
 
     def __init__(self, tipo):
@@ -27,5 +29,5 @@ class TiposServicio(db.Model):
     def to_json(self):
         return {
             'id_tipos_servicio': self.id_tipos_servicio,
-            'tipo': self.tipo
+            'tipo': self.tipo.value
         }
