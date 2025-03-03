@@ -17,10 +17,6 @@ def create_app():
     db.init_app(app)
 
 
-    from .routes.main_route import main_bp
-    app.register_blueprint(main_bp, url_prefix='/')
-
-    # #
     from .routes.usuarios_route import user_bp
     app.register_blueprint(user_bp, url_prefix='/')
 
