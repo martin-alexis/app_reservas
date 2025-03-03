@@ -8,6 +8,9 @@ load_dotenv()
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True  # Activar el pre-ping en el pool de conexiones
+    }
     SECRET_KEY = os.getenv('SECRET_KEY')
 
     @staticmethod
