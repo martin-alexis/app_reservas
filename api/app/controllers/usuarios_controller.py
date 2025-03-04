@@ -115,23 +115,62 @@ class ControladorUsuarios:
             if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
                 return jsonify({"error": "No tienes permiso para actualizar los datos"}), 403
 
-
             data = request.json
 
             if 'nombre' in data:
                 usuario.nombre = data['nombre']
+
             if 'correo' in data:
+                usuario_existente_por_email = Usuarios.query.filter_by(correo=data['correo']).first()
+
+                if usuario_existente_por_email:
+                    return jsonify({'message': 'El correo ya está registrado'}), 400
+
                 usuario.correo = data['correo']
+
             if 'telefono' in data:
+                usuario_existente_por_telefono = Usuarios.query.filter_by(telefono=data['telefono']).first()
+
+                if usuario_existente_por_telefono:
+                    return jsonify({'message': 'El teléfono ya está registrado'}), 400
+
                 usuario.telefono = data['telefono']
 
+            if 'contrasena' in data:
+                usuario.contrasena = usuario.set_password(data['contrasena'])
 
-            db.session.commit()
+            if 'tipos_usuario' in data:
+                tipo_usuario = TiposUsuario.query.filter_by(tipo=data['tipos_usuario']).first()
+                if not tipo_usuario:
+                    return jsonify({'message': 'Tipo de usuario inválido'}), 400
+
+                usuario.tipos_usuario_id = tipo_usuario.id_tipos_usuario
+
+            if 'roles' in data:
+                # Obtener los roles del usuario
+                roles = data.get('roles', [])
+
+                if not isinstance(roles, list):
+                    roles = [roles]
+
+                # Buscar el usuario en la tabla de relaciones y eliminar sus roles anteriores
+                UsuariosTieneRoles.query.filter_by(usuarios_id=usuario.id_usuarios).delete()
+
+                for rol in roles:
+                    rol = Roles.query.filter_by(tipo=rol).first()
+
+                    if not rol:
+                        return jsonify({'message': f'Rol inválido: {rol}'}), 400
+
+                    # Asignar nuevos roles al usuario
+                    rol_usuario = UsuariosTieneRoles(usuarios_id=usuario.id_usuarios, roles_id=rol.id_roles)
+                    db.session.add(rol_usuario)
+
+                    db.session.commit()
 
         except Exception as e:
             db.session.rollback()
-            print(f"Error al actualizar el registro: {e}")
-            return jsonify({"error": "Error al actualizar el registro"}), 500
+            return jsonify({"error": "Error al actualizar el registro: " + str(e)}), 500
 
         finally:
             db.session.close()
