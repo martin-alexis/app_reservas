@@ -112,13 +112,17 @@ class ControladorUsuarios:
             if not usuario:
                 return jsonify({"error": "Usuario no encontrado"}), 404
 
+            # Verificación de permisos
             if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
                 return jsonify({"error": "No tienes permiso para actualizar los datos"}), 403
 
             data = request.json
+            updated = False  # Para trackear si realmente hay algo que actualizar
 
+            # Validaciones y actualizaciones de datos
             if 'nombre' in data:
                 usuario.nombre = data['nombre']
+                updated = True  # Indicar que hubo un cambio
 
             if 'correo' in data:
                 usuario_existente_por_email = Usuarios.query.filter_by(correo=data['correo']).first()
@@ -127,6 +131,7 @@ class ControladorUsuarios:
                     return jsonify({'message': 'El correo ya está registrado'}), 400
 
                 usuario.correo = data['correo']
+                updated = True
 
             if 'telefono' in data:
                 usuario_existente_por_telefono = Usuarios.query.filter_by(telefono=data['telefono']).first()
@@ -135,9 +140,11 @@ class ControladorUsuarios:
                     return jsonify({'message': 'El teléfono ya está registrado'}), 400
 
                 usuario.telefono = data['telefono']
+                updated = True
 
             if 'contrasena' in data:
                 usuario.contrasena = usuario.set_password(data['contrasena'])
+                updated = True
 
             if 'tipos_usuario' in data:
                 tipo_usuario = TiposUsuario.query.filter_by(tipo=data['tipos_usuario']).first()
@@ -145,17 +152,19 @@ class ControladorUsuarios:
                     return jsonify({'message': 'Tipo de usuario inválido'}), 400
 
                 usuario.tipos_usuario_id = tipo_usuario.id_tipos_usuario
+                updated = True
 
+            # Actualización de roles
             if 'roles' in data:
-                # Obtener los roles del usuario
                 roles = data.get('roles', [])
 
                 if not isinstance(roles, list):
                     roles = [roles]
 
-                # Buscar el usuario en la tabla de relaciones y eliminar sus roles anteriores
+                # Eliminar roles anteriores del usuario
                 UsuariosTieneRoles.query.filter_by(usuarios_id=usuario.id_usuarios).delete()
 
+                # Validar y asignar los nuevos roles
                 for rol in roles:
                     rol = Roles.query.filter_by(tipo=rol).first()
 
@@ -166,8 +175,12 @@ class ControladorUsuarios:
                     rol_usuario = UsuariosTieneRoles(usuarios_id=usuario.id_usuarios, roles_id=rol.id_roles)
                     db.session.add(rol_usuario)
 
-                    db.session.commit()
+                updated = True
 
+            if not updated:
+                return jsonify({'message': 'No hay cambios para actualizar'}), 400
+
+            db.session.commit()
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": "Error al actualizar el registro: " + str(e)}), 500
@@ -176,10 +189,6 @@ class ControladorUsuarios:
             db.session.close()
 
         return jsonify({"message": "Usuario actualizado exitosamente"}), 200
-
-
-
-
 
     @staticmethod
     def obtener_usuario_por_correo(correo):
