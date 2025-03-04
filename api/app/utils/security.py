@@ -1,4 +1,7 @@
-import jwt, datetime, os, pytz
+import jwt
+
+import datetime, os, pytz
+
 from dotenv import load_dotenv
 
 class Security:
@@ -25,19 +28,6 @@ class Security:
         if 'Authorization' in headers.keys():
             authorization = headers['Authorization']
             encoded_token = authorization.split(" ")[1]
-
-            # if (len(encoded_token) > 0):
-        #     try:
-        #         payload = jwt.decode(encoded_token, Security.token_secret, algorithms=["HS256"])
-        #         # roles = list(payload['roles'])
-        #         #
-        #         # if 'Administrator' in roles:
-        #         #     return True
-        #         return True
-        #     except (jwt.ExpiredSignatureError, jwt.InvalidSignatureError):
-        #         return False
-        #
-        # return False
 
             try:
                 # Decodificar el token JWT
