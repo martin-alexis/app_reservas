@@ -23,5 +23,5 @@ class DisponibilidadServicio(db.Model):
     def to_json(self):
         return {
             'id_disponibilidad_servicio': self.id_disponibilidad_servicio,
-            'estado': self.estado
+            'estado': self.estado.value
         }

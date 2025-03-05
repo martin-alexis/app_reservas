@@ -23,5 +23,5 @@ class EstadosPago(db.Model):
     def to_json(self):
         return {
             'id_estados_pago': self.id_estados_pago,
-            'estado': self.estado
+            'estado': self.estado.value
         }

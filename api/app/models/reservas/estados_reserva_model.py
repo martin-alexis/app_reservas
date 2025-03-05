@@ -23,5 +23,5 @@ class EstadosReserva(db.Model):
     def to_json(self):
         return {
             'id_estados_reserva': self.id_estados_reserva,
-            'estado': self.estado
+            'estado': self.estado.value
         }
