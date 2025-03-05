@@ -40,7 +40,9 @@ class Servicios(db.Model):
             'precio': float(self.precio),
             'ubicacion': self.ubicacion,
             'imagen': self.imagen,
-            'tipos_servicio_id': self.tipos_servicio_id,
-            'usuarios_proveedores_id': self.usuarios_proveedores_id,
-            'disponibilidad_servicio_id': self.disponibilidad_servicio_id
+            'tipos_servicio': self.tipo_servicio.to_json() if self.tipo_servicio else None,
+            'disponibilidad_servicio': self.disponibilidad.to_json() if self.disponibilidad else None,
+            'usuarios_proveedores': self.proveedor.to_json() if self.proveedor else None,
+
+
         }
