@@ -19,22 +19,29 @@ def create_app():
     ma.init_app(app)
 
 
-    from .routes.usuarios_route import user_bp
-    app.register_blueprint(user_bp, url_prefix='/')
+    # from api.app.v1.routes.usuarios_route import user_bp
+    # app.register_blueprint(user_bp, url_prefix='/')
+    #
+    # from api.app.v1.routes.auth_route import auth_bp
+    # app.register_blueprint(auth_bp, url_prefix='/')
+    #
+    # from api.app.v1.routes import services_bp
+    # app.register_blueprint(services_bp, url_prefix='/')
+    #
+    # from api.app.v1.routes import reservas_bp
+    # app.register_blueprint(reservas_bp, url_prefix='/')
+    #
+    # from api.app.v1.routes import valoraciones_bp
+    # app.register_blueprint(valoraciones_bp, url_prefix='/')
+    #
+    # from api.app.v1.routes import pagos_bp
+    # app.register_blueprint(pagos_bp, url_prefix='/')
 
-    from .routes.auth_route import auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/')
+    # from api.v1_1 import api as api_v1_1
+    # from api.v2 import api as api_v2
+    from api.app.v1 import api as api_v1
+    app.register_blueprint(api_v1, url_prefix='/api/v1.0')
 
-    from .routes.services_route import services_bp
-    app.register_blueprint(services_bp, url_prefix='/')
-
-    from .routes.reservas_route import reservas_bp
-    app.register_blueprint(reservas_bp, url_prefix='/')
-
-    from .routes.valoraciones_route import valoraciones_bp
-    app.register_blueprint(valoraciones_bp, url_prefix='/')
-
-    from .routes.pagos_route import pagos_bp
-    app.register_blueprint(pagos_bp, url_prefix='/')
-
+    # app.register_blueprint(api_v1_1, url_prefix='/v1.1')
+    # app.register_blueprint(api_v2, url_prefix='/v2')
     return app
