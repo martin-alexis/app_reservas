@@ -4,9 +4,9 @@ from api.app.v1.controllers.pagos_controller import ControladorPagos
 from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.security import Security
 
-pagos_bp = Blueprint('pagos', __name__)
+from api.app.v1 import api
 
-@pagos_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
+@api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
 def efectuar_pago(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)
@@ -35,7 +35,7 @@ def efectuar_pago(id_servicio, id_reserva):
 #         response = jsonify({'message': 'Unauthorized'})
 #         return response, 401
 #
-@pagos_bp.route('/api/v1.0/usuarios/<int:id_usuario>/pagos', methods=['GET'])
+@api.route('/usuarios/<int:id_usuario>/pagos', methods=['GET'])
 def obtener_pagos_del_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)

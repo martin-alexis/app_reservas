@@ -5,9 +5,9 @@ from api.app.models.services.servicios_model import Servicios
 from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.security import Security
 
-services_bp = Blueprint('services', __name__)
+from api.app.v1 import api
 
-@services_bp.route('/api/v1.0/servicios', methods=['POST'])
+@api.route('/servicios', methods=['POST'])
 def crear_servicio():
     try:
         has_access = Security.verify_token(request.headers)
@@ -23,7 +23,7 @@ def crear_servicio():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/usuarios/<int:id_usuario>/servicios', methods=['GET'])
+@api.route('/usuarios/<int:id_usuario>/servicios', methods=['GET'])
 def obtener_servicios_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)
@@ -37,7 +37,7 @@ def obtener_servicios_usuario(id_usuario):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/servicios', methods=['GET'])
+@api.route('/servicios', methods=['GET'])
 def obtener_todos_servicios():
     try:
         controller = ControladorServicios()
@@ -45,7 +45,7 @@ def obtener_todos_servicios():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/servicios/<int:id_servicio>', methods=['GET'])
+@api.route('/servicios/<int:id_servicio>', methods=['GET'])
 def obtener_servicio_por_id(id_servicio):
     try:
         servicio = Servicios.query.get(id_servicio)
@@ -59,7 +59,7 @@ def obtener_servicio_por_id(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@services_bp.route('/api/v1.0/servicios/<int:id_servicios>', methods=['PATCH'])
+@api.route('/servicios/<int:id_servicios>', methods=['PATCH'])
 def actualizar_servicios(id_servicios):
     try:
         has_access = Security.verify_token(request.headers)
@@ -74,7 +74,7 @@ def actualizar_servicios(id_servicios):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@services_bp.route('/api/v1.0/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
+@api.route('/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
 def actualizar_imagen_servicio(id_servicio):
     try:
         has_access = Security.verify_token(request.headers)
@@ -89,7 +89,7 @@ def actualizar_imagen_servicio(id_servicio):
             return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
-@services_bp.route('/api/v1.0/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
+@api.route('/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario, id_servicio):
     try:
         has_access = Security.verify_token(request.headers)

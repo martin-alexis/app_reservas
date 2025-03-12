@@ -3,9 +3,9 @@ from api.app.models.users.roles_model import TipoRoles
 from api.app.v1.controllers.reservas_controller import ControladorReservas
 from api.app.utils.security import Security
 
-reservas_bp = Blueprint('reservas', __name__)
+from api.app.v1 import api
 
-@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas', methods=['POST'])
+@api.route('/servicios/<int:id_servicio>/reservas', methods=['POST'])
 def crear_reservas(id_servicio):
     try:
         has_access = Security.verify_token(request.headers)
@@ -19,7 +19,7 @@ def crear_reservas(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
+@api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
 def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)
@@ -33,7 +33,7 @@ def actualizar_reservas_por_servicio(id_servicio, id_reserva):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas', methods=['GET'])
+@api.route('/servicios/<int:id_servicio>/reservas', methods=['GET'])
 def obtener_reservas_por_servicio(id_servicio):
     try:
         controller = ControladorReservas()
@@ -41,7 +41,7 @@ def obtener_reservas_por_servicio(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@reservas_bp.route('/api/v1.0/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
+@api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
 def eliminar_reservas_por_servicio(id_servicio, id_reserva):
     try:
         has_access = Security.verify_token(request.headers)

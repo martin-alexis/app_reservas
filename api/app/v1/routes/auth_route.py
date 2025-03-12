@@ -4,10 +4,10 @@ from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.users.roles_model import Roles
 from api.app.utils.security import Security
 
-auth_bp = Blueprint('auth', __name__)
+from api.app.v1 import api
 
 
-@auth_bp.route('/api/v1.0/login', methods=['POST'])
+@api.route('/login', methods=['POST'])
 def login_jwt():
     try:
         email = request.json.get('email')
