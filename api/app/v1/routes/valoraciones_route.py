@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, request, jsonify
+from flask import Blueprint, request, jsonify
 
-from api.app.controllers.reservas_controller import ControladorReservas
+from api.app.v1.controllers.reservas_controller import ControladorReservas
 from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.security import Security
 

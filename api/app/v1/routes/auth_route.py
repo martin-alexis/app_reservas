@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
 
-from api.app.controllers.usuarios_controller import ControladorUsuarios
+from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.users.roles_model import Roles
-from api.app.models.users.tipos_usuarios_model import TiposUsuario
 from api.app.utils.security import Security
 
 auth_bp = Blueprint('auth', __name__)

@@ -1,15 +1,14 @@
 from flask import Blueprint, request, jsonify
 
-from api.app.controllers.servicios_controller import ControladorServicios
-from api.app.controllers.usuarios_controller import ControladorUsuarios
+from api.app.v1.controllers.servicios_controller import ControladorServicios
+from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.users.roles_model import TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.utils.security import Security
 
-user_bp = Blueprint('user', __name__)
+from api.app.v1.0 import api
 
-
-@user_bp.route('/api/v1.0/usuarios', methods=['POST'])
+@api.route('/usuarios', methods=['POST'])
 def crear_usuario():
     try:
         data = request.get_json()
@@ -19,7 +18,7 @@ def crear_usuario():
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@user_bp.route('/api/v1.0/usuarios/<int:id_usuario>', methods=['PATCH'])
+@api.route('/usuarios/<int:id_usuario>', methods=['PATCH'])
 def actualizar_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)
@@ -34,7 +33,7 @@ def actualizar_usuario(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@user_bp.route('/api/v1.0/usuarios/<int:id_usuario>/foto-perfil', methods=['PUT'])
+@api.route('/usuarios/<int:id_usuario>/foto-perfil', methods=['PUT'])
 def actualizar_foto_perfil_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)
@@ -51,7 +50,7 @@ def actualizar_foto_perfil_usuario(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@user_bp.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
+@api.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario):
     try:
         has_access = Security.verify_token(request.headers)
@@ -67,7 +66,7 @@ def eliminar_servicios_usuario(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@user_bp.route('/api//v1.0/usuarios/<int:id_usuario>', methods=['GET'])
+@api.route('usuarios/<int:id_usuario>', methods=['GET'])
 def obtener_usuario_por_id(id_usuario):
     try:
         usuario = Usuarios.query.get(id_usuario)
@@ -82,7 +81,7 @@ def obtener_usuario_por_id(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-# @user_bp.route('/user/me', methods=['GET'])
+# @api.route('/user/me', methods=['GET'])
 # def obtener_info_usuario():
 #     try:
 #         user_data = Security.verify_token(request.headers)

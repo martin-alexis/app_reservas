@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from api.app.models.users.roles_model import TipoRoles
-from api.app.controllers.reservas_controller import ControladorReservas
+from api.app.v1.controllers.reservas_controller import ControladorReservas
 from api.app.utils.security import Security
 
 reservas_bp = Blueprint('reservas', __name__)

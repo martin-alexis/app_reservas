@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import jsonify, request
 
 from api.app import db
-from api.app.controllers.usuarios_controller import ControladorUsuarios
 from api.app.models.reservas.estados_reserva_model import EstadosReserva
 from api.app.models.reservas.reservas_model import Reservas
 from api.app.models.services.servicios_model import Servicios
