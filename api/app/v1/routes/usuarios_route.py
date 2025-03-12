@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 
 from api.app.v1.controllers.servicios_controller import ControladorServicios
 from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
@@ -6,7 +6,7 @@ from api.app.models.users.roles_model import TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.utils.security import Security
 
-from api.app.v1.0 import api
+from api.app.v1 import api
 
 @api.route('/usuarios', methods=['POST'])
 def crear_usuario():
