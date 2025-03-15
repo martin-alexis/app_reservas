@@ -18,7 +18,7 @@ class APIResponse:
         return APIResponse._build_response("success", code, message, data, **kwargs)
 
     @staticmethod
-    def error(data=None, message="An error occurred", code=400, **kwargs):
+    def error(data=None, message="Ha ocurrido un error", code=400, **kwargs):
         return APIResponse._build_response("error", code, message, data, **kwargs)
 
     @staticmethod
@@ -28,15 +28,15 @@ class APIResponse:
     @staticmethod
     def not_found(data=None, resource="Resource", message=None, code=404, **kwargs):
         if message is None:
-            message = f"{resource} not found"
+            message = f"{resource} no encontrado"
         return APIResponse._build_response("error", code, message, data, **kwargs)
 
     @staticmethod
-    def unauthorized(data=None, message="Unauthorized access", code=401, **kwargs):
+    def unauthorized(data=None, message="Acceso inautorizado", code=401, **kwargs):
         return APIResponse._build_response("error", code, message, data, **kwargs)
 
     @staticmethod
-    def forbidden(data=None, message="Access forbidden", code=403, **kwargs):
+    def forbidden(data=None, message="Acceso prohibido", code=403, **kwargs):
         return APIResponse._build_response("error", code, message, data, **kwargs)
 
     @staticmethod

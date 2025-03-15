@@ -1,4 +1,4 @@
-from api.app.v2 import api
+from api.app.v2 import api_v2 as api
 from api.app.utils import common_routes as common
 
 @api.route('/servicios/<int:id_servicio>', methods=['GET'])

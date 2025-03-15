@@ -2,6 +2,8 @@ from marshmallow import post_load, validate
 
 from api.app import ma
 from api.app.models.users.usuarios_model import Usuarios
+from api.app.schemas.usuarios.schema_roles import RolesSchema
+from api.app.schemas.usuarios.schema_tipos_usuarios import TiposUsuarioSchema
 
 
 class UsuariosSchema(ma.SQLAlchemySchema):
@@ -13,8 +15,11 @@ class UsuariosSchema(ma.SQLAlchemySchema):
     correo = ma.auto_field(validate=validate.Email(error="Correo inválido"))
     telefono = ma.auto_field(validate=validate.Regexp(r'^\+?\d{7,15}$', error="Teléfono inválido"))
     imagen = ma.auto_field()
-    tipo_usuario = ma.Nested('TiposUsuarioSchema')
-    roles = ma.List(ma.Nested('RolesSchema'))
+    # tipos_usuarios_id = ma.auto_field()
+
+
+    tipo_usuario = ma.Nested(TiposUsuarioSchema)
+    roles = ma.List(ma.Nested(RolesSchema))
 
     @post_load
     def make_user(self, data, **kwargs):

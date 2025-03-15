@@ -18,6 +18,7 @@ class Servicios(db.Model):
 
     tipo_servicio = relationship('TiposServicio', back_populates='servicios')
     proveedor = relationship('Usuarios', back_populates='servicios')
+
     disponibilidad = relationship('DisponibilidadServicio', back_populates='servicios')
     reservas = relationship('Reservas', back_populates='servicio')
     # valoraciones = relationship('Valoraciones', back_populates='servicio')

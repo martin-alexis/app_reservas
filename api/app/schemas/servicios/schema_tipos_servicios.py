@@ -3,7 +3,7 @@ from marshmallow_enum import EnumField
 
 from api.app import ma
 from api.app.models.services.tipos_servicios_model import TiposServicio, Tipo
-
+# from api.app.schemas.servicios.schema_servicios import ServiciosSchema
 
 class TiposServicioSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -13,7 +13,7 @@ class TiposServicioSchema(ma.SQLAlchemySchema):
     tipo = EnumField(Tipo)
 
     # Relación con servicios (con exclusión para evitar referencias circulares)
-    servicios = ma.List(ma.Nested('ServiciosSchema', exclude=('tipo_servicio',)))
+    # servicios = ma.List(ma.Nested(ServiciosSchema, exclude=('tipos_servicio_id',)))
 
     @post_load
     def make_tipo_servicio(self, data, **kwargs):
