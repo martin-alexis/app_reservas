@@ -50,20 +50,6 @@ def actualizar_foto_perfil_usuario(id_usuario):
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
-@api.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
-def eliminar_servicios_usuario(id_usuario):
-    try:
-        has_access = Security.verify_token(request.headers)
-        email = has_access.get('email')
-        roles = has_access.get('roles')
-
-        if has_access and roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-            controller = ControladorServicios()
-            return controller.eliminar_servicios_usuario(id_usuario, email)
-        else:
-            return jsonify({'message': 'Unauthorized'}), 401
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
 @api.route('usuarios/<int:id_usuario>', methods=['GET'])
