@@ -89,6 +89,7 @@ def actualizar_imagen_servicio(id_servicio):
             return jsonify({'message': 'Unauthorized'}), 401
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
+
 @api.route('/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
 def eliminar_servicios_usuario(id_usuario, id_servicio):
     try:

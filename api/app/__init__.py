@@ -18,10 +18,10 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
-    from api.app.v1 import api_v1 as api_v1
+    from api.app.v1 import api as api_v1
     app.register_blueprint(api_v1, url_prefix='/api/v1.0')
 
-    from api.app.v2 import api_v2 as api_v2
+    from api.app.v2 import api as api_v2
     app.register_blueprint(api_v2, url_prefix='/api/v2.0')
 
     return app
