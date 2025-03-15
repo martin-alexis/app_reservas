@@ -16,6 +16,6 @@ class RolesSchema(ma.SQLAlchemySchema):
     def make_role(self, data, **kwargs):
         return Roles(**data)
 
-# Instancias del esquema
-role_schema = RolesSchema()
-roles_schema = RolesSchema(many=True)
+# # Instancias del esquema
+# role_schema = RolesSchema()
+# roles_schema = RolesSchema(many=True)

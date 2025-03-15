@@ -19,14 +19,15 @@ class ServiciosSchema(ma.SQLAlchemySchema):
     precio = ma.auto_field()
     ubicacion = ma.auto_field()
     imagen = ma.auto_field()
-    tipos_servicio_id = ma.auto_field()
-    usuarios_proveedores_id = ma.auto_field()
-    disponibilidad_servicio_id = ma.auto_field()
+    # tipos_servicio_id = ma.auto_field()
+    # usuarios_proveedores_id = ma.auto_field()
+    # disponibilidad_servicio_id = ma.auto_field()
 
     tipo_servicio = ma.Nested(TiposServicioSchema)
-    proveedor = ma.Nested(UsuariosSchema)
+    # proveedor = ma.Nested(UsuariosSchema)
     disponibilidad = ma.Nested(DisponibilidadServicioSchema)
-    reservas = ma.List(ma.Nested(ReservasSchema))
+    # reservas = ma.List(ma.Nested(ReservasSchema))
+    usuarios_proveedores_id = ma.auto_field()
 
     # valoraciones = ma.List(ma.Nested('ValoracionesSchema'))
 
@@ -36,5 +37,5 @@ class ServiciosSchema(ma.SQLAlchemySchema):
 
 
 # Instancias del esquema para serialización
-servicio_schema = ServiciosSchema()
-servicios_schema = ServiciosSchema(many=True)
+# servicio_schema = ServiciosSchema()
+# servicios_schema = ServiciosSchema(many=True)

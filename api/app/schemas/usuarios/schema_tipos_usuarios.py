@@ -16,5 +16,5 @@ class TiposUsuarioSchema(ma.SQLAlchemySchema):
     def make_tipo_usuario(self, data, **kwargs):
         return TiposUsuario(**data)
 
-tipo_usuario_schema = TiposUsuarioSchema()
-tipos_usuario_schema = TiposUsuarioSchema(many=True)
+# tipo_usuario_schema = TiposUsuarioSchema()
+# tipos_usuario_schema = TiposUsuarioSchema(many=True)

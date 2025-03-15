@@ -20,6 +20,6 @@ class TiposServicioSchema(ma.SQLAlchemySchema):
         return TiposServicio(**data)
 
 
-# Instancias del esquema para serialización
-tipo_servicio_schema = TiposServicioSchema()
-tipos_servicio_schema = TiposServicioSchema(many=True)
+# # Instancias del esquema para serialización
+# tipo_servicio_schema = TiposServicioSchema()
+# tipos_servicio_schema = TiposServicioSchema(many=True)

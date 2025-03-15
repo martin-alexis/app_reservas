@@ -12,14 +12,14 @@ class DisponibilidadServicioSchema(ma.SQLAlchemySchema):
     id_disponibilidad_servicio = ma.auto_field()
     estado = EnumField(Estado)
 
-    # Relación con servicios (con exclusión para evitar referencias circulares)
-    servicios = ma.List(ma.Nested('ServiciosSchema', exclude=('disponibilidad',)))
+    # # Relación con servicios (con exclusión para evitar referencias circulares)
+    # servicios = ma.List(ma.Nested('ServiciosSchema', exclude=('disponibilidad',)))
 
     @post_load
     def make_disponibilidad(self, data, **kwargs):
         return DisponibilidadServicio(**data)
 
-
-# Instancias del esquema para serialización
-disponibilidad_schema = DisponibilidadServicioSchema()
-disponibilidades_schema = DisponibilidadServicioSchema(many=True)
+#
+# # Instancias del esquema para serialización
+# disponibilidad_schema = DisponibilidadServicioSchema()
+# disponibilidades_schema = DisponibilidadServicioSchema(many=True)

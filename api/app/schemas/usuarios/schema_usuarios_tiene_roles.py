@@ -15,5 +15,5 @@ class UsuariosTieneRolesSchema(ma.SQLAlchemySchema):
     def make_usuarios_tiene_roles(self, data, **kwargs):
         return UsuariosTieneRoles(**data)
 
-usuarios_tiene_roles_schema = UsuariosTieneRolesSchema()
-usuarios_tiene_roles_schema_many = UsuariosTieneRolesSchema(many=True)
+# usuarios_tiene_roles_schema = UsuariosTieneRolesSchema()
+# usuarios_tiene_roles_schema_many = UsuariosTieneRolesSchema(many=True)
