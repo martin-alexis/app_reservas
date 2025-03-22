@@ -18,8 +18,8 @@ class UsuariosSchema(ma.SQLAlchemySchema):
     # tipos_usuarios_id = ma.auto_field()
 
 
-    tipo_usuario = ma.Nested(TiposUsuarioSchema)
-    roles = ma.List(ma.Nested(RolesSchema))
+    tipos_usuario_id = ma.Nested(TiposUsuarioSchema)
+    roles_id= ma.List(ma.Nested(RolesSchema))
 
     @post_load
     def make_user(self, data, **kwargs):

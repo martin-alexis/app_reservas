@@ -1,4 +1,5 @@
 from api.app.models.users.roles_model import Roles
+from api.app.models.users.tipos_usuarios_model import TiposUsuario
 from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.utils.responses import APIResponse
 
@@ -14,5 +15,12 @@ def get_roles_user(user):
                 role_str = str(role.tipo).replace('TipoRoles.', '')
                 roles_user.append(role_str)
         return roles_user
+    except Exception as e:
+        return APIResponse.error(None, str(e))
+
+def get_usertype(user):
+    try:
+        type_user = TiposUsuario.query.filter_by(id_tipos_usuario=user.tipos_usuario_id).first()
+        return str(type_user.tipo).replace('Tipo.', '')
     except Exception as e:
         return APIResponse.error(None, str(e))
