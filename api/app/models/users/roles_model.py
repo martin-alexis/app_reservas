@@ -29,17 +29,3 @@ class Roles(db.Model):
             'id_roles': self.id_roles,
             'tipo': self.tipo.value
         }
-    @staticmethod
-    def get_roles_user(user):
-        try:
-            roles_user = []
-            user_role_relations = UsuariosTieneRoles.query.filter_by(usuarios_id=user.id_usuarios).all()
-
-            for relation in user_role_relations:
-                role = Roles.query.get(relation.roles_id)
-                if role:
-                    role_str = str(role.tipo).replace('TipoRoles.', '')
-                    roles_user.append(role_str)
-            return roles_user
-        except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)}), 400

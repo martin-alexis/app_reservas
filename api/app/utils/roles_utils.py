@@ -1,0 +1,18 @@
+from api.app.models.users.roles_model import Roles
+from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
+from api.app.utils.responses import APIResponse
+
+
+def get_roles_user(user):
+    try:
+        roles_user = []
+        user_role_relations = UsuariosTieneRoles.query.filter_by(usuarios_id=user.id_usuarios).all()
+
+        for relation in user_role_relations:
+            role = Roles.query.get(relation.roles_id)
+            if role:
+                role_str = str(role.tipo).replace('TipoRoles.', '')
+                roles_user.append(role_str)
+        return roles_user
+    except Exception as e:
+        return APIResponse.error(None, str(e))
