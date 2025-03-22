@@ -1,8 +1,16 @@
+from functools import wraps
+
 import jwt
 
 import datetime, os, pytz
 
 from dotenv import load_dotenv
+from flask import request
+from lxml.xslt import message
+
+from api.app.utils.responses import APIResponse
+from api.app.utils.roles_utils import get_roles_user
+
 
 class Security:
     # Carga las variables de entorno desde el archivo .env
@@ -38,3 +46,36 @@ class Security:
             except jwt.InvalidTokenError:
                 return None  # Token inválido
         return None  # Si no hay token o es incorrecto
+
+    @staticmethod
+    def token_required(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            headers = request.headers
+            if 'Authorization' not in headers:
+                return APIResponse.unauthorized(message="No se ha encontrado el token")
+
+            authorization = headers['Authorization']
+            try:
+                encoded_token = authorization.split(" ")[1]
+                payload = jwt.decode(encoded_token, Security.token_secret, algorithms=["HS256"])
+            except jwt.ExpiredSignatureError:
+                return APIResponse.unauthorized(message="Token expirado")
+            except jwt.InvalidTokenError:
+                return APIResponse.unauthorized(message="Token invalido")
+
+            return f(payload, *args, **kwargs)
+
+        return decorated
+
+    @staticmethod
+    def roles_required(roles_permitidos):
+        def decorator(f):
+            @wraps(f)
+            def decorated(payload, *args, **kwargs):
+                user_roles = get_roles_user(payload.get('id_usuario'))
+                if not any(role in user_roles for role in roles_permitidos):
+                    return APIResponse.forbidden(message='No tienes permiso para acceder a este recurso.')
+                return f(payload, *args, **kwargs)
+            return decorated
+        return decorator
