@@ -26,5 +26,5 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         return Usuarios(**data)
 
 # Instancias del esquema para serialización
-# usuario_schema = UsuariosSchema()
-# usuarios_schema = UsuariosSchema(many=True)
+usuario_schema = UsuariosSchema()
+usuarios_schema = UsuariosSchema(many=True)
