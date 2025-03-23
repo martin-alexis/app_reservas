@@ -6,10 +6,9 @@ import datetime, os, pytz
 
 from dotenv import load_dotenv
 from flask import request
-from lxml.xslt import message
 
 from api.app.utils.responses import APIResponse
-from api.app.utils.roles_utils import get_roles_user
+from api.app.utils.functions_utils import get_roles_user
 
 
 class Security:
