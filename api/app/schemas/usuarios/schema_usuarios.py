@@ -60,18 +60,18 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         return usuario
 
 
-@validates("correo")
-def validate_correo(self, value):
-    """Verifica si el correo ya existe en la base de datos."""
-    if Usuarios.query.filter_by(correo=value).first():
-        raise ValidationError("El correo ya está registrado.")
+    @validates("correo")
+    def validate_correo(self, value):
+        """Verifica si el correo ya existe en la base de datos."""
+        if Usuarios.query.filter_by(correo=value).first():
+            raise ValidationError("El correo ya está registrado.")
 
 
-@validates("telefono")
-def validate_telefono(self, value):
-    """Verifica si el teléfono ya existe en la base de datos."""
-    if Usuarios.query.filter_by(telefono=value).first():
-        raise ValidationError("El teléfono ya está registrado.")
+    @validates("telefono")
+    def validate_telefono(self, value):
+        """Verifica si el teléfono ya existe en la base de datos."""
+        if Usuarios.query.filter_by(telefono=value).first():
+            raise ValidationError("El teléfono ya está registrado.")
 
 
 # Instancias del esquema para serialización
