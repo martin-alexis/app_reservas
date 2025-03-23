@@ -15,8 +15,8 @@ class APIResponse:
         return response, code
 
     @staticmethod
-    def created(data=None, message="Recurso creado con éxito", code=201, **kwargs):
-        return APIResponse._build_response("success", code, message, data, **kwargs)
+    def created(data=None, message="Recurso creado con éxito", error=None, code=201, **kwargs):
+        return APIResponse._build_response("success", code, message, data, error, **kwargs)
 
     @staticmethod
     def success(data=None, message="", code=200, error=None, **kwargs):
