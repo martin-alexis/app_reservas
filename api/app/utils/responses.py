@@ -19,7 +19,7 @@ class APIResponse:
         return APIResponse._build_response("success", code, message, data, error, **kwargs)
 
     @staticmethod
-    def success(data=None, message="", code=200, error=None, **kwargs):
+    def success(data=None, message="Operación exitosa", code=200, error=None, **kwargs):
         return APIResponse._build_response("success", code, message, data, error, **kwargs)
 
     @staticmethod
@@ -31,9 +31,7 @@ class APIResponse:
         return APIResponse._build_response("error", code, message, data, error=errors, **kwargs)
 
     @staticmethod
-    def not_found(data=None, resource="Resource", message=None, code=404, error=None, **kwargs):
-        if message is None:
-            message = f"{resource} no encontrado"
+    def not_found(data=None, message='Recurso no encontrado', code=404, error=None, **kwargs):
         return APIResponse._build_response("error", code, message, data, error, **kwargs)
 
     @staticmethod
