@@ -31,7 +31,9 @@ class APIResponse:
         return APIResponse._build_response("error", code, message, data, error=errors, **kwargs)
 
     @staticmethod
-    def not_found(data=None, message='Recurso no encontrado', code=404, error=None, **kwargs):
+    def not_found(data=None, resource="Recurso", message=None, code=404, error=None, **kwargs):
+        if message is None:
+            message = f"{resource} no encontrado"
         return APIResponse._build_response("error", code, message, data, error, **kwargs)
 
     @staticmethod
