@@ -1,11 +1,8 @@
 from flask import request, jsonify
 
 from api.app.utils.responses import APIResponse
-from api.app.v1.controllers.servicios_controller import ControladorServicios
-from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
-from api.app.models.users.roles_model import TipoRoles
-from api.app.models.users.usuarios_model import Usuarios
-from api.app.utils.security import Security
+from api.app.v2.controllers.usuarios_controller import ControladorUsuarios
+
 
 from api.app.v2 import api
 
