@@ -8,8 +8,8 @@ def obtener_servicio_por_id(id_servicio):
     try:
         servicio = Servicios.query.get(id_servicio)
         if not servicio:
-            return APIResponse.not_found(None,'Servicios')
+            return APIResponse.not_found()
         servicio_schema = ServiciosSchema()
-        return APIResponse.success(servicio_schema.dump(servicio), 'Servicio encontrado')
+        return APIResponse.success(data=servicio_schema.dump(servicio))
     except Exception as e:
-        return APIResponse.error(None, str(e))
+        return APIResponse.error(error= str(e))
