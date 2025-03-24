@@ -9,13 +9,14 @@ class LoginSchema(Schema):
 
     contrasena = fields.Str(
         required=True,
-        validate=[
-            validate.Length(min=8, max=32, error="La contraseña debe tener entre 8 y 32 caracteres."),
-            validate.Regexp(
-                regex=r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$",
-                error="La contraseña debe contener al menos una letra y un número."
-            )
-        ],
+        load_only=True,
+        # validate=[
+        #     validate.Length(min=8, max=32, error="La contraseña debe tener entre 8 y 32 caracteres."),
+        #     validate.Regexp(
+        #         regex=r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$",
+        #         error="La contraseña debe contener al menos una letra y un número."
+        #     )
+        # ],
         error_messages={"required": "La contraseña es obligatoria."}
     )
 
