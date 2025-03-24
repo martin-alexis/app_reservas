@@ -1,34 +1,44 @@
 from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
 
-from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
-from api.app.models.users.roles_model import Roles
+from api.app.schemas.usuarios.schema_login import LoginSchema
+from api.app.utils.functions_utils import obtener_usuario_por_correo, get_roles_user
+from api.app.utils.responses import APIResponse
 from api.app.utils.security import Security
 
-from api.app.v1 import api
+from api.app.v2 import api
+
+def verificar_usuario(data):
+    try:
+        authenticated_user = obtener_usuario_por_correo(data['correo'])
+
+        if not authenticated_user or not authenticated_user.check_password(data['contrasena']):
+            return APIResponse.unauthorized(message='Correo o contraseña incorrectos')
+
+        return authenticated_user
+    except Exception as e:
+        return APIResponse.error(error=str(e), code=500)
 
 
 @api.route('/login', methods=['POST'])
 def login_jwt():
     try:
-        email = request.json.get('email')
-        password = request.json.get('password')
 
-        if not email or not password:
-            return jsonify({'message': 'Email y contraseña son requeridos'}), 400
+        login_schema = LoginSchema()
+        login_data = login_schema.load(request.json)
 
-        authenticated_user = ControladorUsuarios.obtener_usuario_por_correo(email)
+        usuario_verificado = verificar_usuario(login_data)
 
-        if not authenticated_user:
-            return jsonify({'message': 'Email incorrecto'}), 404
+        roles_user = get_roles_user(usuario_verificado.id_usuarios)
 
-        if not authenticated_user.check_password(password):
-            return jsonify({'message': 'Contraseña incorrecta'}), 401
+        jwt_token = Security.create_token(usuario_verificado.id_usuarios, usuario_verificado.correo, roles_user)
 
-        roles_user = Roles.get_roles_user(authenticated_user)
+        return APIResponse.success(data= {'jwt_token': jwt_token})
 
-        jwt_token = Security.create_token(authenticated_user.id_usuarios, authenticated_user.correo, roles_user)
+    except ValidationError as err:
+        return APIResponse.validation_error(errors=err.messages)
 
-        return jsonify({'token': jwt_token}), 200
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+        return APIResponse.error(error=str(e))
+
 
