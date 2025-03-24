@@ -20,9 +20,9 @@ class UsuariosSchema(ma.SQLAlchemySchema):
                                                       error="Telefono invalido. El teléfono solo puede contener entre 7 y 15 dígitos numéricos."))
     contrasena = fields.Str(load_only=True, required=True)
     imagen = ma.auto_field(required=False)
-    tipos_usuario_id = fields.String(required=True, validate=validate.OneOf([tipo.value for tipo in Tipo],
+    tipo_usuario = fields.String(required=True, validate=validate.OneOf([tipo.value for tipo in Tipo],
                                                                             error="Tipo de usuario inválido."))
-    roles_id = fields.List(
+    roles = fields.List(
         fields.String(
             load_only=True,
             validate=validate.OneOf([role.value for role in TipoRoles], error="Rol inválido.")
@@ -31,13 +31,14 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         validate=validate.Length(min=1, error="Se requiere al menos un rol.")
     )
 
-    tipos_usuario = ma.Nested(TiposUsuarioSchema)
-    roles = ma.List(ma.Nested(RolesSchema))
+    _tipo_usuario = ma.Nested(TiposUsuarioSchema)
+    _roles = ma.List(ma.Nested(RolesSchema))
 
     @post_load
     def make_user(self, data, **kwargs):
         data.setdefault('imagen',
                         'https://res.cloudinary.com/dfnjifn4w/image/upload/v1740232796/525e350a-f2e9-4b04-9cf8-93d54bffc2ec.png')
+        data['tipos_usuario_id'] = data.pop('tipo_usuario', None)
         return data
 
 
