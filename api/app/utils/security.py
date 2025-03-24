@@ -57,10 +57,10 @@ def token_required(f):
         try:
             encoded_token = authorization.split(" ")[1]
             payload = jwt.decode(encoded_token, Security.token_secret, algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            return APIResponse.unauthorized(message="Token expirado")
-        except jwt.InvalidTokenError:
-            return APIResponse.unauthorized(message="Token invalido")
+        except jwt.ExpiredSignatureError as e:
+            return APIResponse.unauthorized(message="Token expirado", error=str(e))
+        except jwt.InvalidTokenError as e:
+            return APIResponse.unauthorized(message="Token invalido", error=str(e))
 
         return f(payload, *args, **kwargs)
 
