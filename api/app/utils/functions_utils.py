@@ -15,7 +15,6 @@ def get_roles_user(id_usuario):
             if role:
                 role_str = str(role.tipo).replace('TipoRoles.', '')
                 roles_user.append(role_str)
-                print(roles_user)
         return roles_user
     except Exception as e:
         return APIResponse.error(None, str(e))
