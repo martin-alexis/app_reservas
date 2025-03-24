@@ -18,7 +18,17 @@ class UsuariosSchema(ma.SQLAlchemySchema):
 
     telefono = ma.auto_field(validate=validate.Regexp(r'^\d{7,15}$',
                                                       error="Telefono invalido. El teléfono solo puede contener entre 7 y 15 dígitos numéricos."))
-    contrasena = fields.Str(load_only=True, required=True)
+    contrasena = ma.auto_field(
+        required=True,
+        load_only=True,
+        validate=[
+            validate.Length(min=8, max=32, error="La contraseña debe tener entre 8 y 32 caracteres."),
+            validate.Regexp(
+                regex=r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$",
+                error="La contraseña debe contener al menos una letra y un número."
+            )
+        ]
+    )
     imagen = ma.auto_field(required=False)
     tipo_usuario = fields.String(required=True, validate=validate.OneOf([tipo.value for tipo in Tipo],
                                                                             error="Tipo de usuario inválido."))
