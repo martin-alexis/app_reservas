@@ -30,37 +30,19 @@ def actualizar_usuario(payload, id_usuario):
     except Exception as e:
         return APIResponse.error(error=str(e))
 
-# @api.route('/usuarios/<int:id_usuario>', methods=['PATCH'])
-# def actualizar_usuario(id_usuario):
-#     try:
-#         has_access = Security.verify_token(request.headers)
-#         if has_access:
-#             id_usuario_token = has_access.get('id_usuario')
-#             roles = has_access.get('roles')
-#             controller = ControladorUsuarios()
-#             return controller.actualizar_usuario(id_usuario, id_usuario_token, roles)
-#         else:
-#             return jsonify({'message': 'Unauthorized'}), 401
-#     except Exception as e:
-#         return jsonify({'status': 'error', 'message': str(e)}), 400
 
+@api.route('/usuarios/<int:id_usuario>/foto-perfil', methods=['PUT'])
+@token_required
+@roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.CLIENTE.value, TipoRoles.ADMIN.value])
+def actualizar_foto_perfil_usuario(payload, id_usuario):
+    try:
+        id_usuario_token = payload.get('id_usuario')
+        controller = ControladorUsuarios()
+        return controller.actualizar_foto_perfil_usuario(id_usuario, id_usuario_token)
 
-# @api.route('/usuarios/<int:id_usuario>/foto-perfil', methods=['PUT'])
-# def actualizar_foto_perfil_usuario(id_usuario):
-#     try:
-#         has_access = Security.verify_token(request.headers)
-#
-#         if has_access:
-#             email = has_access.get('email')
-#             roles = has_access.get('roles')
-#             id_usuario_token = has_access.get('id_usuario')
-#             controller = ControladorUsuarios()
-#             return controller.actualizar_foto_perfil_usuario(id_usuario, email, roles, id_usuario_token)
-#         else:
-#             return jsonify({'message': 'Unauthorized'}), 401
-#     except Exception as e:
-#         return jsonify({'status': 'error', 'message': str(e)}), 400
-#
+    except Exception as e:
+        return APIResponse.error(error=str(e))
+
 #
 #
 #

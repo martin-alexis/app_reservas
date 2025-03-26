@@ -66,6 +66,12 @@ class ControladorUsuarios:
         return usuario
 
     @staticmethod
+    def existe_imagen(imagen):
+        if imagen is None:
+            raise ValueError("Imagen")
+        return imagen
+
+    @staticmethod
     def verificar_permisos(usuario, id_usuario_token):
         roles = get_roles_user(usuario)
         if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
@@ -104,41 +110,38 @@ class ControladorUsuarios:
 
         except Exception as e:
             db.session.rollback()
-            return APIResponse.error(error=str(e))
+            return APIResponse.error(error=str(e), code=500)
 
         finally:
             db.session.close()
 
-# def actualizar_foto_perfil_usuario(self, id_usuario, correo, roles, id_usuario_token):
-    #     try:
-    #         usuario = Usuarios.query.get(id_usuario)
-    #         mismo_usuario = Usuarios.query.filter_by(correo=correo).first()
-    #
-    #         if not usuario:
-    #             return jsonify({"error": "Usuario no encontrado"}), 404
-    #
-    #         if usuario.id_usuarios != mismo_usuario.id_usuarios and (not roles or TipoRoles.ADMIN.value not in roles):
-    #             return jsonify({"error": "No tienes permiso para modificar esta foto"}), 403
-    #
-    #         imagen = request.files.get('imagen')
-    #         if not imagen:
-    #             return jsonify({"error": "No se envió ninguna imagen"}), 400
-    #
-    #         imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
-    #
-    #         usuario.imagen = imagen_url
-    #
-    #         db.session.commit()
-    #
-    #     except Exception as e:
-    #         db.session.rollback()
-    #         return jsonify({"error": "Error al actualizar el registro"}), 500
-    #
-    #     finally:
-    #         db.session.close()
-    #
-    #     return jsonify({"message": "Foto de perfil del usuario actualizada exitosamente"}), 200
-    #
+    def actualizar_foto_perfil_usuario(self, id_usuario, id_usuario_token):
+            try:
+                usuario = self.existe_usuario(id_usuario)
+                self.verificar_permisos(usuario, id_usuario_token)
+
+                imagen = self.existe_imagen(request.files.get('imagen'))
+                imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
+
+                usuario.imagen = imagen_url
+
+                db.session.commit()
+                return APIResponse.success()
+
+            except ValueError as e:
+                return APIResponse.not_found(resource=str(e))
+
+            except PermissionError as e:
+                return APIResponse.forbidden(error=str(e))
+
+            except Exception as e:
+                db.session.rollback()
+                return APIResponse.error(error=str(e), code=500)
+
+            finally:
+                db.session.close()
+
+
     def actualizar_usuario(self, id_usuario, id_usuario_token, data):
         try:
             # Validar y deserializar con Marshmallow
@@ -187,7 +190,7 @@ class ControladorUsuarios:
 
         except Exception as e:
             db.session.rollback()
-            return APIResponse.error(error=str(e))
+            return APIResponse.error(error=str(e), code=500)
 
         finally:
             db.session.close()
