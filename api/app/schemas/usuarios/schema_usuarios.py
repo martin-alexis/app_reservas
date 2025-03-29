@@ -6,6 +6,7 @@ from api.app.models.users.tipos_usuarios_model import TiposUsuario, Tipo
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.schemas.usuarios.schema_roles import RolesSchema
 from api.app.schemas.usuarios.schema_tipos_usuarios import TiposUsuarioSchema
+from api.app.schemas.usuarios.schema_usuarios_tiene_roles import UsuariosTieneRolesSchema
 
 
 class UsuariosSchema(ma.SQLAlchemySchema):
@@ -30,9 +31,9 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         ]
     )
     imagen = ma.auto_field(required=False)
-    tipo_usuario = fields.String(required=True, validate=validate.OneOf([tipo.value for tipo in Tipo],
+    tipos_usuario = fields.String(required=True, validate=validate.OneOf([tipo.value for tipo in Tipo],
                                                                             error="Tipo de usuario inválido."))
-    roles = fields.List(
+    tipo_roles = fields.List(
         fields.String(
             load_only=True,
             validate=validate.OneOf([role.value for role in TipoRoles], error="Rol inválido.")
@@ -41,8 +42,9 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         validate=validate.Length(min=1, error="Se requiere al menos un rol.")
     )
 
-    _tipo_usuario = ma.Nested(TiposUsuarioSchema)
-    _roles = ma.List(ma.Nested(RolesSchema))
+    tipo_usuario = ma.Nested(TiposUsuarioSchema)
+    roles = fields.List(
+        fields.Nested(UsuariosTieneRolesSchema, dump_only=True))
 
     @post_load
     def make_user(self, data, **kwargs):
