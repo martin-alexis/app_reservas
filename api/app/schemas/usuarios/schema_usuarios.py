@@ -42,16 +42,10 @@ class UsuariosSchema(ma.SQLAlchemySchema):
         validate=validate.Length(min=1, error="Se requiere al menos un rol.")
     )
 
-    tipo_usuario = ma.Nested(TiposUsuarioSchema)
+    tipo_usuario = ma.Nested(TiposUsuarioSchema, dump_only=True)
     roles = fields.List(
-        fields.Nested(UsuariosTieneRolesSchema, dump_only=True))
+        fields.Nested(UsuariosTieneRolesSchema, dump_only=True), dump_only=True)
 
-    @post_load
-    def make_user(self, data, **kwargs):
-        data.setdefault('imagen',
-                        'https://res.cloudinary.com/dfnjifn4w/image/upload/v1740232796/525e350a-f2e9-4b04-9cf8-93d54bffc2ec.png')
-        data['tipos_usuario_id'] = data.pop('tipo_usuario', None)
-        return data
 
 
 # Instancias del esquema para serialización
