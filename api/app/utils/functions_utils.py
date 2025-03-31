@@ -102,5 +102,8 @@ class FunctionsUtils:
         :return: Diccionario con el ids asignados.
         """
         if campo in data:
-            data[campo] = ids[0]
+            if campo == 'tipo_roles':
+                data[campo] = ids
+            else:
+                data[campo] = ids[0]
         return data
