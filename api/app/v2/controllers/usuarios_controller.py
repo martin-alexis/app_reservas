@@ -2,7 +2,7 @@ from flask import jsonify, request
 from marshmallow import ValidationError
 from api.app import db
 from api.app.schemas.usuarios.schema_usuarios import UsuariosSchema
-from api.app.utils.functions_utils import get_roles_user, subir_imagen_cloudinary
+from api.app.utils.functions_utils import FunctionsUtils
 from api.app.utils.responses import APIResponse
 from api.app.models.users.roles_model import Roles, TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
@@ -25,26 +25,6 @@ class ControladorUsuarios:
             usuario = Usuarios.query.filter_by(telefono=data['telefono']).first()
             if usuario and usuario.id_usuarios != id_usuario_token:
                 raise ValidationError("El teléfono ya está registrado.")
-
-    @staticmethod
-    def obtener_tipo_usuario_id(tipo_usuario):
-        tipo_usuario_db = TiposUsuario.query.filter_by(tipo=tipo_usuario).first()
-        return tipo_usuario_db.id_tipos_usuario if tipo_usuario_db else None
-
-    @staticmethod
-    def obtener_roles_ids(roles):
-        roles_db = Roles.query.filter(Roles.tipo.in_(roles)).all()
-        return [role.id_roles for role in roles_db]
-
-    @staticmethod
-    def pasar_strings_a_ids(data):
-        if 'tipos_usuario_id' in data:
-            data['tipos_usuario_id'] = ControladorUsuarios.obtener_tipo_usuario_id(data['tipos_usuario_id'])
-
-        if 'tipo_roles' in data:
-            data['tipo_roles'] = ControladorUsuarios.obtener_roles_ids(data['tipo_roles'])
-
-        return data
 
     @staticmethod
     def eliminar_roles_en_data(data_validada):
@@ -73,7 +53,7 @@ class ControladorUsuarios:
 
     @staticmethod
     def verificar_permisos(usuario, id_usuario_token):
-        roles = get_roles_user(usuario)
+        roles = FunctionsUtils.get_roles_user(usuario)
         if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
             raise PermissionError("No tienes permisos para realizar esta acción")
 
@@ -88,9 +68,16 @@ class ControladorUsuarios:
             self.validar_campos_unicos(data)
 
             # Convertir strings a IDs
-            data_validada = self.pasar_strings_a_ids(data_validada)
+            data_validada = FunctionsUtils.renombrar_campo(data_validada, 'tipos_usuario', 'tipos_usuario_id')
+
+            ids_tipos_usuarios = FunctionsUtils.obtener_ids_de_enums(TiposUsuario, TiposUsuario.tipo, data_validada['tipos_usuario_id'], 'id_tipos_usuario')
+            ids_roles = FunctionsUtils.obtener_ids_de_enums(Roles, Roles.tipo, data_validada['tipo_roles'], 'id_roles')
+            print(ids_roles)
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipos_usuario_id', ids_tipos_usuarios)
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipo_roles', ids_roles)
+            print(data_validada)
+
             data_con_roles, data_validada = self.eliminar_roles_en_data(data_validada)
-            data_validada = self.renombrar_tipos_usuario(data_validada)
 
             # Imagen por default
             data_validada.setdefault('imagen',
@@ -99,7 +86,7 @@ class ControladorUsuarios:
             # Crear usuario
             nuevo_usuario = Usuarios(**data_validada)
             db.session.add(nuevo_usuario)
-            db.session.commit()
+            db.session.flush()
 
             # Se asigna los roles
             for rol in data_con_roles['tipo_roles']:
@@ -120,31 +107,30 @@ class ControladorUsuarios:
             db.session.close()
 
     def actualizar_foto_perfil_usuario(self, id_usuario, id_usuario_token):
-            try:
-                usuario = self.existe_usuario(id_usuario)
-                self.verificar_permisos(usuario, id_usuario_token)
+        try:
+            usuario = self.existe_usuario(id_usuario)
+            self.verificar_permisos(usuario, id_usuario_token)
 
-                imagen = self.existe_imagen(request.files.get('imagen'))
-                imagen_url = subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
+            imagen = self.existe_imagen(request.files.get('imagen'))
+            imagen_url = FunctionsUtils.subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
 
-                usuario.imagen = imagen_url
+            usuario.imagen = imagen_url
 
-                db.session.commit()
-                return APIResponse.success()
+            db.session.commit()
+            return APIResponse.success()
 
-            except ValueError as e:
-                return APIResponse.not_found(resource=str(e))
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
 
-            except PermissionError as e:
-                return APIResponse.forbidden(error=str(e))
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
 
-            except Exception as e:
-                db.session.rollback()
-                return APIResponse.error(error=str(e), code=500)
+        except Exception as e:
+            db.session.rollback()
+            return APIResponse.error(error=str(e), code=500)
 
-            finally:
-                db.session.close()
-
+        finally:
+            db.session.close()
 
     def actualizar_usuario(self, id_usuario, id_usuario_token, data):
         try:
@@ -158,10 +144,17 @@ class ControladorUsuarios:
 
             self.validar_campos_unicos(data, id_usuario_token)
 
-            data_validada = self.pasar_strings_a_ids(data_validada)
+            # Convertir strings a IDs
+            data_validada = FunctionsUtils.renombrar_campo(data_validada, 'tipos_usuario', 'tipos_usuario_id')
+
+            ids_tipos_usuarios = FunctionsUtils.obtener_ids_de_enums(TiposUsuario, TiposUsuario.tipo, data_validada['tipos_usuario_id'], 'id_tipos_usuario')
+            ids_roles = FunctionsUtils.obtener_ids_de_enums(Roles, Roles.tipo, data_validada['tipo_roles'], 'id_roles')
+
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipos_usuario_id', ids_tipos_usuarios)
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipo_roles', ids_roles)
+
 
             data_con_roles, data_validada = self.eliminar_roles_en_data(data_validada)
-            data_validada = self.renombrar_tipos_usuario(data_validada)
 
             # Actualizar solo los campos presentes en los datos validados
             for key, value in data_validada.items():
@@ -179,7 +172,6 @@ class ControladorUsuarios:
                     # Asignar nuevos roles al usuario
                     rol_usuario = UsuariosTieneRoles(usuarios_id=usuario.id_usuarios, roles_id=rol)
                     db.session.add(rol_usuario)
-
 
             db.session.commit()
             return APIResponse.success()
@@ -199,5 +191,3 @@ class ControladorUsuarios:
 
         finally:
             db.session.close()
-
-
