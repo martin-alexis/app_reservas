@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from api.app.utils.functions_utils import get_roles_user
+from api.app.utils.functions_utils import FunctionsUtils
 from api.app.v1.controllers.usuarios_controller import ControladorUsuarios
 from api.app.utils.security import Security
 
@@ -24,7 +24,7 @@ def login_jwt():
         if not authenticated_user.check_password(password):
             return jsonify({'message': 'Contraseña incorrecta'}), 401
 
-        roles_user = get_roles_user(authenticated_user.id_usuarios)
+        roles_user = FunctionsUtils.get_roles_user(authenticated_user.id_usuarios)
 
         jwt_token = Security.create_token(authenticated_user.id_usuarios, authenticated_user.correo, roles_user)
 
