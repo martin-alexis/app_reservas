@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.schemas.usuarios.schema_login import LoginSchema
-from api.app.utils.functions_utils import obtener_usuario_por_correo, get_roles_user
+from api.app.utils.functions_utils import FunctionsUtils
 from api.app.utils.responses import APIResponse
 from api.app.utils.security import Security
 
@@ -11,7 +11,7 @@ from api.app.v2 import api
 
 def verificar_usuario(data):
     try:
-        authenticated_user = obtener_usuario_por_correo(data['correo'])
+        authenticated_user = FunctionsUtils.obtener_usuario_por_correo(data['correo'])
 
         if not authenticated_user or not authenticated_user.check_password(data['contrasena']):
             return APIResponse.unauthorized(message='Correo o contraseña incorrectos')
@@ -33,7 +33,7 @@ def login_jwt():
         if not isinstance(usuario_verificado, Usuarios):
             return usuario_verificado
 
-        roles_user = get_roles_user(usuario_verificado.id_usuarios)
+        roles_user = FunctionsUtils.get_roles_user(usuario_verificado.id_usuarios)
 
         jwt_token = Security.create_token(usuario_verificado.id_usuarios, usuario_verificado.correo, roles_user)
 
