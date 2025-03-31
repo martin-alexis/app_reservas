@@ -10,7 +10,7 @@ class TiposServicioSchema(ma.SQLAlchemySchema):
         model = TiposServicio
 
     id_tipos_servicio = ma.auto_field()
-    tipo = EnumField(Tipo)
+    tipo = EnumField(Tipo, by_value=True)
 
     # Relación con servicios (con exclusión para evitar referencias circulares)
     # servicios = ma.List(ma.Nested(ServiciosSchema, exclude=('tipos_servicio_id',)))

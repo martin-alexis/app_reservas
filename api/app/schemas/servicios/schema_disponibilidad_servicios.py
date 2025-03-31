@@ -10,7 +10,7 @@ class DisponibilidadServicioSchema(ma.SQLAlchemySchema):
         model = DisponibilidadServicio
 
     id_disponibilidad_servicio = ma.auto_field()
-    estado = EnumField(Estado)
+    estado = EnumField(Estado, by_value=True)
 
     # # Relación con servicios (con exclusión para evitar referencias circulares)
     # servicios = ma.List(ma.Nested('ServiciosSchema', exclude=('disponibilidad',)))
