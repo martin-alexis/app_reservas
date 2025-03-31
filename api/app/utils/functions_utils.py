@@ -7,6 +7,7 @@ from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.utils.responses import APIResponse
 
 class FunctionsUtils:
+    @staticmethod
     def get_roles_user(id_usuario):
         try:
             roles_user = []
@@ -20,14 +21,14 @@ class FunctionsUtils:
             return roles_user
         except Exception as e:
             return APIResponse.error(None, str(e))
-
+    # @staticmethod
     # def get_usertype(id_usuario):
     #     try:
     #         type_user = TiposUsuario.query.filter_by(id_tipos_usuario=id_usuario.tipos_usuario_id).first()
     #         return str(type_user.tipo).replace('Tipo.', '')
     #     except Exception as e:
     #         return APIResponse.error(None, str(e))
-
+    @staticmethod
     def obtener_usuario_por_correo(correo):
             usuario = Usuarios.query.filter_by(correo=correo).first()
 
@@ -36,7 +37,7 @@ class FunctionsUtils:
             else:
                 return None
 
-
+    @staticmethod
     def subir_imagen_cloudinary(imagen, id_usuario_token, modelo):
         try:
 
@@ -57,7 +58,7 @@ class FunctionsUtils:
 
         except Exception as e:
             return APIResponse.error(None, error=str(e), code=500, message='Error al subir la imagen a Cloudinary')
-
+    @staticmethod
     def existe_usuario(id_usuario):
         usuario = Usuarios.query.get(id_usuario)
         if usuario is None:
@@ -65,7 +66,7 @@ class FunctionsUtils:
         return usuario
 
 
-
+    @staticmethod
     def obtener_ids_de_enums(modelo, campo_enum, valores_enum, id_campo):
         """
         Convierte una lista de valores de un Enum en sus respectivos IDs en la base de datos.
@@ -84,13 +85,13 @@ class FunctionsUtils:
         registros = modelo.query.filter(campo_enum.in_(valores_enum)).all()
         return [getattr(registro, id_campo) for registro in registros]
 
-
+    @staticmethod
     def renombrar_campo(data, campo_original, nuevo_nombre):
         if campo_original in data:
             data[nuevo_nombre] = data.pop(campo_original)
         return data
 
-
+    @staticmethod
     def pasar_ids(data, campo, ids):
         """
         Convierte un valor string en un ID utilizando una lista de IDs proporcionada.
