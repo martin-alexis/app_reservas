@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from flask import request
 
 from api.app.utils.responses import APIResponse
-from api.app.utils.functions_utils import get_roles_user
+from api.app.utils.functions_utils import FunctionsUtils
 
 
 class Security:
@@ -70,7 +70,7 @@ def roles_required(roles_permitidos):
     def decorator(f):
         @wraps(f)
         def decorated(payload, *args, **kwargs):
-            user_roles = get_roles_user(payload.get('id_usuario'))
+            user_roles = FunctionsUtils.get_roles_user(payload.get('id_usuario'))
             if not any(role in user_roles for role in roles_permitidos):
                 return APIResponse.forbidden(message='No tienes permiso para acceder a este recurso.')
             return f(payload, *args, **kwargs)
