@@ -33,7 +33,7 @@ class ServiciosSchema(ma.SQLAlchemySchema):
     # disponibilidad_servicio_id = ma.auto_field()
 
     tipo_servicio = fields.Nested(TiposServicioSchema, dump_only=True)
-    proveedor = fields.Nested(UsuariosSchema, dump_only=True)
+    # proveedor = fields.Nested(UsuariosSchema, dump_only=True)
     disponibilidad = fields.Nested(DisponibilidadServicioSchema, dump_only=True)
 
     # tipo_servicio = fields.String(required=True, load_only=True, validate=validate.OneOf([tipo.value for tipo in Tipo],error="Tipo de servicio inválido."))
