@@ -39,19 +39,19 @@ def crear_servicio(payload):
         data = request.form.to_dict()
         controller = ControladorServicios()
         return controller.crear_servicio(data, id_usuario_token)
-    except ConnectionError:
-        return jsonify({"status": "error", "message": "No se pudo conectar con la base de datos"}), 500
-
-    except TimeoutError:
-        return jsonify(
-            {"status": "error", "message": "Tiempo de espera agotado al conectar con la base de datos"}), 500
-    except SQLAlchemyError as e:
-        return jsonify({
-            "status": "error",
-            "code": 500,
-            "message": "Error al conectar con la base de datos",
-            "error": str(e)  # Aquí mostrará el error específico de SQLAlchemy
-        }), 500
+    # except ConnectionError:
+    #     return jsonify({"status": "error", "message": "No se pudo conectar con la base de datos"}), 500
+    #
+    # except TimeoutError:
+    #     return jsonify(
+    #         {"status": "error", "message": "Tiempo de espera agotado al conectar con la base de datos"}), 500
+    # except SQLAlchemyError as e:
+    #     return jsonify({
+    #         "status": "error",
+    #         "code": 500,
+    #         "message": "Error al conectar con la base de datos",
+    #         "error": str(e)  # Aquí mostrará el error específico de SQLAlchemy
+    #     }), 500
     except Exception as e:
         return APIResponse.error(message=str(e))
 
