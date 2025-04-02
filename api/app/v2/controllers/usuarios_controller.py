@@ -48,7 +48,7 @@ class ControladorUsuarios:
     @staticmethod
     def existe_imagen(imagen):
         if imagen is None:
-            raise ValueError("Imagen")
+            raise ValueError("La imagen no ha sido proporcionada.")
         return imagen
 
     @staticmethod
@@ -72,10 +72,8 @@ class ControladorUsuarios:
 
             ids_tipos_usuarios = FunctionsUtils.obtener_ids_de_enums(TiposUsuario, TiposUsuario.tipo, data_validada['tipos_usuario_id'], 'id_tipos_usuario')
             ids_roles = FunctionsUtils.obtener_ids_de_enums(Roles, Roles.tipo, data_validada['tipo_roles'], 'id_roles')
-            print(ids_roles)
             data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipos_usuario_id', ids_tipos_usuarios)
             data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipo_roles', ids_roles)
-            print(data_validada)
 
             data_con_roles, data_validada = self.eliminar_roles_en_data(data_validada)
 
@@ -120,7 +118,7 @@ class ControladorUsuarios:
             return APIResponse.success()
 
         except ValueError as e:
-            return APIResponse.not_found(resource=str(e))
+            return APIResponse.error(error=str(e))
 
         except PermissionError as e:
             return APIResponse.forbidden(error=str(e))
