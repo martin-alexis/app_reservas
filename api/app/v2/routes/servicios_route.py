@@ -52,20 +52,17 @@ def obtener_todos_servicios():
 
 
 
-@api.route('/servicios/<int:id_servicios>', methods=['PATCH'])
-def actualizar_servicios(id_servicios):
+@api.route('/servicios/<int:id_servicio>', methods=['PATCH'])
+@token_required
+@roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
+def actualizar_servicios(payload, id_servicio):
     try:
-        has_access = Security.verify_token(request.headers)
-        if has_access:
-            roles = has_access.get('roles')
-            email = has_access.get('email')
-            if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-                controller = ControladorServicios()
-                return controller.actualizar_servicio(id_servicios, email, roles)
-        return jsonify({'message': 'Unauthorized'}), 401
+        id_usuario_token = payload.get('id_usuario')
+        data = request.json
+        controller = ControladorServicios()
+        return controller.actualizar_servicio(data, id_usuario_token, id_servicio)
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
-
+        return APIResponse.error(message=str(e))
 
 @api.route('/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
 def actualizar_imagen_servicio(id_servicio):

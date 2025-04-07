@@ -121,61 +121,31 @@ class ControladorServicios:
             data_validada = servivio_schema.load(data)
 
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
 
-            self.verificar_permisos(usuario, id_usuario_token)
-            servicio = Servicios.query.get(id_servicio)
+            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
 
-            usuario = Usuarios.query.filter_by(correo=correo).first()
-
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-
-            if not servicio:
-                return jsonify({"error": "Servicio no encontrado"}), 404
-
-            if usuario.id_usuarios != servicio.usuarios_proveedores_id and (not roles or TipoRoles.ADMIN.value not in roles):
-                return jsonify({"error": "No tienes permiso para actualizar los datos"}), 403
-
-            data = request.json
-
-
-            if 'disponibilidad_servicio_id' in data:
-                disponibilidad_servicio = DisponibilidadServicio.query.filter_by(
-                    estado=data['disponibilidad_servicio_id']).first()
-
-                if not disponibilidad_servicio:
-                    return jsonify({'message': 'Estado del servicio inválido'}), 400
-
-                servicio.disponibilidad_servicio_id = disponibilidad_servicio.id_disponibilidad_servicio
-
-            if 'tipos_servicio_id' in data:
-                tipo_servicio = TiposServicio.query.filter_by(tipo=data['tipos_servicio_id']).first()
-                if not tipo_servicio:
-                    return jsonify({'message': 'Tipo del servicio inválido'}), 400
-
-                servicio.tipos_servicio_id = tipo_servicio.id_tipos_servicio
-            if 'nombre' in data:
-                servicio.nombre = data['nombre']
-            if 'descripcion' in data:
-                servicio.descripcion = data['descripcion']
-            if 'precio' in data:
-                servicio.precio = data['precio']
-            if 'ubicacion' in data:
-                servicio.ubicacion = data['ubicacion']
-
+            # Actualizar solo los campos presentes en los datos validados
+            for key, value in data_validada.items():
+                setattr(servicio, key, value)
 
             db.session.commit()
+            return APIResponse.success()
+
+        except ValidationError as err:
+            return APIResponse.validation_error(errors=err.messages)
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
 
         except Exception as e:
             db.session.rollback()
-            print(f"Error al actualizar el registro: {e}")
-            return jsonify({"error": "Error al actualizar el registro"}), 500
+            return APIResponse.error(error=str(e), code=500)
 
         finally:
             db.session.close()
-
-        return jsonify({"message": "Servicio actualizado exitosamente"}), 200
 
     def actualizar_imagen_servicio(self, id_servicio, id_usuario_token, roles, correo):
         try:
