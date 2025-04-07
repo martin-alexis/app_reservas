@@ -1,7 +1,8 @@
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
 
-from api.app.models.users.roles_model import Roles
+from api.app.models.services.servicios_model import Servicios
+from api.app.models.users.roles_model import Roles, TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
 from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.utils.responses import APIResponse
@@ -20,7 +21,7 @@ class FunctionsUtils:
                     roles_user.append(role_str)
             return roles_user
         except Exception as e:
-            return APIResponse.error(None, str(e))
+            return APIResponse.error(error=str(e))
     # @staticmethod
     # def get_usertype(id_usuario):
     #     try:
@@ -67,6 +68,32 @@ class FunctionsUtils:
             raise ValueError(f"{modelo.__name__}")
         return registro
 
+    @staticmethod
+    def verificar_permisos(objeto, id_usuario_token):
+        """
+        Verifica si un usuario tiene permiso para acceder o modificar un objeto determinado.
+
+        Parámetros:
+        - objeto: instancia de un modelo (por ejemplo, Usuarios o Servicios).
+        - id_usuario_token: ID del usuario autenticado (extraído del token JWT).
+
+        Excepciones:
+        - Lanza PermissionError si el usuario no tiene permisos sobre el objeto y no es administrador.
+        """
+        roles = FunctionsUtils.get_roles_user(id_usuario_token)
+
+        if isinstance(objeto, Usuarios):
+            id_nombre = Usuarios.id_usuarios.key
+
+        elif isinstance(objeto, Servicios):
+            id_nombre = Servicios.usuarios_proveedores_id.key
+
+        else:
+            raise ValueError("Tipo de objeto no soportado")
+
+        # Verificación de permisos
+        if getattr(objeto, id_nombre) != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
+            raise PermissionError("No tienes permisos para realizar esta acción")
 
     @staticmethod
     def obtener_ids_de_enums(modelo, campo_enum, valores_enum, id_campo):
