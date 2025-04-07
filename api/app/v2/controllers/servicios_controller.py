@@ -1,5 +1,5 @@
 from marshmallow import ValidationError
-from flask import jsonify, request, abort
+from flask import jsonify, request
 
 from api.app import db
 from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio
@@ -7,7 +7,8 @@ from api.app.models.services.servicios_model import Servicios
 from api.app.models.services.tipos_servicios_model import TiposServicio
 from api.app.models.users.roles_model import TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
-from api.app.schemas.servicios.schema_servicios import ServiciosSchema
+from api.app.schemas.servicios.schema_filtros_servicios import filtros_servicios_schema
+from api.app.schemas.servicios.schema_servicios import ServiciosSchema, servicio_schema, servicios_schema
 from api.app.utils.functions_utils import FunctionsUtils
 from api.app.utils.responses import APIResponse
 
@@ -20,8 +21,6 @@ class ControladorServicios:
 
     def crear_servicio(self, data, id_usuario_token):
         try:
-
-            servicio_schema = ServiciosSchema()
             data_validada = servicio_schema.load(data)
 
             usuario = FunctionsUtils.existe_usuario(id_usuario_token)
@@ -75,52 +74,46 @@ class ControladorServicios:
 
     def obtener_todos_servicios(self):
         try:
-            # Obtener los filtros desde la URL
-            tipos_servicios = request.args.get('categoria')
-            disponibilidad = request.args.get('disponibilidad')
-            precio_min = request.args.get('precio_min')
-            precio_max = request.args.get('precio_max')
-            busqueda = request.args.get('busqueda')
+
+            filtros = filtros_servicios_schema.load(request.args)
+
+            page = filtros["page"]
+            per_page = filtros["per_page"]
+            precio_min = filtros.get("precio_min")
+            precio_max = filtros.get("precio_max")
+            tipos_servicios = filtros.get("tipos")
+            disponibilidad = filtros.get("disponibilidad")
+            busqueda = filtros.get("busqueda")
 
             query = Servicios.query
 
             if tipos_servicios:
-                tipos_validos = ControladorServicios.validar_tipos_servicios("Tipos de servicios", tipos_servicios,
-                                                                             "tipo", TiposServicio)
-                if "error" in tipos_validos:
-                    return jsonify(tipos_validos), 400
-
-                query = query.join(TiposServicio).filter(TiposServicio.tipo.in_(tipos_validos))
+                query = query.join(TiposServicio).filter(TiposServicio.tipo.in_(tipos_servicios))
 
             if disponibilidad:
-                estados_validos = ControladorServicios.validar_tipos_servicios("Disponibilidad", disponibilidad,
-                                                                               "estado", DisponibilidadServicio)
-                if "error" in estados_validos:
-                    return jsonify(estados_validos), 400
+                query = query.join(DisponibilidadServicio).filter(DisponibilidadServicio.estado.in_(disponibilidad))
 
-                query = query.join(DisponibilidadServicio).filter(DisponibilidadServicio.estado.in_(estados_validos))
-
-            resultado = ControladorServicios.verificar_filtros_precio(precio_min, precio_max)
-
-            if isinstance(resultado, dict) and "error" in resultado:
-                return jsonify(resultado), 400
-
-            query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
+            if precio_max or precio_min:
+                query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
 
             if busqueda:
                 query = query.filter(
                     (Servicios.nombre.ilike(f"%{busqueda}%")) | (Servicios.descripcion.ilike(f"%{busqueda}%"))
                 )
 
-            servicios = query.all()
+            pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-            if not servicios:
-                return jsonify({'message': 'No se encontraron servicios.'}), 200
+            if pagination.items == []:
+                return APIResponse.pagination(page=pagination.page,
+                                              per_page=pagination.per_page, total=pagination.total,
+                                              pages=pagination.pages, message='No se encontraron servicios')
 
-            return jsonify([servicio.to_json() for servicio in servicios]), 200
+            return APIResponse.pagination(data=servicios_schema.dump(pagination.items),page=pagination.page, per_page=pagination.per_page, total=pagination.total, pages=pagination.pages)
 
+        except ValidationError as err:
+            return APIResponse.validation_error(errors=err.messages)
         except Exception as e:
-            return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
+            return APIResponse.error(error=str(e), code=500)
 
     def actualizar_servicio(self, id_servicio, correo, roles):
         try:
@@ -237,37 +230,24 @@ class ControladorServicios:
             print(f"Error al eliminar servicio: {e}")
             return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
 
+
     @staticmethod
     def validar_tipos_servicios(atributo, nombres_atributos, campo, modelo):
         if not nombres_atributos:
             return []
 
         nombres_atributos = [atributo.upper() for atributo in nombres_atributos.split(",")]
-        atributos_validos = modelo.query.with_entities(getattr(modelo, campo)).filter(getattr(modelo, campo).in_(nombres_atributos)).all()
+
+        atributos_validos = modelo.query.with_entities(getattr(modelo, campo)) \
+            .filter(getattr(modelo, campo).in_(nombres_atributos)).all()
 
         atributos_validos = [atributo[0].value for atributo in atributos_validos]  # Extraer los valores válidos
 
-        atributos_invalidos = set(nombres_atributos) - set(atributos_validos)  # Buscar valores que no existen
+        atributos_invalidos = set(nombres_atributos) - set(atributos_validos)
         if atributos_invalidos:
-            return {"error": f"{atributo.capitalize()} no encontradas: {', '.join(atributos_invalidos)}"}
+            raise ValueError(f"{atributo.capitalize()} no encontrados: {', '.join(atributos_invalidos)}")
 
         return atributos_validos
-
-    @staticmethod
-    def verificar_filtros_precio(precio_min, precio_max):
-        if precio_min:
-            try:
-                precio_min = float(precio_min)
-            except ValueError:
-                return {"error": "El precio mínimo debe ser un número válido."}
-
-        if precio_max:
-            try:
-                precio_max = float(precio_max)
-            except ValueError:
-                return {"error": "El precio máximo debe ser un número válido."}
-
-        return precio_min, precio_max
 
 
     @staticmethod
