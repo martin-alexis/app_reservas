@@ -39,23 +39,10 @@ class ControladorUsuarios:
         return data_validada
 
     @staticmethod
-    def existe_usuario(id_usuario):
-        usuario = Usuarios.query.get(id_usuario)
-        if usuario is None:
-            raise ValueError("Usuario")
-        return usuario
-
-    @staticmethod
     def existe_imagen(imagen):
         if imagen is None:
             raise ValueError("La imagen no ha sido proporcionada.")
         return imagen
-
-    @staticmethod
-    def verificar_permisos(usuario, id_usuario_token):
-        roles = FunctionsUtils.get_roles_user(usuario)
-        if usuario.id_usuarios != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
-            raise PermissionError("No tienes permisos para realizar esta acción")
 
     def crear_usuario(self, data):
         try:
@@ -106,8 +93,8 @@ class ControladorUsuarios:
 
     def actualizar_foto_perfil_usuario(self, id_usuario, id_usuario_token):
         try:
-            usuario = self.existe_usuario(id_usuario)
-            self.verificar_permisos(usuario, id_usuario_token)
+            usuario = FunctionsUtils.existe_registro(id_usuario, Usuarios)
+            FunctionsUtils.verificar_permisos(usuario, id_usuario_token)
 
             imagen = self.existe_imagen(request.files.get('imagen'))
             imagen_url = FunctionsUtils.subir_imagen_cloudinary(imagen, id_usuario_token, 'usuarios')
@@ -136,9 +123,9 @@ class ControladorUsuarios:
             usuario_schema = UsuariosSchema(partial=True)
             data_validada = usuario_schema.load(data)
 
-            usuario = self.existe_usuario(id_usuario)
+            usuario = FunctionsUtils.existe_registro(id_usuario, Usuarios)
 
-            self.verificar_permisos(usuario, id_usuario_token)
+            FunctionsUtils.verificar_permisos(usuario, id_usuario_token)
 
             self.validar_campos_unicos(data, id_usuario_token)
 
