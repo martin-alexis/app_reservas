@@ -18,6 +18,17 @@ class ControladorServicios:
     def __init__(self):
         pass
 
+    @staticmethod
+    def aplicar_filtros_precio(query, precio_min, precio_max):
+        if precio_min and precio_max:
+            query = query.filter(Servicios.precio >= float(precio_min), Servicios.precio <= float(precio_max))
+        elif precio_min:
+            query = query.filter(Servicios.precio >= float(precio_min))
+        elif precio_max:
+            query = query.filter(Servicios.precio <= float(precio_max))
+        return query
+
+
 
     def crear_servicio(self, data, id_usuario_token):
         try:
@@ -170,45 +181,33 @@ class ControladorServicios:
         finally:
             db.session.close()
 
-    def actualizar_imagen_servicio(self, id_servicio, id_usuario_token, roles, correo):
+    def actualizar_imagen_servicio(self, id_usuario_token, id_servicio):
         try:
-            servicio = Servicios.query.get(id_servicio)
 
-            if not servicio:
-                return jsonify({"error": "Servicio no encontrado"}), 404
-
-            if servicio.usuarios_proveedores_id != id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
-                return jsonify({"error": "No tienes permiso para modificar esta imagen"}), 403
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
 
             imagen = request.files.get('imagen')
-            if not imagen:
-                return jsonify({"error": "No se envió ninguna imagen"}), 400
 
-            imagen_url = ControladorServicios.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
+            if not imagen:
+                return APIResponse.error(error="No se envió ninguna imagen")
+
+            imagen_url = FunctionsUtils.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
 
             servicio.imagen = imagen_url
-
             db.session.commit()
+
+            return APIResponse.success()
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
 
         except Exception as e:
             db.session.rollback()
-            return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
+            return APIResponse.error(error=str(e), code=500)
 
         finally:
             db.session.close()
-
-        return jsonify({"message": "Imagen del servicio actualizada exitosamente"}), 200
-
-
-    @staticmethod
-    def aplicar_filtros_precio(query, precio_min, precio_max):
-        if precio_min and precio_max:
-            query = query.filter(Servicios.precio >= float(precio_min), Servicios.precio <= float(precio_max))
-        elif precio_min:
-            query = query.filter(Servicios.precio >= float(precio_min))
-        elif precio_max:
-            query = query.filter(Servicios.precio <= float(precio_max))
-        return query
-
-
-

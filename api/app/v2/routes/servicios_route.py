@@ -64,23 +64,6 @@ def actualizar_servicios(payload, id_servicio):
     except Exception as e:
         return APIResponse.error(message=str(e))
 
-@api.route('/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
-def actualizar_imagen_servicio(id_servicio):
-    try:
-        has_access = Security.verify_token(request.headers)
-
-        if has_access:
-            id_usuario_token= has_access.get('id_usuario')
-            email= has_access.get('email')
-            roles = has_access.get('roles')
-            controller = ControladorServicios()
-            return controller.actualizar_imagen_servicio(id_servicio, id_usuario_token, roles, email)
-        else:
-            return jsonify({'message': 'Unauthorized'}), 401
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
-
-
 @api.route('/servicios/<int:id_servicio>', methods=['DELETE'])
 @token_required
 @roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
@@ -89,5 +72,17 @@ def eliminar_servicios(payload, id_servicio):
         id_usuario_token = payload.get('id_usuario')
         controller = ControladorServicios()
         return controller.eliminar_servicio(id_usuario_token, id_servicio)
+    except Exception as e:
+        return APIResponse.error(message=str(e))
+
+
+@api.route('/servicios/<int:id_servicio>/imagen-servicio', methods=['PUT'])
+@token_required
+@roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
+def actualizar_imagen_servicio(payload, id_servicio):
+    try:
+        id_usuario_token = payload.get('id_usuario')
+        controller = ControladorServicios()
+        return controller.actualizar_imagen_servicio(id_usuario_token, id_servicio)
     except Exception as e:
         return APIResponse.error(message=str(e))
