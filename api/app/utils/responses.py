@@ -45,11 +45,19 @@ class APIResponse:
         return APIResponse._build_response("error", code, message, data, error, **kwargs)
 
     @staticmethod
-    def pagination(data=None, page=1, per_page=10, total=0, message="", code=200, error=None, **kwargs):
+    def pagination(data=None, page=0, per_page=0, total=0, pages=0, message="Operación Exitosa", code=200, error=None,
+                   **kwargs):
         pagination_info = {
             "page": page,
             "per_page": per_page,
             "total": total,
-            "pages": (total + per_page - 1) // per_page
+            "pages": pages
         }
-        return APIResponse._build_response("success", code, message, data, error, pagination=pagination_info, **kwargs)
+
+        # Insertar paginación al principio dentro de data
+        data_with_pagination = {
+            "pagination": pagination_info,
+            "results": data if data is not None else []
+        }
+
+        return APIResponse._build_response("success", code, message, data_with_pagination, error, **kwargs)
