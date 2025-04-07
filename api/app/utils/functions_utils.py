@@ -58,12 +58,14 @@ class FunctionsUtils:
 
         except Exception as e:
             return APIResponse.error(None, error=str(e), code=500, message='Error al subir la imagen a Cloudinary')
+
+
     @staticmethod
-    def existe_usuario(id_usuario):
-        usuario = Usuarios.query.get(id_usuario)
-        if usuario is None:
-            raise ValueError("Usuario")
-        return usuario
+    def existe_registro(id_registro, modelo):
+        registro = modelo.query.get(id_registro)
+        if registro is None:
+            raise ValueError(f"{modelo.__name__}")
+        return registro
 
 
     @staticmethod
