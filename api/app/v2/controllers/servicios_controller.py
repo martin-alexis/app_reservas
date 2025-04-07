@@ -23,7 +23,7 @@ class ControladorServicios:
         try:
             data_validada = servicio_schema.load(data)
 
-            usuario = FunctionsUtils.existe_usuario(id_usuario_token)
+            usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
             data_validada['usuarios_proveedores_id'] = usuario.id_usuarios
 
             data_validada = FunctionsUtils.renombrar_campo(data_validada,'tipos_servicio', 'tipos_servicio_id')
@@ -115,8 +115,15 @@ class ControladorServicios:
         except Exception as e:
             return APIResponse.error(error=str(e), code=500)
 
-    def actualizar_servicio(self, id_servicio, correo, roles):
+    def actualizar_servicio(self, data, id_usuario_token, id_servicio):
         try:
+            servivio_schema = ServiciosSchema(partial=True)
+            data_validada = servivio_schema.load(data)
+
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
+
+            self.verificar_permisos(usuario, id_usuario_token)
             servicio = Servicios.query.get(id_servicio)
 
             usuario = Usuarios.query.filter_by(correo=correo).first()
@@ -230,24 +237,6 @@ class ControladorServicios:
             print(f"Error al eliminar servicio: {e}")
             return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
 
-
-    @staticmethod
-    def validar_tipos_servicios(atributo, nombres_atributos, campo, modelo):
-        if not nombres_atributos:
-            return []
-
-        nombres_atributos = [atributo.upper() for atributo in nombres_atributos.split(",")]
-
-        atributos_validos = modelo.query.with_entities(getattr(modelo, campo)) \
-            .filter(getattr(modelo, campo).in_(nombres_atributos)).all()
-
-        atributos_validos = [atributo[0].value for atributo in atributos_validos]  # Extraer los valores válidos
-
-        atributos_invalidos = set(nombres_atributos) - set(atributos_validos)
-        if atributos_invalidos:
-            raise ValueError(f"{atributo.capitalize()} no encontrados: {', '.join(atributos_invalidos)}")
-
-        return atributos_validos
 
 
     @staticmethod
