@@ -80,16 +80,14 @@ def actualizar_imagen_servicio(id_servicio):
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
-@api.route('/usuarios/<int:id_usuario>/servicios/<int:id_servicio>', methods=['DELETE'])
-def eliminar_servicios_usuario(id_usuario, id_servicio):
+
+@api.route('/servicios/<int:id_servicio>', methods=['DELETE'])
+@token_required
+@roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
+def eliminar_servicios(payload, id_servicio):
     try:
-        has_access = Security.verify_token(request.headers)
-        if has_access:
-            email = has_access.get('email')
-            roles = has_access.get('roles')
-            if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-                controller = ControladorServicios()
-                return controller.eliminar_servicios_usuario(id_usuario, id_servicio, email, roles)
-        return jsonify({'message': 'Unauthorized'}), 401
+        id_usuario_token = payload.get('id_usuario')
+        controller = ControladorServicios()
+        return controller.eliminar_servicio(id_usuario_token, id_servicio)
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+        return APIResponse.error(message=str(e))

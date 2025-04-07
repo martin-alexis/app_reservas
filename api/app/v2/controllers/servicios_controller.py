@@ -147,6 +147,29 @@ class ControladorServicios:
         finally:
             db.session.close()
 
+    def eliminar_servicio(self, id_usuario_token, id_servicio):
+        try:
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+
+            db.session.delete(servicio)
+            db.session.commit()
+
+            return APIResponse.success()
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
+
+        except Exception as e:
+            db.session.rollback()
+            return APIResponse.error(error=str(e), code=500)
+
+        finally:
+            db.session.close()
+
     def actualizar_imagen_servicio(self, id_servicio, id_usuario_token, roles, correo):
         try:
             servicio = Servicios.query.get(id_servicio)
@@ -175,38 +198,6 @@ class ControladorServicios:
             db.session.close()
 
         return jsonify({"message": "Imagen del servicio actualizada exitosamente"}), 200
-
-    def eliminar_servicios_usuario(self, id_usuario, id_servicio, correo, roles):
-        try:
-            servicio = Servicios.query.get(id_servicio)
-            usuario = Usuarios.query.get(id_usuario)
-            mismo_usuario = Usuarios.query.filter_by(correo=correo).first()
-
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-            if not servicio:
-                return jsonify({"error": "Servicio no encontrado"}), 404
-
-            if TipoRoles.ADMIN.value in roles:
-                # El ADMIN puede eliminar cualquier servicio, no es necesario verificar si es propietario
-                pass
-            else:
-                # El usuario no es ADMIN, entonces verificamos que el usuario sea el dueño del servicio
-                if usuario.id_usuarios != servicio.usuarios_proveedores_id:
-                    return jsonify({"error": "Este servicio no pertenece al usuario"}), 403
-
-                # Verificar que el usuario en el token sea el mismo que el id_usuario
-                if usuario.id_usuarios != mismo_usuario.id_usuarios:
-                    return jsonify({"error": "No tienes permiso para eliminar el servicio"}), 403
-
-            db.session.delete(servicio)
-            db.session.commit()
-            return jsonify({'message': 'Servicio eliminado correctamente.'}), 200
-
-        except Exception as e:
-            print(f"Error al eliminar servicio: {e}")
-            return jsonify({'error': 'Ocurrió un error al eliminar el servicio.', 'message': str(e)}), 500
-
 
 
     @staticmethod
