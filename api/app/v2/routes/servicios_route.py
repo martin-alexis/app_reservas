@@ -28,19 +28,19 @@ def crear_servicio(payload):
 
 
 
-@api.route('/usuarios/<int:id_usuario>/servicios', methods=['GET'])
-def obtener_servicios_usuario(id_usuario):
-    try:
-        has_access = Security.verify_token(request.headers)
-        if has_access:
-            email = has_access.get('email')
-            roles = has_access.get('roles')
-            if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
-                controller = ControladorServicios()
-                return controller.obtener_servicios_usuario(id_usuario)
-        return jsonify({'message': 'Unauthorized'}), 401
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
+# @api.route('/usuarios/<int:id_usuario>/servicios', methods=['GET'])
+# def obtener_servicios_usuario(id_usuario):
+#     try:
+#         has_access = Security.verify_token(request.headers)
+#         if has_access:
+#             email = has_access.get('email')
+#             roles = has_access.get('roles')
+#             if roles and (TipoRoles.PROVEEDOR.value in roles or TipoRoles.ADMIN.value in roles):
+#                 controller = ControladorServicios()
+#                 return controller.obtener_servicios_usuario(id_usuario)
+#         return jsonify({'message': 'Unauthorized'}), 401
+#     except Exception as e:
+#         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 @api.route('/servicios', methods=['GET'])
 def obtener_todos_servicios():
