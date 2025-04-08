@@ -1,4 +1,5 @@
 from decimal import Decimal
+from functools import partial
 
 from marshmallow import post_load, fields, validate
 from api.app import ma
@@ -61,5 +62,6 @@ class ServiciosSchema(ma.SQLAlchemySchema):
         return data
 
 #Instancias del esquema para serialización
+servicio_partial_schema = ServiciosSchema(partial=True)
 servicio_schema = ServiciosSchema()
 servicios_schema = ServiciosSchema(many=True)
