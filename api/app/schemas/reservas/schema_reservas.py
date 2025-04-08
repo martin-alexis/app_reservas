@@ -1,6 +1,7 @@
-from marshmallow import post_load
+from marshmallow import post_load, fields, validate
 
 from api.app import ma
+from api.app.models.reservas.estados_reserva_model import EstadosReserva, EstadoReserva
 from api.app.models.reservas.reservas_model import Reservas
 
 
@@ -13,19 +14,18 @@ class ReservasSchema(ma.SQLAlchemySchema):
     fecha_inicio_reserva = ma.auto_field()
     fecha_fin_reserva = ma.auto_field()
     monto_total = ma.auto_field()
-    servicios_id = ma.auto_field()
-    estados_reserva_id = ma.auto_field()
+    servicios_id = ma.auto_field(dump_only=True)
+    estados_reserva = fields.String(
+        required=True,
+        load_only=True,
+        validate=validate.OneOf([estado.value for estado in EstadoReserva])
+    )
 
-    # Relaciones anidadas con exclusiones para evitar referencias circulares
-    servicio = ma.Nested('ServiciosSchema', exclude=('reservas',))
-    estado_reserva = ma.Nested('EstadosReservaSchema', exclude=('reservas',))
-    pagos = ma.List(ma.Nested('PagosSchema', exclude=('reserva',)))
+    estado_reserva = fields.Nested(EstadosReserva, dump_only=True)
 
-    @post_load
-    def make_reserva(self, data, **kwargs):
-        return Reservas(**data)
 
 
 # Instancias del esquema para serialización
+reserva_partial_schema = ReservasSchema(partial=True)
 reserva_schema = ReservasSchema()
 reservas_schema = ReservasSchema(many=True)
