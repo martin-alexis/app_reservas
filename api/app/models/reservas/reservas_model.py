@@ -10,7 +10,7 @@ class Reservas(db.Model):
     fecha_creacion_reserva = db.Column(DateTime, default=datetime.utcnow, nullable=False)
     fecha_inicio_reserva = db.Column(DateTime, nullable=False)
     fecha_fin_reserva = db.Column(DateTime, nullable=False)
-    monto_total = db.Column(Numeric(10, 0), nullable=False)
+    monto_total = db.Column(Numeric(10, 2), nullable=False)
     servicios_id = db.Column(Integer, ForeignKey('servicios.id_servicios'), nullable=False)
     estados_reserva_id = db.Column(Integer, ForeignKey('estados_reserva.id_estados_reserva'), nullable=False)
 
