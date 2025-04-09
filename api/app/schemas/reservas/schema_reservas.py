@@ -1,7 +1,8 @@
-from marshmallow import post_load, fields, validate
+from marshmallow import post_load, validates_schema, ValidationError, fields, validate, post_dump
+from datetime import datetime
 
 from api.app import ma
-from api.app.models.reservas.estados_reserva_model import EstadosReserva, EstadoReserva
+from api.app.models.reservas.estados_reserva_model import EstadoReserva
 from api.app.models.reservas.reservas_model import Reservas
 
 
@@ -11,9 +12,9 @@ class ReservasSchema(ma.SQLAlchemySchema):
 
     id_reservas = ma.auto_field()
     fecha_creacion_reserva = ma.auto_field()
-    fecha_inicio_reserva = ma.auto_field()
-    fecha_fin_reserva = ma.auto_field()
-    monto_total = ma.auto_field()
+    fecha_inicio_reserva = ma.auto_field(required=True)
+    fecha_fin_reserva = ma.auto_field(required=True)
+    monto_total = fields.Decimal(required=True, places=2, as_string=True)
     servicios_id = ma.auto_field(dump_only=True)
     estados_reserva = fields.String(
         required=True,
@@ -21,8 +22,16 @@ class ReservasSchema(ma.SQLAlchemySchema):
         validate=validate.OneOf([estado.value for estado in EstadoReserva])
     )
 
-    estado_reserva = fields.Nested(EstadosReserva, dump_only=True)
+    @validates_schema
+    def validar_fechas(self, data, **kwargs):
+        inicio = data.get("fecha_inicio_reserva")
+        fin = data.get("fecha_fin_reserva")
 
+        if inicio and fin:
+            if fin < inicio:
+                raise ValidationError("La fecha de fin debe ser posterior a la de inicio", field_name="fecha_fin_reserva")
+            if inicio < datetime.now():
+                raise ValidationError("La fecha de inicio no puede estar en el pasado", field_name="fecha_inicio_reserva")
 
 
 # Instancias del esquema para serialización
