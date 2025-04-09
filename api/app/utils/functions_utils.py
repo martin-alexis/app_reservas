@@ -103,7 +103,7 @@ class FunctionsUtils:
         :param modelo: Modelo de SQLAlchemy (ej. Roles).
         :param campo_enum: Campo del modelo que contiene el Enum (ej. Roles.tipo).
         :param valores_enum: Lista de valores del Enum a buscar en la base de datos.
-        :param id_campo: Nombre del campo de ID en la base de datos (ej. "id_roles", "id_pepe").
+        :param id_campo: Nombre del campo de ID en la base de datos (ej. "id_roles").
         :return: Lista de IDs correspondientes a los valores encontrados.
         """
 
