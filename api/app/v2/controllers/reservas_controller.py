@@ -59,6 +59,30 @@ class ControladorReservas:
         finally:
             db.session.close()
 
+    def eliminar_reservas(self, id_usuario_token, id_servicio, id_reserva):
+        try:
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
+
+            FunctionsUtils.verificar_permisos_reserva(servicio, reserva, id_usuario_token)
+
+            db.session.delete(reserva)
+            db.session.commit()
+
+            return APIResponse.success()
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
+
+        except Exception as e:
+            db.session.rollback()
+            return APIResponse.error(error=str(e), code=500)
+
+        finally:
+            db.session.close()
     def actualizar_reservas(self, data, id_usuario_token, id_servicio, id_reserva):
         try:
             data_validada = reserva_partial_schema.load(data)
