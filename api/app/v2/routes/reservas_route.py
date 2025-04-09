@@ -30,6 +30,17 @@ def actualizar_reservas(payload, id_servicio, id_reserva):
     except Exception as e:
         return APIResponse.error(message=str(e))
 
+@api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['DELETE'])
+@token_required
+@roles_required([TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
+def eliminar_reservas(payload, id_servicio, id_reserva):
+    try:
+        id_usuario_token = payload.get('id_usuario')
+        controller = ControladorReservas()
+        return controller.eliminar_reservas( id_usuario_token, id_servicio, id_reserva)
+    except Exception as e:
+        return APIResponse.error(message=str(e))
+
 
 # @api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>', methods=['PATCH'])
 # def actualizar_reservas_por_servicio(id_servicio, id_reserva):
