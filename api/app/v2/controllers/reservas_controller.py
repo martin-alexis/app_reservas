@@ -9,7 +9,7 @@ from api.app.models.services.servicios_model import Servicios
 from api.app.models.services.tipos_servicios_model import TiposServicio
 from api.app.models.users.roles_model import TipoRoles
 from api.app.models.users.usuarios_model import Usuarios
-from api.app.schemas.reservas.schema_reservas import reserva_schema
+from api.app.schemas.reservas.schema_reservas import reserva_schema, reserva_partial_schema
 from api.app.schemas.servicios.schema_filtros_servicios import filtros_servicios_schema
 from api.app.schemas.servicios.schema_servicios import ServiciosSchema, servicio_schema, servicios_schema
 from api.app.utils.functions_utils import FunctionsUtils
@@ -59,77 +59,18 @@ class ControladorReservas:
         finally:
             db.session.close()
 
-    def obtener_servicios_usuario(self, id_usuario):
+    def actualizar_reservas(self, data, id_usuario_token, id_servicio, id_reserva):
         try:
-            usuario = Usuarios.query.get(id_usuario)
-            if not usuario:
-                return jsonify({"error": "Usuario no encontrado"}), 404
-
-            servicios = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).all()
-
-            if servicios:
-                return jsonify([servicio.to_json() for servicio in servicios]), 200
-            else:
-                return jsonify({'message': 'No hay servicios registrados.'}), 200
-
-        except Exception as e:
-            return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
-
-    def obtener_todos_servicios(self):
-        try:
-
-            filtros = filtros_servicios_schema.load(request.args)
-
-            page = filtros["page"]
-            per_page = filtros["per_page"]
-            precio_min = filtros.get("precio_min")
-            precio_max = filtros.get("precio_max")
-            tipos_servicios = filtros.get("tipos")
-            disponibilidad = filtros.get("disponibilidad")
-            busqueda = filtros.get("busqueda")
-
-            query = Servicios.query
-
-            if tipos_servicios:
-                query = query.join(TiposServicio).filter(TiposServicio.tipo.in_(tipos_servicios))
-
-            if disponibilidad:
-                query = query.join(DisponibilidadServicio).filter(DisponibilidadServicio.estado.in_(disponibilidad))
-
-            if precio_max or precio_min:
-                query = ControladorServicios.aplicar_filtros_precio(query, precio_min, precio_max)
-
-            if busqueda:
-                query = query.filter(
-                    (Servicios.nombre.ilike(f"%{busqueda}%")) | (Servicios.descripcion.ilike(f"%{busqueda}%"))
-                )
-
-            pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-
-            if pagination.items == []:
-                return APIResponse.pagination(page=pagination.page,
-                                              per_page=pagination.per_page, total=pagination.total,
-                                              pages=pagination.pages, message='No se encontraron servicios')
-
-            return APIResponse.pagination(data=servicios_schema.dump(pagination.items),page=pagination.page, per_page=pagination.per_page, total=pagination.total, pages=pagination.pages)
-
-        except ValidationError as err:
-            return APIResponse.validation_error(errors=err.messages)
-        except Exception as e:
-            return APIResponse.error(error=str(e), code=500)
-
-    def actualizar_servicio(self, data, id_usuario_token, id_servicio):
-        try:
-            servivio_schema = ServiciosSchema(partial=True)
-            data_validada = servivio_schema.load(data)
+            data_validada = reserva_partial_schema.load(data)
 
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
 
-            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+            FunctionsUtils.verificar_permisos_reserva(servicio, reserva,id_usuario_token)
 
             # Actualizar solo los campos presentes en los datos validados
             for key, value in data_validada.items():
-                setattr(servicio, key, value)
+                setattr(reserva, key, value)
 
             db.session.commit()
             return APIResponse.success()
@@ -149,57 +90,49 @@ class ControladorReservas:
 
         finally:
             db.session.close()
+def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, id_usuario_token, roles):
+    try:
+        usuario = Usuarios.query.get(id_usuario_token)
 
-    def eliminar_servicio(self, id_usuario_token, id_servicio):
-        try:
-            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+        servicio = Servicios.query.get(id_servicio)
 
-            db.session.delete(servicio)
-            db.session.commit()
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
 
-            return APIResponse.success()
+        if not servicio:
+            return jsonify({"error": "Servicio no encontrado"}), 404
 
-        except ValueError as e:
-            return APIResponse.not_found(resource=str(e))
+        if usuario.id_usuarios != servicio.usuarios_proveedores_id and (servicios.usuarios_proveedores_id != id_reserva.servicios_id) and(
+                not roles or TipoRoles.ADMIN.value not in roles):
+            return jsonify({"error": "No tienes permiso para actualizar la reserva."}), 403
 
-        except PermissionError as e:
-            return APIResponse.forbidden(error=str(e))
+        reserva = Reservas.query.get(id_reserva)
 
-        except Exception as e:
-            db.session.rollback()
-            return APIResponse.error(error=str(e), code=500)
+        if not reserva:
+            return jsonify({"error": "Reserva no encontrada"}), 404
 
-        finally:
-            db.session.close()
+        data = request.json
 
-    def actualizar_imagen_servicio(self, id_usuario_token, id_servicio):
-        try:
+        estado_reserva = True
+        if 'fecha_inicio_reserva' in data:
+            reserva.fecha_inicio_reserva = datetime.strptime(data['fecha_inicio_reserva'], "%d/%m/%Y %H:%M:%S")
+        if 'fecha_fin_reserva' in data:
+            reserva.fecha_fin_reserva = datetime.strptime(data['fecha_fin_reserva'], "%d/%m/%Y %H:%M:%S")
+        if 'monto_total' in data:
+            reserva.monto_total = data['monto_total']
+        if 'estados_reserva_id' in data:
+            estado_reserva = EstadosReserva.query.filter_by(estado=data['estados_reserva_id']).first()
+            reserva.estados_reserva_id = estado_reserva.id_estados_reserva
+        elif not estado_reserva:
+            return jsonify({"error": "Estado de la reserva no es valido."}), 400
 
-            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+        db.session.commit()
 
-            imagen = request.files.get('imagen')
+        return jsonify({"message": "Reserva actualizado exitosamente"}), 200
 
-            if not imagen:
-                return APIResponse.error(error="No se envió ninguna imagen")
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
 
-            imagen_url = FunctionsUtils.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
-
-            servicio.imagen = imagen_url
-            db.session.commit()
-
-            return APIResponse.success()
-
-        except ValueError as e:
-            return APIResponse.not_found(resource=str(e))
-
-        except PermissionError as e:
-            return APIResponse.forbidden(error=str(e))
-
-        except Exception as e:
-            db.session.rollback()
-            return APIResponse.error(error=str(e), code=500)
-
-        finally:
-            db.session.close()
+    finally:
+        db.session.close()
