@@ -96,6 +96,26 @@ class FunctionsUtils:
             raise PermissionError("No tienes permisos para realizar esta acción")
 
     @staticmethod
+    def verificar_permisos_reserva(servicio, reserva, id_usuario_token):
+        """Verifica permisos para una reserva de un servicio"""
+        # Primero verificar permisos sobre el servicio
+        FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+
+        # Luego verificar que la reserva pertenezca al servicio
+        if reserva.servicios_id != servicio.id_servicios:
+            raise PermissionError("La reserva no pertenece a este servicio")
+
+    @staticmethod
+    def verificar_permisos_pago(servicio, reserva, pago, id_usuario_token):
+        """Verifica permisos para un pago de una reserva de un servicio"""
+        # Verificar la cadena completa de relaciones
+        FunctionsUtils.verificar_permisos_reserva(servicio, reserva, id_usuario_token)
+
+        # Verificar que el pago pertenezca a la reserva
+        if pago.reservas_id != reserva.id_reservas:
+            raise PermissionError("El pago no pertenece a esta reserva")
+
+    @staticmethod
     def obtener_ids_de_enums(modelo, campo_enum, valores_enum, id_campo):
         """
         Convierte una lista de valores de un Enum en sus respectivos IDs en la base de datos.
