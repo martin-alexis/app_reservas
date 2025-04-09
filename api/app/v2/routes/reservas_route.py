@@ -12,7 +12,7 @@ from api.app.v2 import api
 def crear_reservas(payload, id_servicio):
     try:
         id_usuario_token = payload.get('id_usuario')
-        data = request.json()
+        data = request.json
         controller = ControladorReservas()
         return controller.crear_reservas(data, id_usuario_token, id_servicio)
     except Exception as e:
