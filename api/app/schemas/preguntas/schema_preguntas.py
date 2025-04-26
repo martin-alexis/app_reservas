@@ -14,8 +14,8 @@ class PreguntaSchema(ma.SQLAlchemySchema):
     id_preguntas = ma.auto_field(dump_only=True)
     pregunta = ma.auto_field(required=True)
     fecha_pregunta = ma.auto_field(dump_only=True)
-    servicios_id = ma.auto_field(required=True)
-    usuarios_pregunta_id = ma.auto_field(required=True)
+    servicios_id = ma.auto_field(dump_only=True)
+    usuarios_pregunta_id = ma.auto_field(dump_only=True)
 
     # Relaciones (solo para mostrar, no para enviar)
     servicio = fields.Nested(ServiciosSchema, dump_only=True)
