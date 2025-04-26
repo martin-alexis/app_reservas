@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from marshmallow import ValidationError
 from api.app import db
+from api.app.models.services.servicios_model import Servicios
 from api.app.schemas.usuarios.schema_usuarios import UsuariosSchema
 from api.app.utils.functions_utils import FunctionsUtils
 from api.app.utils.responses import APIResponse
@@ -43,6 +44,20 @@ class ControladorUsuarios:
         if imagen is None:
             raise ValueError("La imagen no ha sido proporcionada.")
         return imagen
+
+    @staticmethod
+    def verificar_servicios(roles_nuevos, usuario):
+        roles_actuales = FunctionsUtils.get_roles_user(usuario.id_usuarios)
+        # Si el usuario actualmente es proveedor
+        if TipoRoles.PROVEEDOR.value in roles_actuales:
+            # Pero en los roles nuevos YA NO está proveedor
+            if TipoRoles.PROVEEDOR.value not in roles_nuevos:
+                # Entonces hay que verificar si tiene servicios
+                servicio = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
+                if servicio:
+                    raise PermissionError("Tiene que eliminar los servicios para poder dejar de ser proveedor.")
+
+        return roles_nuevos
 
     def crear_usuario(self, data):
         try:
@@ -148,12 +163,12 @@ class ControladorUsuarios:
             # Actualización de roles
             if 'tipo_roles' in data:
                 roles = data_con_roles['tipo_roles']
-
+                roles_nuevos = self.verificar_servicios(roles, usuario)
                 # Eliminar roles anteriores
                 UsuariosTieneRoles.query.filter_by(usuarios_id=usuario.id_usuarios).delete()
 
                 # Validar y asignar los nuevos roles
-                for rol in roles:
+                for rol in roles_nuevos:
                     # Asignar nuevos roles al usuario
                     rol_usuario = UsuariosTieneRoles(usuarios_id=usuario.id_usuarios, roles_id=rol)
                     db.session.add(rol_usuario)
