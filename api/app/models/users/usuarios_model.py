@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from api.app import db
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
+from api.app.models.preguntas.preguntas_model import Preguntas
 
 
 class Usuarios(db.Model):
@@ -19,6 +20,11 @@ class Usuarios(db.Model):
     roles = relationship('UsuariosTieneRoles', back_populates='usuario')
     servicios = relationship('Servicios', back_populates='proveedor')
     pagos = relationship('Pagos', back_populates='usuario')
+
+    preguntas_pregunta = relationship('Preguntas', foreign_keys=[Preguntas.usuarios_pregunta_id],
+                                      back_populates='usuario_pregunta')
+    preguntas_respuesta = relationship('Preguntas', foreign_keys=[Preguntas.usuarios_respuesta_id],
+                                       back_populates='usuario_respuesta')
 
     # valoraciones = relationship('Valoraciones', back_populates='usuario')
 
