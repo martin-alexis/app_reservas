@@ -14,7 +14,6 @@ class ReservasSchema(ma.SQLAlchemySchema):
     fecha_creacion_reserva = ma.auto_field()
     fecha_inicio_reserva = ma.auto_field(required=True)
     fecha_fin_reserva = ma.auto_field(required=True)
-    monto_total = fields.Decimal(required=True, places=2, as_string=True)
     servicios_id = ma.auto_field(dump_only=True)
     estados_reserva = fields.String(
         required=True,
