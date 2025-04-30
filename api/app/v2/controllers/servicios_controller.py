@@ -135,6 +135,12 @@ class ControladorServicios:
 
             FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
 
+            data_validada = FunctionsUtils.renombrar_campo(data_validada,'disponibilidad_servicio', 'disponibilidad_servicio_id')
+
+            ids_disponibilidad_servicio = FunctionsUtils.obtener_ids_de_enums(DisponibilidadServicio,DisponibilidadServicio.estado, data_validada['disponibilidad_servicio_id'], 'id_disponibilidad_servicio')
+
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'disponibilidad_servicio_id', ids_disponibilidad_servicio)
+
             # Actualizar solo los campos presentes en los datos validados
             for key, value in data_validada.items():
                 setattr(servicio, key, value)
