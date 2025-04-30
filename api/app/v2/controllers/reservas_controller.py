@@ -4,7 +4,7 @@ from flask import jsonify, request
 from api.app import db
 from api.app.models.reservas.estados_reserva_model import EstadoReserva, EstadosReserva
 from api.app.models.reservas.reservas_model import Reservas
-from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio
+from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio, Estado
 from api.app.models.services.servicios_model import Servicios
 from api.app.models.services.tipos_servicios_model import TiposServicio
 from api.app.models.users.roles_model import TipoRoles
@@ -21,6 +21,33 @@ class ControladorReservas:
     def __init__(self):
         pass
 
+    @staticmethod
+    def verificar_disponibilidad_rango(data_validada):
+        id_servicio = data_validada['servicios_id']
+        nueva_fecha_inicio = data_validada['fecha_inicio_reserva']
+        nueva_fecha_fin = data_validada['fecha_fin_reserva']
+
+        # Busca si ya existe una reserva que se solape con el nuevo rango
+        # Condición 1: es del mismo servicio
+        # Condición 2: la reserva existente comienza antes de que termine la nueva
+        # Condición 3: la reserva existente termina después de que comienza la nueva
+        # Si se cumplen todas esas condiciones, hay conflicto de horario
+        conflicto = Reservas.query.filter(
+            Reservas.servicios_id == id_servicio,
+            Reservas.fecha_inicio_reserva < nueva_fecha_fin,
+            Reservas.fecha_fin_reserva > nueva_fecha_inicio
+        ).first()
+
+        if conflicto:
+            raise PermissionError("Ya existe una reserva en ese horario.")
+
+    @staticmethod
+    def verificar_disponibilidad_servicio(servicio):
+        disponibilidad = DisponibilidadServicio.query.filter_by(id_disponibilidad_servicio=servicio.disponibilidad_servicio_id).first()
+        if disponibilidad.estado.value in [Estado.AGOTADO.value, Estado.PROXIMAMENTE.value]:
+            raise PermissionError("El servicio no está disponible para su reserva.")
+
+
     def crear_reservas(self, data, id_usuario_token, id_servicio):
         try:
             data_validada = reserva_schema.load(data)
@@ -29,13 +56,14 @@ class ControladorReservas:
             data_validada['servicios_id'] = servicio.id_servicios
 
             FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
-
+            self.verificar_disponibilidad_servicio(servicio)
             data_validada = FunctionsUtils.renombrar_campo(data_validada,'estados_reserva', 'estados_reserva_id')
 
             ids_estados_reserva= FunctionsUtils.obtener_ids_de_enums(EstadosReserva,EstadosReserva.estado, data_validada['estados_reserva_id'], 'id_estados_reserva')
 
             data_validada = FunctionsUtils.pasar_ids(data_validada, 'estados_reserva_id', ids_estados_reserva)
 
+            self.verificar_disponibilidad_rango(data_validada)
 
             nueva_reserva = Reservas(**data_validada)
             db.session.add(nueva_reserva)
