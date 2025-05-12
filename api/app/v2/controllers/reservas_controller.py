@@ -45,7 +45,7 @@ class ControladorReservas:
     def verificar_disponibilidad_servicio(servicio):
         disponibilidad = DisponibilidadServicio.query.filter_by(id_disponibilidad_servicio=servicio.disponibilidad_servicio_id).first()
         if disponibilidad.estado.value in [Estado.AGOTADO.value, Estado.PROXIMAMENTE.value]:
-            raise PermissionError("El servicio no está disponible para su reserva.")
+            raise PermissionError("No es posible realizar esta accion. El servicio debe estar disponible.")
 
 
     def crear_reservas(self, data, id_usuario_token, id_servicio):
@@ -111,6 +111,7 @@ class ControladorReservas:
 
         finally:
             db.session.close()
+
     def actualizar_reservas(self, data, id_usuario_token, id_servicio, id_reserva):
         try:
             data_validada = reserva_partial_schema.load(data)
@@ -119,6 +120,16 @@ class ControladorReservas:
             reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
 
             FunctionsUtils.verificar_permisos_reserva(servicio, reserva,id_usuario_token)
+            self.verificar_disponibilidad_servicio(servicio)
+            data_validada = FunctionsUtils.renombrar_campo(data_validada, 'estados_reserva', 'estados_reserva_id')
+
+            ids_estados_reserva = FunctionsUtils.obtener_ids_de_enums(EstadosReserva, EstadosReserva.estado,
+                                                                      data_validada['estados_reserva_id'],
+                                                                      'id_estados_reserva')
+
+            data_validada = FunctionsUtils.pasar_ids(data_validada, 'estados_reserva_id', ids_estados_reserva)
+
+            self.verificar_disponibilidad_rango(data_validada)
 
             # Actualizar solo los campos presentes en los datos validados
             for key, value in data_validada.items():
@@ -142,49 +153,4 @@ class ControladorReservas:
 
         finally:
             db.session.close()
-def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, id_usuario_token, roles):
-    try:
-        usuario = Usuarios.query.get(id_usuario_token)
 
-        servicio = Servicios.query.get(id_servicio)
-
-        if not usuario:
-            return jsonify({"error": "Usuario no encontrado"}), 404
-
-        if not servicio:
-            return jsonify({"error": "Servicio no encontrado"}), 404
-
-        if usuario.id_usuarios != servicio.usuarios_proveedores_id and (servicios.usuarios_proveedores_id != id_reserva.servicios_id) and(
-                not roles or TipoRoles.ADMIN.value not in roles):
-            return jsonify({"error": "No tienes permiso para actualizar la reserva."}), 403
-
-        reserva = Reservas.query.get(id_reserva)
-
-        if not reserva:
-            return jsonify({"error": "Reserva no encontrada"}), 404
-
-        data = request.json
-
-        estado_reserva = True
-        if 'fecha_inicio_reserva' in data:
-            reserva.fecha_inicio_reserva = datetime.strptime(data['fecha_inicio_reserva'], "%d/%m/%Y %H:%M:%S")
-        if 'fecha_fin_reserva' in data:
-            reserva.fecha_fin_reserva = datetime.strptime(data['fecha_fin_reserva'], "%d/%m/%Y %H:%M:%S")
-        if 'monto_total' in data:
-            reserva.monto_total = data['monto_total']
-        if 'estados_reserva_id' in data:
-            estado_reserva = EstadosReserva.query.filter_by(estado=data['estados_reserva_id']).first()
-            reserva.estados_reserva_id = estado_reserva.id_estados_reserva
-        elif not estado_reserva:
-            return jsonify({"error": "Estado de la reserva no es valido."}), 400
-
-        db.session.commit()
-
-        return jsonify({"message": "Reserva actualizado exitosamente"}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
-
-    finally:
-        db.session.close()
