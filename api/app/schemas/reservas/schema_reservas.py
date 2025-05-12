@@ -3,6 +3,7 @@ from datetime import datetime
 
 from api.app import ma
 from api.app.models.reservas.estados_reserva_model import EstadoReserva
+from api.app.schemas.reservas.schema_estados_reserva import EstadosReservaSchema
 from api.app.models.reservas.reservas_model import Reservas
 
 
@@ -20,6 +21,8 @@ class ReservasSchema(ma.SQLAlchemySchema):
         load_only=True,
         validate=validate.OneOf([estado.value for estado in EstadoReserva])
     )
+
+    estado_reserva = fields.Nested(EstadosReservaSchema, dump_only=True)
 
     @validates_schema
     def validar_fechas(self, data, **kwargs):
