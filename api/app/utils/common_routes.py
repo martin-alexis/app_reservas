@@ -1,9 +1,9 @@
-from api.app.models.reservas.reservas_model import Reservas
-from api.app.models.services.servicios_model import Servicios
-from api.app.models.users.usuarios_model import Usuarios
-from api.app.schemas.reservas.schema_reservas import ReservasSchema
-from api.app.schemas.servicios.schema_servicios import ServiciosSchema
-from api.app.schemas.usuarios.schema_usuarios import UsuariosSchema
+from api.app.reservas.models.reservas_model import Reservas
+from api.app.servicios.models.servicios_model import Servicios
+from api.app.usuarios.models.usuarios_model import Usuarios
+from api.app.reservas.schemas.schema_reservas import ReservasSchema
+from api.app.servicios.schemas.schema_servicios import ServiciosSchema
+from api.app.usuarios.schemas.schema_usuarios import UsuariosSchema
 from api.app.utils.responses import APIResponse
 
 

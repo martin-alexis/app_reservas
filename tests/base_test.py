@@ -1,12 +1,12 @@
 import unittest
 from api.app import create_app
 from api.app import db
-from api.app.models.users.tipos_usuarios_model import TiposUsuario, Tipo as TipoUsuarios
-from api.app.models.users.roles_model import Roles, TipoRoles
-from api.app.models.services.disponibilidad_servicios_model import DisponibilidadServicio, Estado
-from api.app.models.services.tipos_servicios_model import TiposServicio, Tipo as TipoServicios
-from api.app.models.reservas.estados_reserva_model import EstadoReserva, EstadosReserva
-from api.app.models.pagos.estados_pago_model import EstadosPago, TiposEstadoPago
+from api.app.usuarios.models.tipos_usuarios_model import TiposUsuario, Tipo as TipoUsuarios
+from api.app.usuarios.models.roles_model import Roles, TipoRoles
+from api.app.servicios.models.disponibilidad_servicios_model import DisponibilidadServicio, Estado
+from api.app.servicios.models.tipos_servicios_model import TiposServicio, Tipo as TipoServicios
+from api.app.reservas.models.estados_reserva_model import EstadoReserva, EstadosReserva
+from api.app.pagos.models.estados_pago_model import EstadosPago, TiposEstadoPago
 
 
 class BaseTestCase(unittest.TestCase):

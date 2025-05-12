@@ -1,8 +1,8 @@
 import json
 import unittest
 from tests.base_test import BaseTestCase
-from api.app.models.users.usuarios_model import Usuarios
-from api.app import db
+from api.app.usuarios.models.usuarios_model import Usuarios
+
 
 class TestCrearUsuario(BaseTestCase):
     def test_crear_usuario(self):
@@ -17,7 +17,7 @@ class TestCrearUsuario(BaseTestCase):
         }
 
         respuesta = self.client.post(
-            "/api/v1.0/usuarios",
+            "/api/blueprints_v1.0/usuarios",
             data=json.dumps(datos_usuario),
             content_type="application/json"
         )

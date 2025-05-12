@@ -1,10 +1,10 @@
 from werkzeug.utils import secure_filename
 import cloudinary.uploader
 
-from api.app.models.services.servicios_model import Servicios
-from api.app.models.users.roles_model import Roles, TipoRoles
-from api.app.models.users.usuarios_model import Usuarios
-from api.app.models.users.usuarios_tiene_roles_model import UsuariosTieneRoles
+from api.app.servicios.models.servicios_model import Servicios
+from api.app.usuarios.models.roles_model import Roles, TipoRoles
+from api.app.usuarios.models.usuarios_model import Usuarios
+from api.app.usuarios.models.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.utils.responses import APIResponse
 
 class FunctionsUtils:
