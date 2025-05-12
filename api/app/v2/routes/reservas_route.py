@@ -3,8 +3,14 @@ from api.app.models.users.roles_model import TipoRoles
 from api.app.utils.responses import APIResponse
 from api.app.v2.controllers.reservas_controller import ControladorReservas
 from api.app.utils.security import Security, token_required, roles_required
+from api.app.utils import common_routes as common
+
 
 from api.app.v2 import api
+
+@api.route('/reservas/<int:id_reserva>', methods=['GET'])
+def obtener_reserva_por__id (id_reserva):
+       return common.obtener_reserva_por_id(id_reserva)
 
 @api.route('/servicios/<int:id_servicio>/reservas', methods=['POST'])
 @token_required
