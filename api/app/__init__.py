@@ -27,6 +27,13 @@ def create_app():
     from api.app.blueprints_v2 import api as api_v2
     app.register_blueprint(api_v2, url_prefix='/api/v2.0')
 
+    from api.app.swagger.routes import swagger_bp
+    app.register_blueprint(swagger_bp)
+
+    # Inicializar documentación Swagger de forma modular
+    from api.app.swagger.apispec_config import initialize_all_documentation
+    initialize_all_documentation()
+
     register_error_handlers(app)
     return app
 
