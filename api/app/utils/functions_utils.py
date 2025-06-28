@@ -114,6 +114,15 @@ class FunctionsUtils:
         # Verificar que el pago pertenezca a la reserva
         if pago.reservas_id != reserva.id_reservas:
             raise PermissionError("El pago no pertenece a esta reserva")
+        
+    
+    @staticmethod
+    def verificar_usuario_pregunta(servicio, id_usuario_token):
+        """Si el usuario es dueño del servicio no puede preguntar, a menos que sea admin"""
+        roles = FunctionsUtils.get_roles_user(id_usuario_token)
+
+        if servicio.usuarios_proveedores_id == id_usuario_token and (not roles or TipoRoles.ADMIN.value not in roles):
+            raise PermissionError("Los dueños del servicio no pueden preguntar")
 
     @staticmethod
     def obtener_ids_de_enums(modelo, campo_enum, valores_enum, id_campo):
