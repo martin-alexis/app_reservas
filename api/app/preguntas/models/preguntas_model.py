@@ -20,11 +20,14 @@ class Preguntas(db.Model):
     usuario_pregunta = relationship('Usuarios', foreign_keys=[usuarios_pregunta_id])
     usuario_respuesta = relationship('Usuarios', foreign_keys=[usuarios_respuesta_id])
 
-    def __init__(self, pregunta, servicios_id, usuarios_pregunta_id, respuesta, fecha_respuesta, usuarios_respuesta_id):
+
+    def __init__(self, pregunta, servicios_id, usuarios_pregunta_id, **kwargs):
         self.pregunta = pregunta
-        self.respuesta = respuesta
-        self.fecha_respuesta = datetime.now()
-        self.fecha_respuesta = fecha_respuesta
         self.servicios_id = servicios_id
         self.usuarios_pregunta_id = usuarios_pregunta_id
-        self.usuarios_respuesta_id = usuarios_respuesta_id
+        self.fecha_pregunta = datetime.now()
+        
+        # Campos opcionales para respuesta
+        self.respuesta = kwargs.get('respuesta')
+        self.fecha_respuesta = kwargs.get('fecha_respuesta')
+        self.usuarios_respuesta_id = kwargs.get('usuarios_respuesta_id')
