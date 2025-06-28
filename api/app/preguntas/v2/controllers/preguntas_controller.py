@@ -19,44 +19,6 @@ class ControladorPreguntas:
     def __init__(self):
         pass
 
-    def crear_pr(self, data, id_usuario_token, id_servicio):
-        try:
-            # 1. Validar y cargar datos -> ya devuelve objeto Preguntas
-            data_validada = pregunta_schema.load(data)
-
-            # 2. Verificar que existe el servicio
-            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            data_validada.servicios_id = servicio.id_servicios
-
-            # 3. Verificar que existe el usuario
-            usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
-            data_validada.usuarios_pregunta_id = usuario.id_usuarios
-
-            # 4. Verificar permisos (opcional según tu lógica)
-            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
-
-            # 5. Guardar
-            db.session.add(data_validada)
-            db.session.commit()
-
-            return APIResponse.created()
-
-        except ValidationError as err:
-            return APIResponse.validation_error(errors=err.messages)
-
-        except ValueError as e:
-            return APIResponse.not_found(resource=str(e))
-
-        except PermissionError as e:
-            return APIResponse.forbidden(error=str(e))
-
-        except Exception as e:
-            db.session.rollback()
-            return APIResponse.error(error=str(e), code=500)
-
-        finally:
-            db.session.close()
-
     def crear_preguntas(self, data, id_usuario_token, id_servicio):
         try:
             data_validada = pregunta_schema.load(data)
@@ -67,14 +29,7 @@ class ControladorPreguntas:
             usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
             data_validada['usuarios_pregunta_id'] = usuario.id_usuarios
 
-            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
-
-            # data_validada = FunctionsUtils.renombrar_campo(data_validada,'estados_reserva', 'estados_reserva_id')
-
-            # ids_estados_reserva= FunctionsUtils.obtener_ids_de_enums(EstadosReserva,EstadosReserva.estado, data_validada['estados_reserva_id'], 'id_estados_reserva')
-
-            # data_validada = FunctionsUtils.pasar_ids(data_validada, 'estados_reserva_id', ids_estados_reserva)
-
+            FunctionsUtils.verificar_usuario_pregunta(servicio, id_usuario_token)
 
             nueva_pregunta = Preguntas(**data_validada)
             db.session.add(nueva_pregunta)
@@ -153,6 +108,7 @@ class ControladorPreguntas:
 
         finally:
             db.session.close()
+            
 def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, id_usuario_token, roles):
     try:
         usuario = Usuarios.query.get(id_usuario_token)
