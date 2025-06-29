@@ -5,6 +5,7 @@ from api.app.servicios.models.servicios_model import Servicios
 from api.app.usuarios.models.roles_model import Roles, TipoRoles
 from api.app.usuarios.models.usuarios_model import Usuarios
 from api.app.usuarios.models.usuarios_tiene_roles_model import UsuariosTieneRoles
+from api.app.preguntas.models.preguntas_model import Preguntas
 from api.app.utils.responses import APIResponse
 
 class FunctionsUtils:
@@ -114,8 +115,31 @@ class FunctionsUtils:
         # Verificar que el pago pertenezca a la reserva
         if pago.reservas_id != reserva.id_reservas:
             raise PermissionError("El pago no pertenece a esta reserva")
-        
     
+        
+    @staticmethod
+    def pregunta_pertenece_servicio(servicio, pregunta):
+        """Verifica si la pregunta pertenece al servicio"""
+
+        # Verificar que la pregunta pertenece al servicio
+        if pregunta.servicios_id != servicio.id_servicios:
+            raise PermissionError("La pregunta no pertenece a este servicio")    
+
+    @staticmethod
+    def verificar_permisos_eliminar_pregunta(servicio, pregunta, id_usuario_token):
+        """
+        Verifica permisos para eliminar una pregunta.
+        Solo el proveedor del servicio o el autor de la pregunta pueden eliminarla.
+        """
+
+        # Verificar permisos: solo el proveedor del servicio o el usuario que hizo la pregunta puede eliminarla
+        es_proveedor = servicio.usuarios_proveedores_id == id_usuario_token
+        es_autor_pregunta = pregunta.usuarios_pregunta_id == id_usuario_token
+
+
+        if not (es_proveedor or es_autor_pregunta):
+            raise PermissionError("No tienes permisos para eliminar esta pregunta")
+        
     @staticmethod
     def verificar_usuario_pregunta(servicio, id_usuario_token):
         """Si el usuario es dueño del servicio no puede preguntar, a menos que sea admin"""
