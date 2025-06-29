@@ -1,5 +1,6 @@
 from marshmallow import ValidationError
 from flask import jsonify, request
+from datetime import datetime
 
 from api.app import db
 from api.app.preguntas.models.preguntas_model import Preguntas
@@ -8,7 +9,8 @@ from api.app.reservas.models.reservas_model import Reservas
 from api.app.servicios.models.servicios_model import Servicios
 from api.app.usuarios.models.roles_model import TipoRoles
 from api.app.usuarios.models.usuarios_model import Usuarios
-from api.app.preguntas.schemas.schema_preguntas import pregunta_schema
+from api.app.preguntas.schemas.schema_preguntas import pregunta_schema, preguntas_schema
+from api.app.preguntas.schemas.schema_respuestas import respuesta_schema, respuesta_partial_schema
 from api.app.reservas.schemas.schema_reservas import reserva_partial_schema
 from api.app.utils.functions_utils import FunctionsUtils
 from api.app.utils.responses import APIResponse
@@ -19,7 +21,23 @@ class ControladorPreguntas:
     def __init__(self):
         pass
 
+    def obtener_preguntas_servicio(self, id_servicio):
+        """Obtener todas las preguntas de un servicio específico"""
+        try:
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            
+            preguntas= Preguntas.query.filter_by(servicios_id=servicio.id_servicios).all()
+            
+            return APIResponse.success(data=preguntas_schema.dump(preguntas))
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+
+        except Exception as e:
+            return APIResponse.error(error=str(e), code=500)
+
     def crear_preguntas(self, data, id_usuario_token, id_servicio):
+        """Crear una nueva pregunta para un servicio"""
         try:
             data_validada = pregunta_schema.load(data)
 
@@ -29,7 +47,7 @@ class ControladorPreguntas:
             usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
             data_validada['usuarios_pregunta_id'] = usuario.id_usuarios
 
-            FunctionsUtils.verificar_usuario_pregunta(servicio, id_usuario_token)
+            FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
 
             nueva_pregunta = Preguntas(**data_validada)
             db.session.add(nueva_pregunta)
@@ -53,45 +71,30 @@ class ControladorPreguntas:
         finally:
             db.session.close()
 
-    def eliminar_reservas(self, id_usuario_token, id_servicio, id_reserva):
+    def crear_respuestas(self, data, id_usuario_token, id_servicio, id_pregunta):
+        """Crear una respuesta para una pregunta específica"""
         try:
-            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
-
-            FunctionsUtils.verificar_permisos_reserva(servicio, reserva, id_usuario_token)
-
-            db.session.delete(reserva)
-            db.session.commit()
-
-            return APIResponse.success()
-
-        except ValueError as e:
-            return APIResponse.not_found(resource=str(e))
-
-        except PermissionError as e:
-            return APIResponse.forbidden(error=str(e))
-
-        except Exception as e:
-            db.session.rollback()
-            return APIResponse.error(error=str(e), code=500)
-
-        finally:
-            db.session.close()
-    def actualizar_reservas(self, data, id_usuario_token, id_servicio, id_reserva):
-        try:
-            data_validada = reserva_partial_schema.load(data)
+            data_validada = respuesta_schema.load(data)
 
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
-            reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
 
-            FunctionsUtils.verificar_permisos_reserva(servicio, reserva,id_usuario_token)
+            pregunta = FunctionsUtils.existe_registro(id_pregunta, Preguntas)
+            
+            usuario = FunctionsUtils.existe_registro(id_usuario_token, Usuarios) 
+            
+            data_validada['usuarios_respuesta_id'] = usuario.id_usuarios
+     
 
-            # Actualizar solo los campos presentes en los datos validados
+            FunctionsUtils.verificar_permisos_respuesta(servicio, pregunta, id_usuario_token)
+
+            data_validada['fecha_respuesta'] = datetime.now()
+
             for key, value in data_validada.items():
-                setattr(reserva, key, value)
+                setattr(pregunta, key, value)
 
             db.session.commit()
-            return APIResponse.success()
+
+            return APIResponse.success(message="Respuesta creada exitosamente")
 
         except ValidationError as err:
             return APIResponse.validation_error(errors=err.messages)
@@ -108,50 +111,38 @@ class ControladorPreguntas:
 
         finally:
             db.session.close()
-            
-def actualizar_reservas_por_servicio(self, id_servicio, id_reserva, id_usuario_token, roles):
-    try:
-        usuario = Usuarios.query.get(id_usuario_token)
 
-        servicio = Servicios.query.get(id_servicio)
+    def eliminar_pregunta(self, id_usuario_token, id_servicio, id_pregunta):
+        """Eliminar una pregunta específica"""
+        try:
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
 
-        if not usuario:
-            return jsonify({"error": "Usuario no encontrado"}), 404
+            pregunta = FunctionsUtils.existe_registro(id_pregunta, Preguntas)
 
-        if not servicio:
-            return jsonify({"error": "Servicio no encontrado"}), 404
+            FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
 
-        if usuario.id_usuarios != servicio.usuarios_proveedores_id and (servicios.usuarios_proveedores_id != id_reserva.servicios_id) and(
-                not roles or TipoRoles.ADMIN.value not in roles):
-            return jsonify({"error": "No tienes permiso para actualizar la reserva."}), 403
+            FunctionsUtils.pregunta_pertenece_servicio(servicio, pregunta)
 
-        reserva = Reservas.query.get(id_reserva)
+            FunctionsUtils.verificar_permisos_eliminar_pregunta(servicio, pregunta, id_usuario_token)
 
-        if not reserva:
-            return jsonify({"error": "Reserva no encontrada"}), 404
+            db.session.delete(pregunta)
+            db.session.commit()
 
-        data = request.json
+            return APIResponse.success(message="Pregunta eliminada exitosamente")
 
-        estado_reserva = True
-        if 'fecha_inicio_reserva' in data:
-            reserva.fecha_inicio_reserva = datetime.strptime(data['fecha_inicio_reserva'], "%d/%m/%Y %H:%M:%S")
-        if 'fecha_fin_reserva' in data:
-            reserva.fecha_fin_reserva = datetime.strptime(data['fecha_fin_reserva'], "%d/%m/%Y %H:%M:%S")
-        if 'monto_total' in data:
-            reserva.monto_total = data['monto_total']
-        if 'estados_reserva_id' in data:
-            estado_reserva = EstadosReserva.query.filter_by(estado=data['estados_reserva_id']).first()
-            reserva.estados_reserva_id = estado_reserva.id_estados_reserva
-        elif not estado_reserva:
-            return jsonify({"error": "Estado de la reserva no es valido."}), 400
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
 
-        db.session.commit()
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
 
-        return jsonify({"message": "Reserva actualizado exitosamente"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return APIResponse.error(error=str(e), code=500)
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"Error al actualizar el registro: {str(e)}"}), 500
+        finally:
+            db.session.close()
 
-    finally:
-        db.session.close()
+    
+
+
