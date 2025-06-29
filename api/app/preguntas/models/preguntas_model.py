@@ -29,5 +29,5 @@ class Preguntas(db.Model):
         
         # Campos opcionales para respuesta
         self.respuesta = kwargs.get('respuesta')
-        self.fecha_respuesta = kwargs.get('fecha_respuesta')
+        self.fecha_respuesta = kwargs.get('fecha_respuesta') if self.respuesta else None
         self.usuarios_respuesta_id = kwargs.get('usuarios_respuesta_id')

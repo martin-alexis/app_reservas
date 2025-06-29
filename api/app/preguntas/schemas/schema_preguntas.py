@@ -17,8 +17,7 @@ class PreguntaSchema(ma.SQLAlchemySchema):
     usuarios_pregunta_id = ma.auto_field(dump_only=True)
 
     # Relaciones (solo para mostrar, no para enviar)
-    servicio = fields.Nested(ServiciosSchema, dump_only=True)
-    usuario_pregunta = fields.Nested(UsuariosSchema, dump_only=True)
+   
 
 pregunta_partial_schema = PreguntaSchema(partial=True)
 preguntas_schema = PreguntaSchema(many=True)

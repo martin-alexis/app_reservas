@@ -11,10 +11,8 @@ class RespuestaSchema(ma.SQLAlchemySchema):
 
     respuesta = ma.auto_field(required=True)
     fecha_respuesta = ma.auto_field(dump_only=True)
-    usuarios_respuesta_id = ma.auto_field(required=True)
+    usuarios_respuesta_id = ma.auto_field(dump_only=True)
 
-    # Relaciones
-    usuario_respuesta = fields.Nested(UsuariosSchema, dump_only=True)
 
 # Instancias
 respuesta_partial_schema = RespuestaSchema(partial=True)
