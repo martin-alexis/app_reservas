@@ -43,6 +43,12 @@ def initialize_all_documentation():
     except ImportError as e:
         print(f"⚠️  No se pudo cargar documentación de preguntas: {e}")
     
+    try:
+        from api.app.pagos.v2.swagger.initializer import initialize_pago_documentation
+        initialize_pago_documentation()
+    except ImportError as e:
+        print(f"⚠️  No se pudo cargar documentación de pagos: {e}")
+    
     # Aquí se pueden agregar más módulos en el futuro
     # from api.app.pagos.v2.swagger.initializer import initialize_pago_documentation
     # initialize_pago_documentation()
