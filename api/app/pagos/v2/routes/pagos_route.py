@@ -26,4 +26,15 @@ def obtener_pagos_del_usuario(payload, id_usuario):
         controller = ControladorPagos()
         return controller.obtener_pagos_del_usuario(id_usuario, id_usuario_token)
     except Exception as e:
+        return APIResponse.error(message=str(e))
+
+@api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos/<int:id_pago>', methods=['DELETE'])
+@token_required
+@roles_required([TipoRoles.CLIENTE.value, TipoRoles.PROVEEDOR.value, TipoRoles.ADMIN.value])
+def eliminar_pagos(payload, id_servicio, id_reserva, id_pago):
+    try:
+        id_usuario_token = payload.get('id_usuario')
+        controller = ControladorPagos()
+        return controller.eliminar_pagos(id_usuario_token, id_servicio, id_reserva, id_pago)
+    except Exception as e:
         return APIResponse.error(message=str(e)) 

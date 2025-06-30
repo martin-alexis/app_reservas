@@ -83,4 +83,36 @@ class ControladorPagos:
             return APIResponse.forbidden(error=str(e))
         
         except Exception as e:
-            return APIResponse.error(error=str(e), code=500) 
+            return APIResponse.error(error=str(e), code=500)
+
+    def eliminar_pagos(self, id_usuario_token, id_servicio, id_reserva, id_pago):
+        try:
+            servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
+            reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
+            pago = FunctionsUtils.existe_registro(id_pago, Pagos)
+            FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
+
+            FunctionsUtils.verificar_pago_pertenece_reserva_servicio(servicio, reserva, pago)
+
+
+            FunctionsUtils.verificar_permisos_eliminar_pago(pago, id_usuario_token)
+
+            FunctionsUtils.poner_reserva_en_estado_disponible(reserva)
+
+            db.session.delete(pago)
+            db.session.commit()
+
+            return APIResponse.success(message="Pago eliminado exitosamente")
+
+        except ValueError as e:
+            return APIResponse.not_found(resource=str(e))
+        
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
+        
+        except Exception as e:
+            db.session.rollback()
+            return APIResponse.error(error=str(e), code=500)
+        
+        finally:
+            db.session.close() 
