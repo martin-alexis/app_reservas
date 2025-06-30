@@ -225,3 +225,32 @@ class FunctionsUtils:
         """
         if servicio.usuarios_proveedores_id == usuario.id_usuarios:
             raise PermissionError("El proveedor del servicio no puede efectuar el pago de su propio servicio.")
+
+    @staticmethod
+    def verificar_permisos_eliminar_pago(pago, id_usuario_token):
+        """
+        Permite eliminar solo si el usuario es dueño del pago o es admin.
+        """
+        roles = FunctionsUtils.get_roles_user(id_usuario_token)
+        es_duenio = pago.usuarios_id == id_usuario_token
+        es_admin = roles and TipoRoles.ADMIN.value in roles
+        if not (es_duenio or es_admin):
+            raise PermissionError("No tienes permisos para eliminar este pago")
+
+    @staticmethod
+    def verificar_pago_pertenece_reserva_servicio(servicio, reserva, pago):
+        """
+        Verifica que la reserva pertenezca al servicio y el pago a la reserva.
+        Lanza PermissionError si no se cumple.
+        """
+        if reserva.servicios_id != servicio.id_servicios:
+            raise PermissionError("La reserva no pertenece a este servicio")
+        if pago.reservas_id != reserva.id_reservas:
+            raise PermissionError("El pago no pertenece a esta reserva")
+
+    @staticmethod
+    def poner_reserva_en_estado_disponible(reserva):
+        estado_disponible = EstadosReserva.query.filter_by(estado=EstadoReserva.DISPONIBLE.value).first()
+        if not estado_disponible:
+            raise ValueError("No se encontró el estado DISPONIBLE.")
+        reserva.estados_reserva_id = estado_disponible.id_estados_reserva
