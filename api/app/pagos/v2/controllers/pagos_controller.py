@@ -79,5 +79,8 @@ class ControladorPagos:
         except ValueError as e:
             return APIResponse.not_found(resource=str(e))
         
+        except PermissionError as e:
+            return APIResponse.forbidden(error=str(e))
+        
         except Exception as e:
             return APIResponse.error(error=str(e), code=500) 
