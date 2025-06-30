@@ -7,6 +7,8 @@ from api.app.usuarios.models.usuarios_model import Usuarios
 from api.app.usuarios.models.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.preguntas.models.preguntas_model import Preguntas
 from api.app.utils.responses import APIResponse
+from api.app.reservas.models.estados_reserva_model import EstadosReserva, EstadoReserva
+from api.app import db
 
 class FunctionsUtils:
     @staticmethod
@@ -105,6 +107,14 @@ class FunctionsUtils:
         # Luego verificar que la reserva pertenezca al servicio
         if reserva.servicios_id != servicio.id_servicios:
             raise PermissionError("La reserva no pertenece a este servicio")
+        
+    @staticmethod
+    def reserva_pertece_servicio(servicio, reserva):
+        """Verifica permisos para una reserva de un servicio"""
+
+        # Luego verificar que la reserva pertenezca al servicio
+        if reserva.servicios_id != servicio.id_servicios:
+            raise PermissionError("La reserva no pertenece a este servicio")
 
     @staticmethod
     def verificar_permisos_pago(servicio, reserva, pago, id_usuario_token):
@@ -189,3 +199,29 @@ class FunctionsUtils:
             else:
                 data[campo] = ids[0]
         return data
+
+    @staticmethod
+    def verificar_reserva_ya_reservada(reserva):
+        estado_actual = EstadosReserva.query.get(reserva.estados_reserva_id)
+        if estado_actual and estado_actual.estado.value == EstadoReserva.RESERVADA.value:
+            raise PermissionError("Esta reserva ya está reservada.")
+
+    @staticmethod
+    def verificar_pago_monto_exactitud(servicio, monto):
+        if monto != servicio.precio:
+            raise ValueError("El pago del servicio tiene que ser exacto.")
+
+    @staticmethod
+    def poner_reserva_en_estado_reservada(reserva):
+        estado_reservada = EstadosReserva.query.filter_by(estado=EstadoReserva.RESERVADA.value).first()
+        if not estado_reservada:
+            raise ValueError("No se encontró el estado RESERVADA.")
+        reserva.estados_reserva_id = estado_reservada.id_estados_reserva
+
+    @staticmethod
+    def verificar_usuario_no_es_proveedor(servicio, usuario):
+        """
+        Lanza PermissionError si el usuario es el proveedor del servicio.
+        """
+        if servicio.usuarios_proveedores_id == usuario.id_usuarios:
+            raise PermissionError("El proveedor del servicio no puede efectuar el pago de su propio servicio.")
