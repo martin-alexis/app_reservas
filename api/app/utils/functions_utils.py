@@ -109,6 +109,16 @@ class FunctionsUtils:
             raise PermissionError("La reserva no pertenece a este servicio")
         
     @staticmethod
+    def verificar_permisos_respuesta(servicio, pregunta, id_usuario_token):
+        """Verifica permisos para una respuesta de una pregunta de un servicio"""
+        # Primero verificar permisos sobre el servicio
+        FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
+
+        # Luego verificar que la pregunta pertenezca al servicio
+        if pregunta.servicios_id != servicio.id_servicios:
+            raise PermissionError("La pregunta no pertenece a este servicio")
+        
+    @staticmethod
     def reserva_pertece_servicio(servicio, reserva):
         """Verifica permisos para una reserva de un servicio"""
 
