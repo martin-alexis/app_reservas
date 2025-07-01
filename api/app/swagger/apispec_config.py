@@ -15,6 +15,18 @@ spec = APISpec(
     }
 )
 
+
+# Definir el esquema de seguridad global para JWT Bearer
+spec.components.security_scheme(
+    "bearerAuth",
+    {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Autenticación JWT usando el esquema Bearer. Ejemplo: 'Bearer {token}'"
+    }
+)
+
 def initialize_all_documentation():
     """Inicializa toda la documentación de la API de forma modular"""
     
