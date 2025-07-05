@@ -32,11 +32,11 @@ class Config:
 class DevelopmentConfig:
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = (
-        f"sqlite+{os.environ.get("TURSO_DATABASE_DEVELOPMENT_URI")}?secure=true&check_same_thread=false"
+        f"sqlite+{os.environ.get('TURSO_DATABASE_DEVELOPMENT_URI')}?secure=true&check_same_thread=false"
     )
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {
-            "auth_token": os.environ.get("TURSO_DATABASE_DEVELOPMENT_TOKEN")
+            "auth_token": os.environ.get('TURSO_DATABASE_DEVELOPMENT_TOKEN')
         }
     }
 
@@ -49,11 +49,11 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = False
 
     SQLALCHEMY_DATABASE_URI = (
-        f"sqlite+{os.environ.get("TURSO_DATABASE_PRODUCTION_URI")}?secure=true&check_same_thread=false"
+        f"sqlite+{os.environ.get('TURSO_DATABASE_DEVELOPMENT_URI')}?secure=true&check_same_thread=false"
     )
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {
-            "auth_token": os.environ.get("TURSO_DATABASE_PRODUCTION_TOKEN")
+            "auth_token": os.environ.get('TURSO_DATABASE_PRODUCTION_TOKEN')
         }
     }
     LOGGING_LEVEL = "ERROR"  # Solo registrar errores o más graves
