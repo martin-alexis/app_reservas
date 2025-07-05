@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import os
 import logging
 from logging.handlers import RotatingFileHandler
+from sqlalchemy import create_engine
+import datetime
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -27,16 +29,33 @@ class Config:
         return app
 
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig:
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"sqlite+{os.getenv('TURSO_DATABASE-DEVELOPMENT_URI')}/?authToken={os.getenv('TURSO_DATABASE-DEVELOPMENT_TOKEN')}&secure=true&check_same_thread=false"
+    SQLALCHEMY_DATABASE_URI = (
+        f"sqlite+{os.environ.get("TURSO_DATABASE_DEVELOPMENT_URI")}?secure=true&check_same_thread=false"
+    )
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {
+            "auth_token": os.environ.get("TURSO_DATABASE_DEVELOPMENT_TOKEN")
+        }
+    }
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False  
+
 
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = f"sqlite+{os.getenv('TURSO_DATABASE-PRODUCTION_URI')}/?authToken={os.getenv('TURSO_DATABASE-PRODUCTION_TOKEN')}&secure=true&check_same_thread=false"
 
+    SQLALCHEMY_DATABASE_URI = (
+        f"sqlite+{os.environ.get("TURSO_DATABASE_PRODUCTION_URI")}?secure=true&check_same_thread=false"
+    )
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {
+            "auth_token": os.environ.get("TURSO_DATABASE_PRODUCTION_TOKEN")
+        }
+    }
     LOGGING_LEVEL = "ERROR"  # Solo registrar errores o más graves
 
     # Configuración básica del logging
