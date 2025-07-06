@@ -15,8 +15,8 @@ from api.app.blueprints_v2 import api
 
 import secrets
 from flask import session, request
+from api.app.utils.security import invalidated_tokens
 
-invalidated_tokens = set()
 
 @api.route('/google/login')
 def google_login():

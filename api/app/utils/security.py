@@ -10,6 +10,7 @@ from flask import request
 from api.app.utils.responses import APIResponse
 from api.app.utils.functions_utils import FunctionsUtils
 
+invalidated_tokens = set()
 
 class Security:
     # Carga las variables de entorno desde el archivo .env
@@ -37,6 +38,8 @@ class Security:
             encoded_token = authorization.split(" ")[1]
 
             try:
+                if encoded_token in invalidated_tokens:
+                    return None
                 # Decodificar el token JWT
                 payload = jwt.decode(encoded_token, Security.token_secret, algorithms=["HS256"])
                 return payload  # Retorna los datos del usuario
