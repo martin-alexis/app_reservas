@@ -21,6 +21,17 @@ class Security:
 
     @staticmethod
     def create_token(id_usuario, email, roles,):
+        """
+        Genera un token JWT para un usuario autenticado.
+
+        Parámetros:
+        - id_usuario (int): ID del usuario.
+        - email (str): Correo electrónico del usuario.
+        - roles (list): Lista de roles del usuario.
+
+        Retorna:
+        - str: Token JWT firmado con expiración de 24 horas.
+        """
         payload = {
             "id_usuario": id_usuario,
             "email": email,
@@ -30,9 +41,18 @@ class Security:
         }
         return jwt.encode(payload, Security.token_secret, algorithm="HS256")
 
-
     @staticmethod
     def verify_token(headers):
+        """
+        Verifica y decodifica un token JWT presente en los headers de la petición.
+
+        Parámetros:
+        - headers (dict): Diccionario de headers HTTP (usualmente request.headers).
+
+        Retorna:
+        - dict: Payload decodificado si el token es válido.
+        - None: Si el token está expirado, es inválido, ha sido invalidado o no está presente.
+        """
         if 'Authorization' in headers.keys():
             authorization = headers['Authorization']
             encoded_token = authorization.split(" ")[1]
@@ -50,6 +70,12 @@ class Security:
         return None  # Si no hay token o es incorrecto
 
 def token_required(f):
+    """
+    Decorador para proteger rutas que requieren autenticación JWT.
+    Verifica la validez del token y pasa el payload decodificado a la función decorada.
+
+    Si el token es inválido, expirado o no está presente, retorna una respuesta de error.
+    """
     @wraps(f)
     def decorated(*args, **kwargs):
         headers = request.headers
@@ -70,6 +96,15 @@ def token_required(f):
     return decorated
 
 def roles_required(roles_permitidos):
+    """
+    Decorador para proteger rutas según roles permitidos.
+    Solo permite el acceso si el usuario autenticado tiene al menos uno de los roles requeridos.
+
+    Parámetros:
+    - roles_permitidos (list): Lista de roles (strings) permitidos para acceder a la ruta.
+
+    Si el usuario no tiene los roles requeridos, retorna una respuesta de error 403.
+    """
     def decorator(f):
         @wraps(f)
         def decorated(payload, *args, **kwargs):
