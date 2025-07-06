@@ -5,6 +5,12 @@ from api.app.preguntas.v2.controllers.preguntas_controller import ControladorPre
 from api.app.utils.security import token_required, roles_required
 
 from api.app.blueprints_v2 import api
+from api.app.utils import common_routes as common
+
+
+@api.route('/preguntas/<int:id_pregunta>', methods=['GET'])
+def obtener_pregunta_por_id (id_pregunta):
+       return common.obtener_pregunta_por_id(id_pregunta)
 
 @api.route('/servicios/<int:id_servicio>/preguntas', methods=['GET'])
 def obtener_preguntas_servicio(id_servicio):

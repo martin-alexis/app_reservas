@@ -1,3 +1,6 @@
+from api.app.pagos.models.pagos_model import Pagos
+from api.app.pagos.schemas.schema_pagos import PagosSchema
+from api.app.preguntas.schemas.schema_preguntas import PreguntaSchema
 from api.app.reservas.models.reservas_model import Reservas
 from api.app.servicios.models.servicios_model import Servicios
 from api.app.usuarios.models.usuarios_model import Usuarios
@@ -6,6 +9,26 @@ from api.app.servicios.schemas.schema_servicios import ServiciosSchema
 from api.app.usuarios.schemas.schema_usuarios import UsuariosSchema
 from api.app.utils.responses import APIResponse
 
+
+def obtener_pago_por_id(id_pago):
+    try:
+        pago = Pagos.query.get(id_pago)
+        if not pago:
+            return APIResponse.not_found(resource='Pagos')
+        pago_schema = PagosSchema()
+        return APIResponse.success(data=pago_schema.dump(pago))
+    except Exception as e:
+        return APIResponse.error(error= str(e))
+
+def obtener_pregunta_por_id(id_pregunta):
+    try:
+        pregunta = Pagos.query.get(id_pregunta)
+        if not pregunta:
+            return APIResponse.not_found(resource='Preguntas')
+        pregunta_schema = PreguntaSchema()
+        return APIResponse.success(data=pregunta_schema.dump(pregunta))
+    except Exception as e:
+        return APIResponse.error(error= str(e))
 
 def obtener_servicio_por_id(id_servicio):
     try:

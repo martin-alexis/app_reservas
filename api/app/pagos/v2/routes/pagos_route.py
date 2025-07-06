@@ -3,7 +3,14 @@ from api.app.usuarios.models.roles_model import TipoRoles
 from api.app.utils.responses import APIResponse
 from api.app.pagos.v2.controllers.pagos_controller import ControladorPagos
 from api.app.utils.security import token_required, roles_required
+from api.app.utils import common_routes as common
 from api.app.blueprints_v2 import api
+
+
+@api.route('/pagos/<int:id_pago>', methods=['GET'])
+def obtener_pago_por_id (id_pago):
+       return common.obtener_pago_por_id(id_pago)
+
 
 @api.route('/servicios/<int:id_servicio>/reservas/<int:id_reserva>/pagos', methods=['POST'])
 @token_required
