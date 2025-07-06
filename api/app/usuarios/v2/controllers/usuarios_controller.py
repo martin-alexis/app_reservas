@@ -19,6 +19,14 @@ class ControladorUsuarios:
 
     @staticmethod
     def validar_campos_unicos(data, id_usuario_token=None):
+        """
+        Valida que los campos 'correo' y 'telefono' sean únicos en la base de datos.
+        Si se encuentra un usuario con el mismo correo o teléfono (distinto del usuario actual), lanza ValidationError.
+
+        Parámetros:
+        - data (dict): Datos del usuario a validar.
+        - id_usuario_token (int, opcional): ID del usuario actual (para permitir actualizarse a sí mismo).
+        """
         if 'correo' in data:
             usuario = Usuarios.query.filter_by(correo=data['correo']).first()
             if usuario and usuario.id_usuarios != id_usuario_token:
@@ -30,40 +38,73 @@ class ControladorUsuarios:
 
     @staticmethod
     def eliminar_roles_en_data(data_validada):
+        """
+        Elimina el campo 'tipo_roles' del diccionario de datos validados y retorna una copia con los roles y otra sin ellos.
+
+        Parámetros:
+        - data_validada (dict): Datos validados del usuario.
+        Retorna:
+        - tuple: (data_con_roles, data_validada_sin_roles)
+        """
         data_con_roles = data_validada.copy()
         data_validada.pop('tipo_roles', None)
         return data_con_roles, data_validada
 
     @staticmethod
     def renombrar_tipos_usuario(data_validada):
+        """
+        Renombra el campo 'tipos_usuario' a 'tipos_usuario_id' en el diccionario de datos validados.
+        Parámetros:
+        - data_validada (dict): Datos validados del usuario.
+        Retorna:
+        - dict: Diccionario actualizado.
+        """
         if 'tipos_usuario' in data_validada:
             data_validada['tipos_usuario_id'] = data_validada.pop('tipos_usuario')
         return data_validada
 
     @staticmethod
     def existe_imagen(imagen):
+        """
+        Verifica que se haya proporcionado una imagen. Lanza ValueError si no existe.
+        Parámetros:
+        - imagen: Archivo de imagen (puede ser None).
+        Retorna:
+        - imagen: El mismo archivo si existe.
+        """
         if imagen is None:
             raise ValueError("La imagen no ha sido proporcionada.")
         return imagen
 
     @staticmethod
     def verificar_servicios(roles_nuevos, usuario):
+        """
+        Verifica que un usuario pueda dejar de ser proveedor solo si no tiene servicios asociados.
+        Si intenta quitar el rol de proveedor y aún tiene servicios, lanza PermissionError.
+        Parámetros:
+        - roles_nuevos (list): Lista de roles a asignar.
+        - usuario (Usuarios): Instancia del usuario.
+        Retorna:
+        - list: Lista de roles permitidos.
+        """
         roles_actuales = FunctionsUtils.get_roles_user(usuario.id_usuarios)
-        # Si el usuario actualmente es proveedor
         if TipoRoles.PROVEEDOR.value in roles_actuales:
-            # Pero en los roles nuevos YA NO está proveedor
             if TipoRoles.PROVEEDOR.value not in roles_nuevos:
-                # Entonces hay que verificar si tiene servicios
                 servicio = Servicios.query.filter_by(usuarios_proveedores_id=usuario.id_usuarios).first()
                 if servicio:
                     raise PermissionError("Tiene que eliminar los servicios para poder dejar de ser proveedor.")
-
         return roles_nuevos
 
     def crear_usuario(self, data):
+        """
+        Crea un nuevo usuario en la base de datos, asignando roles y tipo de usuario.
+        Valida los datos, verifica unicidad de correo/teléfono, asigna imagen por defecto y retorna un token JWT.
+        Parámetros:
+        - data (dict): Datos del usuario a crear.
+        Retorna:
+        - APIResponse: Respuesta con token JWT o errores de validación.
+        """
         try:
-
-            # Validar y deserializar con Marshmallow
             usuario_schema = UsuariosSchema()
             data_validada = usuario_schema.load(data)
 
@@ -110,6 +151,15 @@ class ControladorUsuarios:
             db.session.close()
 
     def actualizar_foto_perfil_usuario(self, id_usuario, id_usuario_token):
+        """
+        Actualiza la foto de perfil de un usuario, subiendo la imagen a Cloudinary.
+        Verifica permisos y retorna una respuesta de éxito o error.
+        Parámetros:
+        - id_usuario (int): ID del usuario a modificar.
+        - id_usuario_token (int): ID del usuario autenticado (para permisos).
+        Retorna:
+        - APIResponse: Respuesta de éxito o error.
+        """
         try:
             usuario = FunctionsUtils.existe_registro(id_usuario, Usuarios)
             FunctionsUtils.verificar_permisos(usuario, id_usuario_token)
@@ -136,6 +186,16 @@ class ControladorUsuarios:
             db.session.close()
 
     def actualizar_usuario(self, id_usuario, id_usuario_token, data):
+        """
+        Actualiza los datos de un usuario existente, permitiendo cambios parciales.
+        Valida permisos, unicidad de correo/teléfono, y actualiza roles si corresponde.
+        Parámetros:
+        - id_usuario (int): ID del usuario a modificar.
+        - id_usuario_token (int): ID del usuario autenticado (para permisos).
+        - data (dict): Datos a actualizar.
+        Retorna:
+        - APIResponse: Respuesta de éxito o error.
+        """
         try:
             # Validar y deserializar con Marshmallow
             usuario_schema = UsuariosSchema(partial=True)
