@@ -31,13 +31,7 @@ class FunctionsUtils:
             return roles_user
         except Exception as e:
             return APIResponse.error(error=str(e))
-    # @staticmethod
-    # def get_usertype(id_usuario):
-    #     try:
-    #         type_user = TiposUsuario.query.filter_by(id_tipos_usuario=id_usuario.tipos_usuario_id).first()
-    #         return str(type_user.tipo).replace('Tipo.', '')
-    #     except Exception as e:
-    #         return APIResponse.error(None, str(e))
+
     @staticmethod
     def obtener_usuario_por_correo(correo):
         """
