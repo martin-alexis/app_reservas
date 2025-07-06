@@ -1,10 +1,11 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 from sqlalchemy.exc import SQLAlchemyError
 
 from api.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from api.oauth import oauth
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -19,6 +20,7 @@ def create_app():
     Config.select_config(app)
     db.init_app(app)
     ma.init_app(app)
+    oauth.init_app(app)
     app.json.sort_keys = False
 
     from api.app.blueprints_v1 import api as api_v1

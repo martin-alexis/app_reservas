@@ -14,6 +14,9 @@ class Config:
         'pool_pre_ping': True  # Activar el pre-ping en el pool de conexiones
     }
     SECRET_KEY = os.getenv('SECRET_KEY')
+    TOKEN_SECRET = os.getenv('TOKEN_SECRET')
+    CLIENT_ID = os.getenv('CLIENT_ID')
+    CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
     @staticmethod
     def select_config(app):
@@ -29,7 +32,7 @@ class Config:
         return app
 
 
-class DevelopmentConfig:
+class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = (
         f"sqlite+{os.environ.get('TURSO_DATABASE_DEVELOPMENT_URI')}?secure=true&check_same_thread=false"
