@@ -19,7 +19,7 @@ class UsuariosSchema(ma.SQLAlchemySchema):
     telefono = ma.auto_field(validate=validate.Regexp(r'^\d{7,15}$',
                                                       error="Telefono invalido. El teléfono solo puede contener entre 7 y 15 dígitos numéricos."))
     contrasena = ma.auto_field(
-        required=True,
+        required=False,
         load_only=True,
         validate=[
             validate.Length(min=8, max=32, error="La contraseña debe tener entre 8 y 32 caracteres."),
