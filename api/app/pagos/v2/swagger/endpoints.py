@@ -450,4 +450,63 @@ def document_pago_endpoints():
                 }
             }
         }
+    )
+
+    # Endpoint: Obtener pago por ID
+    spec.path(
+        path="/api/v2.0/pagos/{id_pago}",
+        operations={
+            "get": {
+                "tags": ["Pagos"],
+                "summary": "Obtener pago por ID",
+                "description": "Obtiene la información de un pago específico por su ID.",
+                "parameters": [
+                    {
+                        "name": "id_pago",
+                        "in": "path",
+                        "required": True,
+                        "description": "ID del pago a consultar",
+                        "schema": {"type": "integer"},
+                        "example": 123
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pago encontrado",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "success",
+                                    "code": 200,
+                                    "message": "Operación exitosa",
+                                    "error": None,
+                                    "data": {
+                                        "id_pagos": 123,
+                                        "monto": 1000.0,
+                                        "fecha_pago": "2024-07-01T12:00:00",
+                                        "usuarios_id": 1,
+                                        "reservas_id": 10,
+                                        "estados_pago_id": 2
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pago no encontrado",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "error",
+                                    "code": 404,
+                                    "message": "Pago no encontrado",
+                                    "error": None,
+                                    "data": None
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     ) 

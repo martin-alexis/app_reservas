@@ -507,4 +507,63 @@ def document_pregunta_endpoints():
                 }
             }
         }
+    )
+
+    # Endpoint: Obtener pregunta por ID
+    spec.path(
+        path="/api/v2.0/preguntas/{id_pregunta}",
+        operations={
+            "get": {
+                "tags": ["Preguntas"],
+                "summary": "Obtener pregunta por ID",
+                "description": "Obtiene la información de una pregunta específica por su ID.",
+                "parameters": [
+                    {
+                        "name": "id_pregunta",
+                        "in": "path",
+                        "required": True,
+                        "description": "ID de la pregunta a consultar",
+                        "schema": {"type": "integer"},
+                        "example": 456
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pregunta encontrada",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "success",
+                                    "code": 200,
+                                    "message": "Operación exitosa",
+                                    "error": None,
+                                    "data": {
+                                        "id_preguntas": 456,
+                                        "texto": "¿El servicio incluye materiales?",
+                                        "servicios_id": 22,
+                                        "usuarios_pregunta_id": 3,
+                                        "usuarios_respuesta_id": 5,
+                                        "fecha_respuesta": "2024-07-01T15:00:00"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pregunta no encontrada",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "error",
+                                    "code": 404,
+                                    "message": "Pregunta no encontrada",
+                                    "error": None,
+                                    "data": None
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     ) 

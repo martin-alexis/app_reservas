@@ -8,7 +8,12 @@ spec = APISpec(
     openapi_version="3.0.3",
     plugins=[MarshmallowPlugin()],
     info={
-        "description": "API para sistema de reservas y servicios",
+        "description": (
+            "Booking App es una API de reservas orientada a la gestión integral de servicios de todo tipo. "
+            "Permite a usuarios y proveedores publicar, buscar, reservar y gestionar servicios de manera eficiente.\n\n"
+            "Módulos principales: usuarios, servicios, reservas, pagos y preguntas.\n"
+            "Características: API RESTful versionada, autenticación JWT y Google OAuth, roles y permisos, documentación Swagger/OpenAPI, validaciones robustas, integración con servicios externos (Cloudinary, Google)."
+        ),
         "contact": {
             "name": "Booking API Support"
         }
