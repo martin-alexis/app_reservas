@@ -22,7 +22,11 @@ class ControladorPreguntas:
         pass
 
     def obtener_preguntas_servicio(self, id_servicio):
-        """Obtener todas las preguntas de un servicio específico"""
+        """
+        Obtiene todas las preguntas asociadas a un servicio específico.
+        :param id_servicio: ID del servicio.
+        :return: APIResponse con la lista de preguntas o error.
+        """
         try:
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
             
@@ -37,7 +41,13 @@ class ControladorPreguntas:
             return APIResponse.error(error=str(e), code=500)
 
     def crear_preguntas(self, data, id_usuario_token, id_servicio):
-        """Crear una nueva pregunta para un servicio"""
+        """
+        Crea una nueva pregunta para un servicio.
+        :param data: Diccionario con los datos de la pregunta.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = pregunta_schema.load(data)
 
@@ -72,7 +82,14 @@ class ControladorPreguntas:
             db.session.close()
 
     def crear_respuestas(self, data, id_usuario_token, id_servicio, id_pregunta):
-        """Crear una respuesta para una pregunta específica"""
+        """
+        Crea una respuesta para una pregunta específica de un servicio.
+        :param data: Diccionario con los datos de la respuesta.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :param id_pregunta: ID de la pregunta a responder.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = respuesta_schema.load(data)
 
@@ -113,7 +130,13 @@ class ControladorPreguntas:
             db.session.close()
 
     def eliminar_pregunta(self, id_usuario_token, id_servicio, id_pregunta):
-        """Eliminar una pregunta específica"""
+        """
+        Elimina una pregunta específica de un servicio, validando permisos y relaciones.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :param id_pregunta: ID de la pregunta a eliminar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
 

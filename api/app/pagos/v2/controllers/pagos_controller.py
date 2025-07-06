@@ -18,6 +18,14 @@ class ControladorPagos:
         pass
 
     def efectuar_pago(self, data, id_servicio, id_reserva, id_usuario_token):
+        """
+        Efectúa un pago para una reserva de un servicio, validando reglas de negocio y estados.
+        :param data: Diccionario con los datos del pago.
+        :param id_servicio: ID del servicio asociado.
+        :param id_reserva: ID de la reserva asociada.
+        :param id_usuario_token: ID del usuario autenticado.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = pago_schema.load(data)
 
@@ -67,6 +75,12 @@ class ControladorPagos:
             db.session.close()
 
     def obtener_pagos_del_usuario(self, id_usuario, id_usuario_token):
+        """
+        Obtiene todos los pagos realizados por un usuario, validando permisos.
+        :param id_usuario: ID del usuario cuyos pagos se consultan.
+        :param id_usuario_token: ID del usuario autenticado (para permisos).
+        :return: APIResponse con la lista de pagos o error.
+        """
         try:
             usuario = FunctionsUtils.existe_registro(id_usuario, Usuarios)
 
@@ -86,6 +100,14 @@ class ControladorPagos:
             return APIResponse.error(error=str(e), code=500)
 
     def eliminar_pagos(self, id_usuario_token, id_servicio, id_reserva, id_pago):
+        """
+        Elimina un pago de una reserva de un servicio, validando permisos y relaciones.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :param id_reserva: ID de la reserva asociada.
+        :param id_pago: ID del pago a eliminar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
             reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
@@ -93,7 +115,6 @@ class ControladorPagos:
             FunctionsUtils.existe_registro(id_usuario_token, Usuarios)
 
             FunctionsUtils.verificar_pago_pertenece_reserva_servicio(servicio, reserva, pago)
-
 
             FunctionsUtils.verificar_permisos_eliminar_pago(pago, id_usuario_token)
 

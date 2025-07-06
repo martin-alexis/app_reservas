@@ -19,6 +19,13 @@ class ControladorServicios:
 
     @staticmethod
     def aplicar_filtros_precio(query, precio_min, precio_max):
+        """
+        Aplica filtros de precio mínimo y/o máximo a una consulta SQLAlchemy.
+        :param query: Consulta SQLAlchemy base.
+        :param precio_min: Precio mínimo (opcional).
+        :param precio_max: Precio máximo (opcional).
+        :return: Consulta filtrada por rango de precios.
+        """
         if precio_min and precio_max:
             query = query.filter(Servicios.precio >= float(precio_min), Servicios.precio <= float(precio_max))
         elif precio_min:
@@ -27,9 +34,14 @@ class ControladorServicios:
             query = query.filter(Servicios.precio <= float(precio_max))
         return query
 
-
-
     def crear_servicio(self, data, id_usuario_token):
+        """
+        Crea un nuevo servicio asociado a un usuario proveedor.
+        Valida los datos, sube la imagen a Cloudinary y guarda el servicio en la base de datos.
+        :param data: Diccionario con los datos del servicio.
+        :param id_usuario_token: ID del usuario autenticado (proveedor).
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = servicio_schema.load(data)
 
@@ -44,7 +56,6 @@ class ControladorServicios:
 
             data_validada = FunctionsUtils.pasar_ids(data_validada, 'tipos_servicio_id', ids_tipos_servicio)
             data_validada = FunctionsUtils.pasar_ids(data_validada, 'disponibilidad_servicio_id', ids_disponibilidad_servicio)
-
 
             imagen = request.files['imagen']
             imagen_url = FunctionsUtils.subir_imagen_cloudinary(imagen, id_usuario_token, 'servicios')
@@ -67,6 +78,11 @@ class ControladorServicios:
             db.session.close()
 
     def obtener_servicios_usuario(self, id_usuario):
+        """
+        Obtiene todos los servicios publicados por un usuario proveedor.
+        :param id_usuario: ID del usuario proveedor.
+        :return: Lista de servicios en formato JSON o mensaje de error.
+        """
         try:
             usuario = Usuarios.query.get(id_usuario)
             if not usuario:
@@ -83,8 +99,11 @@ class ControladorServicios:
             return jsonify({'error': 'Ocurrió un error al obtener los servicios.', 'message': str(e)}), 500
 
     def obtener_todos_servicios(self):
+        """
+        Obtiene todos los servicios disponibles, aplicando filtros de búsqueda, paginación, precio, tipo y disponibilidad.
+        :return: APIResponse con la lista paginada de servicios o mensaje de error.
+        """
         try:
-
             filtros = filtros_servicios_schema.load(request.args)
 
             page = filtros["page"]
@@ -126,6 +145,14 @@ class ControladorServicios:
             return APIResponse.error(error=str(e), code=500)
 
     def actualizar_servicio(self, data, id_usuario_token, id_servicio):
+        """
+        Actualiza los datos de un servicio existente, permitiendo cambios parciales.
+        Valida permisos y actualiza solo los campos presentes en los datos recibidos.
+        :param data: Diccionario con los datos a actualizar.
+        :param id_usuario_token: ID del usuario autenticado (proveedor).
+        :param id_servicio: ID del servicio a modificar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             servivio_schema = ServiciosSchema(partial=True)
             data_validada = servivio_schema.load(data)
@@ -164,6 +191,12 @@ class ControladorServicios:
             db.session.close()
 
     def eliminar_servicio(self, id_usuario_token, id_servicio):
+        """
+        Elimina un servicio existente si el usuario autenticado tiene permisos.
+        :param id_usuario_token: ID del usuario autenticado (proveedor).
+        :param id_servicio: ID del servicio a eliminar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
             FunctionsUtils.verificar_permisos(servicio, id_usuario_token)
@@ -187,6 +220,12 @@ class ControladorServicios:
             db.session.close()
 
     def actualizar_imagen_servicio(self, id_usuario_token, id_servicio):
+        """
+        Actualiza la imagen de un servicio, subiendo la nueva imagen a Cloudinary.
+        :param id_usuario_token: ID del usuario autenticado (proveedor).
+        :param id_servicio: ID del servicio a modificar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
 
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)

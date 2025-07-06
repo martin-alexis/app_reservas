@@ -17,6 +17,11 @@ class ControladorReservas:
 
     @staticmethod
     def verificar_disponibilidad_rango(data_validada):
+        """
+        Verifica que no exista una reserva solapada en el mismo servicio para el rango de fechas dado.
+        :param data_validada: Diccionario con los datos de la reserva (incluye fechas y servicio).
+        :raises PermissionError: Si existe conflicto de horario.
+        """
         id_servicio = data_validada['servicios_id']
         nueva_fecha_inicio = data_validada['fecha_inicio_reserva']
         nueva_fecha_fin = data_validada['fecha_fin_reserva']
@@ -31,18 +36,28 @@ class ControladorReservas:
             Reservas.fecha_inicio_reserva < nueva_fecha_fin,
             Reservas.fecha_fin_reserva > nueva_fecha_inicio
         ).first()
-
         if conflicto:
             raise PermissionError("Ya existe una reserva en ese horario.")
 
     @staticmethod
     def verificar_disponibilidad_servicio(servicio):
+        """
+        Verifica que el servicio esté disponible para reservar (no agotado ni próximamente).
+        :param servicio: Instancia de Servicios.
+        :raises PermissionError: Si el servicio no está disponible.
+        """
         disponibilidad = DisponibilidadServicio.query.filter_by(id_disponibilidad_servicio=servicio.disponibilidad_servicio_id).first()
         if disponibilidad.estado.value in [Estado.AGOTADO.value, Estado.PROXIMAMENTE.value]:
             raise PermissionError("No es posible realizar esta accion. El servicio debe estar disponible.")
 
-
     def crear_reservas(self, data, id_usuario_token, id_servicio):
+        """
+        Crea una nueva reserva para un servicio, validando disponibilidad y solapamiento de fechas.
+        :param data: Diccionario con los datos de la reserva.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio a reservar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = reserva_schema.load(data)
 
@@ -82,6 +97,13 @@ class ControladorReservas:
             db.session.close()
 
     def eliminar_reservas(self, id_usuario_token, id_servicio, id_reserva):
+        """
+        Elimina una reserva de un servicio, validando permisos y relaciones.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :param id_reserva: ID de la reserva a eliminar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             servicio = FunctionsUtils.existe_registro(id_servicio, Servicios)
             reserva = FunctionsUtils.existe_registro(id_reserva, Reservas)
@@ -107,6 +129,14 @@ class ControladorReservas:
             db.session.close()
 
     def actualizar_reservas(self, data, id_usuario_token, id_servicio, id_reserva):
+        """
+        Actualiza los datos de una reserva existente, validando permisos y disponibilidad.
+        :param data: Diccionario con los datos a actualizar.
+        :param id_usuario_token: ID del usuario autenticado.
+        :param id_servicio: ID del servicio asociado.
+        :param id_reserva: ID de la reserva a modificar.
+        :return: APIResponse con el resultado de la operación.
+        """
         try:
             data_validada = reserva_partial_schema.load(data)
 
