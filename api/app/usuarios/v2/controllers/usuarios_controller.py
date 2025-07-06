@@ -9,6 +9,7 @@ from api.app.usuarios.models.roles_model import Roles, TipoRoles
 from api.app.usuarios.models.usuarios_model import Usuarios
 from api.app.usuarios.models.usuarios_tiene_roles_model import UsuariosTieneRoles
 from api.app.usuarios.models.tipos_usuarios_model import TiposUsuario
+from api.app.utils.security import Security
 
 
 class ControladorUsuarios:
@@ -94,7 +95,9 @@ class ControladorUsuarios:
                 db.session.add(rol_usuario)
 
             db.session.commit()
-            return APIResponse.created()
+            roles_user = FunctionsUtils.get_roles_user(nuevo_usuario.id_usuarios)
+            token = Security.create_token(nuevo_usuario.id_usuarios, nuevo_usuario.correo, roles_user)
+            return APIResponse.created(data={'token': token})
 
         except ValidationError as err:
             return APIResponse.validation_error(errors=err.messages)
