@@ -11,7 +11,7 @@ class Usuarios(db.Model):
     id_usuarios = db.Column(Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(String(45), nullable=False)
     correo = db.Column(String(45), nullable=False, unique=True)
-    contrasena = db.Column(String(255), nullable=False)
+    contrasena = db.Column(String(255), nullable=True)
     telefono = db.Column(String(45), nullable=False, unique=True)
     imagen = db.Column(String(255))
     tipos_usuario_id = db.Column(Integer, ForeignKey('tipos_usuario.id_tipos_usuario'), nullable=False)
@@ -28,10 +28,10 @@ class Usuarios(db.Model):
 
     # valoraciones = relationship('Valoraciones', back_populates='usuario')
 
-    def __init__(self, nombre, correo, contrasena, telefono, imagen, tipos_usuario_id):
+    def __init__(self, nombre, correo, telefono, imagen, tipos_usuario_id, contrasena=None):
         self.nombre = nombre
         self.correo = correo
-        self.contrasena = Usuarios.set_password(contrasena)
+        self.contrasena = Usuarios.set_password(contrasena) if contrasena else None
         self.telefono = telefono
         self.imagen = imagen
         self.tipos_usuario_id = tipos_usuario_id
@@ -51,9 +51,13 @@ class Usuarios(db.Model):
     @staticmethod
     def set_password(password):
         # Genera un hash de la contraseña y lo guarda
+        if password is None:
+            return None
         return generate_password_hash(password)
 
     def check_password(self, password):
         # Verifica si la contraseña ingresada coincide con el hash guardado
+        if self.contrasena is None:
+            return False
         return check_password_hash(self.contrasena, password)
 
