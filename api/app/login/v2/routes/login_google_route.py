@@ -25,7 +25,7 @@ def google_login():
     session['oauth_state'] = state
     
     return google.authorize_redirect(
-        url_for('api_v2.authorize', _external=True),
+        url_for('api_v2.google_callback', _external=True),
         state=state
     )
 
