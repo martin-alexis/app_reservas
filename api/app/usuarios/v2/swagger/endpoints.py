@@ -15,42 +15,58 @@ def document_usuario_endpoints():
                 "tags": ["Usuarios"],
                 "summary": "Crear un nuevo usuario",
                 "description": (
-                    "Crea un nuevo usuario en el sistema.\n\n"
-                    "Validaciones por campo:\n"
+                    "Crea un nuevo usuario en el sistema y retorna un JWT token para autenticación inmediata.\n\n"
+                    "**Validaciones por campo:**\n"
                     "- nombre: requerido, string.\n"
                     "- correo: requerido, string, formato email válido, único.\n"
                     "- telefono: requerido, string, solo dígitos, longitud 7-15, único.\n"
-                    "- contrasena: requerido, string, 8-32 caracteres, al menos una letra y un número.\n"
+                    "- contrasena: opcional, string, 8-32 caracteres, al menos una letra y un número.\n"
                     f"- tipos_usuario: requerido, string, Enum válido ({', '.join(tipos_usuario_validos)}).\n"
                     f"- tipo_roles: requerido, lista de strings, al menos uno, Enum válido ({', '.join(tipo_roles_validos)}).\n"
-                    "- imagen: string (opcional, si no se envía se asigna una por defecto).\n"
+                    "- imagen: string (opcional, si no se envía se asigna una por defecto).\n\n"
+                    "**Respuesta:** Incluye un JWT token para autenticación inmediata del usuario creado.\n"
                 ),
                 "requestBody": {
                     "required": True,
                     "content": {
                         "application/json": {
                             "schema": {"$ref": "#/components/schemas/Usuario"},
-                            "example": {
-                                "nombre": "Juan Pérez",
-                                "correo": "juan.perez@email.com",
-                                "telefono": "1234567890",
-                                "contrasena": "Password123",
-                                "tipos_usuario": tipos_usuario_validos[0],
-                                "tipo_roles": [tipo_roles_validos[0]]
+                            "examples": {
+                                "Usuario con contraseña": {
+                                    "value": {
+                                        "nombre": "Juan Pérez",
+                                        "correo": "juan.perez@email.com",
+                                        "telefono": "1234567890",
+                                        "contrasena": "Password123",
+                                        "tipos_usuario": tipos_usuario_validos[0],
+                                        "tipo_roles": [tipo_roles_validos[0]]
+                                    }
+                                },
+                                "Usuario sin contraseña": {
+                                    "value": {
+                                        "nombre": "María García",
+                                        "correo": "maria.garcia@email.com",
+                                        "telefono": "9876543210",
+                                        "tipos_usuario": tipos_usuario_validos[0],
+                                        "tipo_roles": [tipo_roles_validos[0]]
+                                    }
+                                }
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Usuario creado exitosamente",
+                        "description": "Usuario creado exitosamente.",
                         "content": {
                             "application/json": {
                                 "example": {
                                     "status": "success",
                                     "code": 201,
                                     "message": "Recurso creado con éxito",
-                                    "data": None,
+                                    "data": {
+                                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJqdWFuLnBlcmV6QGVtYWlsLmNvbSIsInJvbGVzIjpbIkNMSUVOVEUiXSwiaWF0IjoxNjg1NjYwMDAwLCJleHAiOjE2ODU3NDY0MDB9.abc123..."
+                                    },
                                     "error": None
                                 }
                             }
