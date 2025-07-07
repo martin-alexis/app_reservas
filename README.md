@@ -357,3 +357,23 @@ Alexis Damián Martín - [LinkedIn](https://linkedin.com/in/alexismartin090)
 Proyecto: [https://github.com/martin-alexis/app_reservas](https://github.com/martin-alexis/app_reservas) 
 
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p> 
+
+---
+
+<div align="center">
+  <strong>⭐ ¡Dale una estrella si este proyecto te fue útil!</strong>
+</div>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/martin-alexis/booking_app.svg?style=for-the-badge
+[contributors-url]: https://github.com/martin-alexis/booking_app/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/martin-alexis/booking_app.svg?style=for-the-badge
+[forks-url]: https://github.com/martin-alexis/booking_app/network/members
+[stars-shield]: https://img.shields.io/github/stars/martin-alexis/booking_app.svg?style=for-the-badge
+[stars-url]: https://github.com/martin-alexis/booking_app/stargazers
+[issues-shield]: https://img.shields.io/github/issues/martin-alexis/booking_app.svg?style=for-the-badge
+[issues-url]: https://github.com/martin-alexis/booking_app/issues
+[license-shield]: https://img.shields.io/github/license/martin-alexis/booking_app.svg?style=for-the-badge
+[license-url]: https://github.com/martin-alexis/booking_app/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/martin-alexis
