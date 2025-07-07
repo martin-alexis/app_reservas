@@ -73,7 +73,6 @@
 - **Reservar servicios:** Los clientes pueden reservar servicios en fechas y horarios disponibles, con validaciones automáticas para evitar solapamientos o reservas en estados no permitidos.
 - **Gestión de pagos:** El sistema permite registrar y validar pagos asociados a reservas, asegurando que los montos sean correctos y actualizando los estados de las reservas y servicios.
 - **Preguntas y respuestas:** Los usuarios pueden realizar preguntas sobre los servicios y los proveedores pueden responderlas, facilitando la comunicación previa a la reserva.
-- **Valoraciones:** (Módulo preparado) Los usuarios pueden dejar valoraciones sobre los servicios recibidos.
 - **Gestión de usuarios y roles:** El sistema soporta diferentes tipos de usuarios (cliente, proveedor, admin) y roles, con autenticación JWT y login social mediante Google OAuth.
 - **Panel de usuario:** Cada usuario puede gestionar su perfil, foto, datos personales y ver sus reservas, servicios o pagos.
 
