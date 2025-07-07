@@ -318,9 +318,6 @@ Puedes ver todos los detalles y comentarios en el archivo `.example.env` incluid
 
 La estructura de la base de datos se encuentra en el archivo `database.sql`. Puedes ejecutarlo en tu gestor de base de datos para crear todas las tablas necesarias:
 
-```bash
-sqlite3 mydatabase.db < database.sql
-```
 
 ### 6. Ejecutar la aplicación
 ```bash
