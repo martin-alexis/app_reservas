@@ -1,4 +1,66 @@
-# Booking App - API de Reservas de Servicios
+<a id="readme-top"></a>
+
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![project_license][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="#">
+    <img src="logo.png" alt="Logo" width="120" height="120">
+  </a>
+
+<h3 align="center">Booking App - API de Reservas de Servicios</h3>
+
+  <p align="center">
+    <a href="#documentacion-swagger"><strong>Explora la documentación »</strong></a>
+    <br />
+    <br />
+    <a href="#diagrama-de-casos-de-uso">Ver Diagramas</a>
+    &middot;
+    <a href="https://g-services.vercel.app/">Ver Demo</a>
+    &middot;
+    <a href="#contribucion">Contribuir</a>
+  </p>
+</div>
+
+🌐 **Acceder a la aplicación:**
+
+- API: [https://app-reservas-wg8p.onrender.com/](https://app-reservas-wg8p.onrender.com/)
+- Documentación: [https://app-reservas-wg8p.onrender.com//docs](https://app-reservas-wg8p.onrender.com/docs)
+- Demo: [https://g-services.vercel.app/](https://g-services.vercel.app/)
+- Frontend: [https://github.com/RubDev476/General-services](https://github.com/RubDev476/General-services)
+
+---
+
+<details>
+  <summary>Tabla de Contenidos</summary>
+  <ol>
+    <li><a href="#sobre-el-proyecto">Sobre el Proyecto</a></li>
+    <li><a href="#arquitectura-del-proyecto">Arquitectura del Proyecto</a></li>
+    <li><a href="#sistema-de-versionado">Sistema de Versionado</a></li>
+    <li><a href="#como-crear-un-nuevo-versionado-de-api">Como Crear un Nuevo Versionado de API</a></li>
+    <li><a href="#modulos-disponibles">Modulos Disponibles</a></li>
+    <li><a href="#diagramas-del-proyecto">Diagramas del Proyecto</a></li>
+    <li><a href="#tecnologias-utilizadas">Tecnologias Utilizadas</a></li>
+    <li><a href="#seguridad">Seguridad</a></li>
+    <li><a href="#instalacion-y-configuracion">Instalacion y Configuracion</a></li>
+    <li><a href="#documentacion-de-la-api">Documentacion de la API</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#contribucion">Contribucion</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ol>
+</details>
+
+---
+
+<a id="sobre-el-proyecto"></a>
+## Sobre el Proyecto
 
 **Booking App** es una API de reservas orientada a la gestión integral de servicios de todo tipo. Permite a usuarios y proveedores interactuar en un ecosistema seguro, flexible y escalable, donde se pueden publicar, buscar, reservar y gestionar servicios de manera eficiente.
 
@@ -20,8 +82,9 @@
 - **Arquitectura modular:** Separación clara por módulos (usuarios, servicios, reservas, pagos, preguntas, etc.) y por versiones de API.
 - **Integración con servicios externos:** Subida de imágenes a Cloudinary, login con Google, etc.
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-
+<a id="arquitectura-del-proyecto"></a>
 ## 🏗️ Arquitectura del Proyecto
 
 ```
@@ -54,6 +117,9 @@ booking_app/
 └── requirements.txt              # Dependencias
 ```
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="sistema-de-versionado"></a>
 ## 🔄 Sistema de Versionado
 
 ### Estructura de Versionado
@@ -81,54 +147,16 @@ api/app/[modulo]/
 
 ### Características del Versionado
 
-✅ **Independencia total**: Cada versión puede evolucionar sin afectar a las otras
-✅ **Modelos compartidos**: Los modelos de base de datos son compartidos entre versiones
-✅ **Esquemas compartidos**: Los esquemas de validación pueden ser reutilizados
-✅ **Documentación modular**: Cada versión tiene su propia documentación Swagger
-✅ **Migración gradual**: Permite migrar endpoints gradualmente sin romper compatibilidad
+- **Independencia total**: Cada versión puede evolucionar sin afectar a las otras.
+- **Modelos compartidos**: Los modelos de base de datos son compartidos entre versiones.
+- **Esquemas compartidos**: Los esquemas de validación pueden ser reutilizados.
+- **Documentación modular**: Cada versión tiene su propia documentación Swagger.
+- **Migración gradual**: Permite migrar endpoints gradualmente sin romper compatibilidad.
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-
-## 📚 Módulos Disponibles
-
-### Usuarios
-- **v1.0**: Endpoints básicos de CRUD
-- **v2.0**: Endpoints mejorados con validaciones avanzadas y JWT
-
-### Servicios
-- **v1.0**: Gestión básica de servicios
-- **v2.0**: Gestión avanzada con filtros y búsquedas
-
-### Reservas
-- **v1.0**: Creación y gestión básica de reservas
-- **v2.0**: Sistema completo con validaciones de fechas y estados
-
-### Pagos
-- **v1.0**: Procesamiento básico de pagos
-- **v2.0**: Sistema completo con estados y validaciones
-
-### Preguntas
-- **v2.0**: Sistema de preguntas y respuestas para servicios
-
-### Login/Autenticación
-- **v1.0**: Login básico con JWT
-- **v2.0**: Login con JWT y OAuth (Google)
-
-## 🖼️ Diagramas del Proyecto
-
-A continuación se incluyen los principales diagramas UML del sistema:
-
-### Diagrama de Casos de Uso
-
-![Diagrama de Casos de Uso](casos_de_uso.svg)
-
-### Diagrama de Clases
-
-![Diagrama de Clases](diagrama_de_clases.svg)
-
-Estos diagramas ayudan a comprender la arquitectura y los principales flujos de la aplicación Booking App.
-
-## ➕ Cómo Crear un Nuevo Versionado de API (Ejemplo: v3)
+<a id="como-crear-un-nuevo-versionado-de-api"></a>
+## Cómo Crear un Nuevo Versionado de API (Ejemplo: v3)
 
 Para agregar una nueva versión de la API (por ejemplo, v3.0), sigue estos pasos:
 
@@ -165,21 +193,84 @@ Para agregar una nueva versión de la API (por ejemplo, v3.0), sigue estos pasos
 
 Esto permite que todos los endpoints de la nueva versión estén disponibles bajo el prefijo `/api/v3.0/` y mantiene la arquitectura modular y versionada del proyecto.
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="modulos-disponibles"></a>
+## 📚 Módulos Disponibles
+
+### Usuarios
+- **v1.0**: Endpoints básicos de CRUD
+- **v2.0**: Endpoints mejorados con validaciones avanzadas y JWT
+
+### Servicios
+- **v1.0**: Gestión básica de servicios
+- **v2.0**: Gestión avanzada con filtros y búsquedas
+
+### Reservas
+- **v1.0**: Creación y gestión básica de reservas
+- **v2.0**: Sistema completo con validaciones de fechas y estados
+
+### Pagos
+- **v1.0**: Procesamiento básico de pagos
+- **v2.0**: Sistema completo con estados y validaciones
+
+### Preguntas
+- **v2.0**: Sistema de preguntas y respuestas para servicios
+
+### Login/Autenticación
+- **v1.0**: Login básico con JWT
+- **v2.0**: Login con JWT y OAuth (Google)
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="diagramas-del-proyecto"></a>
+## 🖼️ Diagramas del Proyecto
+
+A continuación se incluyen los principales diagramas UML del sistema:
+
+### Diagrama de Casos de Uso
+
+![Diagrama de Casos de Uso](casos_de_uso.svg)
+
+### Diagrama de Clases
+
+![Diagrama de Clases](diagrama_de_clases.svg)
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="tecnologias-utilizadas"></a>
 ## 🔧 Tecnologías Utilizadas
 
 ### Backend
-- **Flask**: Framework web
-- **SQLAlchemy**: ORM para base de datos
-- **Marshmallow**: Serialización y validación
-- **PyJWT**: Autenticación JWT
-- **Authlib**: OAuth 2.0
-- **APISpec**: Documentación OpenAPI/Swagger
+- <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" height="20"/> Framework web
+- <img src="https://img.shields.io/badge/SQLAlchemy-c5442a?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="SQLAlchemy" height="20"/> ORM para base de datos
+- <img src="https://img.shields.io/badge/Marshmallow-3C873A?style=for-the-badge&logo=python&logoColor=white" alt="Marshmallow" height="20"/> Serialización y validación
+- <img src="https://img.shields.io/badge/PyJWT-FF9900?style=for-the-badge&logo=python&logoColor=white" alt="PyJWT" height="20"/> Autenticación JWT
+- <img src="https://img.shields.io/badge/Authlib-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Authlib" height="20"/> OAuth 2.0
+- <img src="https://img.shields.io/badge/APISpec-6BA539?style=for-the-badge&logo=openapiinitiative&logoColor=white" alt="APISpec" height="20"/> Documentación OpenAPI/Swagger
 
 ### Base de Datos
-- **SQLite**: Base de datos principal
-- **Turso**: Base de datos en la nube 
+- <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" height="20"/> Base de datos principal
+- <img src="https://img.shields.io/badge/Turso-00B4B6?style=for-the-badge&logo=database&logoColor=white" alt="Turso" height="20"/> Base de datos en la nube
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
+<a id="seguridad"></a>
+## 🔒 Seguridad
+
+### Autenticación
+- <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" height="20"/> Tokens de autenticación con expiración de 24 horas
+- <img src="https://img.shields.io/badge/OAuth2-0080FF?style=for-the-badge&logo=oauth&logoColor=white" alt="OAuth2" height="20"/> Integración con Google para login social
+- <img src="https://img.shields.io/badge/Roles-6f42c1?style=for-the-badge&logo=security&logoColor=white" alt="Roles" height="20"/> Sistema de roles (ADMIN, CLIENTE, PROVEEDOR)
+
+### Validaciones
+- <img src="https://img.shields.io/badge/Marshmallow-3C873A?style=for-the-badge&logo=python&logoColor=white" alt="Marshmallow" height="20"/> Validación de esquemas
+- <img src="https://img.shields.io/badge/SQLAlchemy-c5442a?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="SQLAlchemy" height="20"/> Validaciones a nivel de base de datos
+- <img src="https://img.shields.io/badge/Decoradores-FFD700?style=for-the-badge&logo=python&logoColor=black" alt="Decoradores" height="20"/> Verificación de permisos y roles
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="instalacion-y-configuracion"></a>
 ## 🛠️ Instalación y Configuración
 
 ### 1. Clonar el repositorio
@@ -216,17 +307,23 @@ cd api
 python -m api.run
 ```
 
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="documentacion-de-la-api"></a>
 ## 📖 Documentación de la API
 
 ### Swagger UI
-- **URL**: `http://localhost:5000/docs`
-- **Descripción**: Documentación interactiva de todas las versiones de la API
+- **URL**: `https://app-reservas-wg8p.onrender.com/docs`
+- **Descripción**: Documentación interactiva de la v2.0 de la API
 
 ### Endpoints principales
-- **API v1.0**: `http://localhost:5000/api/v1.0/`
-- **API v2.0**: `http://localhost:5000/api/v2.0/`
+- **API v1.0**: `https://app-reservas-wg8p.onrender.com/api/v1.0/`
+- **API v2.0**: `https://app-reservas-wg8p.onrender.com/api/v2.0/`
 
-## 🧪 Testing
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+<a id="testing"></a>
+## 🧪 Testing (No implementado)
 
 ```bash
 # Ejecutar tests unitarios
@@ -237,27 +334,26 @@ python -m pytest
 python -m pytest unit/usuarios/v1/test_crear_usuario.py
 ```
 
-## 🔒 Seguridad
-
-### Autenticación
-- **JWT**: Tokens de autenticación con expiración de 24 horas
-- **OAuth 2.0**: Integración con Google para login social
-- **Roles**: Sistema de roles (ADMIN, CLIENTE, PROVEEDOR)
-
-### Validaciones
-- **Marshmallow**: Validación de esquemas
-- **SQLAlchemy**: Validaciones a nivel de base de datos
-- **Decoradores**: Verificación de permisos y roles
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 
+<a id="contribucion"></a>
 ## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-version`)
-3. Commit tus cambios (`git commit -am 'Agregar nueva versión de API'`)
-4. Push a la rama (`git push origin feature/nueva-version`)
+2. Crea una rama para tu feature (`git checkout -b feature/new-feature`)
+3. Commit tus cambios (`git commit -am 'New feature'`)
+4. Push a la rama (`git push origin feature/new-feature`)
 5. Crea un Pull Request
 
-## 📄 Licencia
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles. 
+
+<a id="contacto"></a>
+## Contacto
+
+Alexis Damián Martín - [LinkedIn](https://linkedin.com/in/alexismartin090)
+
+Proyecto: [https://github.com/martin-alexis/app_reservas](https://github.com/martin-alexis/app_reservas) 
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p> 
