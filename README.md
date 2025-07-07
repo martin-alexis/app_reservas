@@ -5,7 +5,6 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![project_license][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
@@ -373,7 +372,5 @@ Proyecto: [https://github.com/martin-alexis/app_reservas](https://github.com/mar
 [stars-url]: https://github.com/martin-alexis/booking_app/stargazers
 [issues-shield]: https://img.shields.io/github/issues/martin-alexis/booking_app.svg?style=for-the-badge
 [issues-url]: https://github.com/martin-alexis/booking_app/issues
-[license-shield]: https://img.shields.io/github/license/martin-alexis/booking_app.svg?style=for-the-badge
-[license-url]: https://github.com/martin-alexis/booking_app/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/martin-alexis
