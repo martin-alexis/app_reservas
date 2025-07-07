@@ -35,7 +35,7 @@
 🌐 **Acceder a la aplicación:**
 
 - API: [https://app-reservas-wg8p.onrender.com/](https://app-reservas-wg8p.onrender.com/)
-- Documentación: [https://app-reservas-wg8p.onrender.com//docs](https://app-reservas-wg8p.onrender.com/docs)
+- Documentación: [https://app-reservas-wg8p.onrender.com/docs](https://app-reservas-wg8p.onrender.com/docs)
 - Demo: [https://g-services.vercel.app/](https://g-services.vercel.app/)
 - Frontend: [https://github.com/RubDev476/General-services](https://github.com/RubDev476/General-services)
 
