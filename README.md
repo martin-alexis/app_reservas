@@ -295,15 +295,34 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configurar variables de entorno
-```bash
-# Crear archivo .env
-SECRET_KEY=tu_clave_secreta
-TOKEN_SECRET=tu_token_secret
-CLIENT_ID=tu_google_client_id
-CLIENT_SECRET=tu_google_client_secret
+
+Copia el archivo `.example.env` a `.env` en la raíz del proyecto y completa los valores según tu entorno. El archivo `.env` debe tener la siguiente estructura:
+
+
+```env
+FLASK_ENV=development
+TURSO_DATABASE_DEVELOPMENT_URI=
+TURSO_DATABASE_DEVELOPMENT_TOKEN=
+TURSO_DATABASE_PRODUCTION_URI=
+TURSO_DATABASE_PRODUCTION_TOKEN=
+TOKEN_SECRET=
+SECRET_KEY=
+CLIENT_ID=
+CLIENT_SECRET=
+CLOUDINARY_URL=
 ```
 
-### 5. Ejecutar la aplicación
+Puedes ver todos los detalles y comentarios en el archivo `.example.env` incluido en el repositorio.
+
+### 5. Inicializar la base de datos
+
+La estructura de la base de datos se encuentra en el archivo `database.sql`. Puedes ejecutarlo en tu gestor de base de datos para crear todas las tablas necesarias:
+
+```bash
+sqlite3 mydatabase.db < database.sql
+```
+
+### 6. Ejecutar la aplicación
 ```bash
 cd api
 python -m api.run
