@@ -341,15 +341,32 @@ python -m api.run
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
 <a id="testing"></a>
-## 🧪 Testing (No implementado)
+## 🧪 Testing
+
+Se realizaron tests unitarios para las funcionalidades principales del sistema. Los tests se encuentran en la carpeta `tests/unit/` y están organizados por dominio:
+
+- Usuarios: `tests/unit/usuarios/test_usuarios.py`
+- Preguntas: `tests/unit/preguntas/test_preguntas.py`
+- Pagos: `tests/unit/pagos/test_pagos.py`
+- Reservas: `tests/unit/reservas/test_reservas.py`
+- Generales: `tests/unit/generales/test_generales.py`
+
+### Cómo ejecutar los tests
+
+Puedes ejecutar **todos los tests** del proyecto con:
 
 ```bash
-# Ejecutar tests unitarios
-cd tests
 python -m pytest
+```
 
-# Ejecutar tests específicos
-python -m pytest unit/usuarios/v1/test_crear_usuario.py
+O puedes ejecutar los tests de un archivo específico, por ejemplo:
+
+```bash
+python -m tests.unit.usuarios.test_usuarios
+python -m tests.unit.preguntas.test_preguntas
+python -m tests.unit.pagos.test_pagos
+python -m tests.unit.reservas.test_reservas
+python -m tests.unit.generales.test_generales
 ```
 
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
